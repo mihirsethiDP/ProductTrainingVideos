@@ -1,6 +1,7 @@
 import type { Lesson } from '../../types';
 
-const BASE = '/screenshots/module-01';
+// BASE_URL ends with '/' and respects the Vite `base` (e.g. GitHub Pages subpath)
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-01`;
 
 /**
  * Lesson 1 — Dashboard Overview.
