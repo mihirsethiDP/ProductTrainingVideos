@@ -1,0 +1,58 @@
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { useLanguage } from '../context/LanguageContext';
+import { modulesForRole } from '../data/catalog';
+import type { RoleId } from '../data/types';
+import { saveRole } from '../lib/progress';
+
+const ROLE_CARDS: { id: RoleId; icon: string; nameKey: string; descKey: string }[] = [
+  { id: 'operator', icon: '🛠️', nameKey: 'roleOperator', descKey: 'roleOperatorDesc' },
+  { id: 'supervisor', icon: '📊', nameKey: 'roleSupervisor', descKey: 'roleSupervisorDesc' },
+  { id: 'internal', icon: '💧', nameKey: 'roleInternal', descKey: 'roleInternalDesc' },
+];
+
+export default function RoleSelect() {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  return (
+    <div className="page">
+      <div className="container">
+        <Header />
+        <div className="title-block">
+          <div className="eyebrow">{t('homeEyebrow')}</div>
+          <h1 className="lesson-title" dangerouslySetInnerHTML={{ __html: t('homeTitle') }} />
+          <p className="lesson-subtitle">{t('homeSubtitle')}</p>
+        </div>
+
+        <div className="eyebrow" style={{ padding: '0 8px' }}>{t('whoAreYou')}</div>
+        <div className="role-grid">
+          {ROLE_CARDS.map((card) => {
+            const modules = modulesForRole(card.id);
+            const lessonCount = modules.reduce((n, m) => n + m.lessons.length, 0);
+            return (
+              <button
+                key={card.id}
+                className="role-card"
+                onClick={() => {
+                  saveRole(card.id);
+                  navigate(`/${card.id}`);
+                }}
+              >
+                <div className={`role-icon ${card.id}`}>{card.icon}</div>
+                <div className="role-name">{t(card.nameKey)}</div>
+                <div className="role-desc">{t(card.descKey)}</div>
+                <div className="role-count">
+                  {modules.length} {t('moduleWord')} · {lessonCount} {t('lessonsWord')}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <Footer />
+      </div>
+    </div>
+  );
+}
