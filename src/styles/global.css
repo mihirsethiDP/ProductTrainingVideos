@@ -432,9 +432,10 @@ button { font-family: var(--sans); }
 /* === SHOWCASE === */
 .dashboard-showcase { width: 100%; display: flex; flex-direction: column; align-items: center; }
 .showcase-viewport {
+  --viewport-h: 480px;
   width: 100%;
   max-width: 720px;
-  height: 480px;
+  height: var(--viewport-h);
   border-radius: 10px;
   overflow: hidden;
   position: relative;
@@ -447,18 +448,20 @@ button { font-family: var(--sans); }
 .showcase-viewport.auto-scroll .showcase-scroller {
   animation: showcase-scroll 18s ease-in-out forwards;
 }
+/* The scroll distance is the scroller height minus the viewport, so the
+   tour always ends exactly at the bottom of the dashboard image. */
 @keyframes showcase-scroll {
-  0%   { transform: translateY(0%); }
-  8%   { transform: translateY(0%); }
-  25%  { transform: translateY(-22%); }
-  42%  { transform: translateY(-42%); }
-  58%  { transform: translateY(-58%); }
-  75%  { transform: translateY(-75%); }
-  92%  { transform: translateY(-88%); }
-  100% { transform: translateY(-88%); }
+  0%, 8% { transform: translateY(0); }
+  25%  { transform: translateY(calc((-100% + var(--viewport-h, 480px)) * 0.25)); }
+  42%  { transform: translateY(calc((-100% + var(--viewport-h, 480px)) * 0.45)); }
+  58%  { transform: translateY(calc((-100% + var(--viewport-h, 480px)) * 0.62)); }
+  75%  { transform: translateY(calc((-100% + var(--viewport-h, 480px)) * 0.82)); }
+  92%, 100% { transform: translateY(calc(-100% + var(--viewport-h, 480px))); }
 }
 .showcase-annotation {
   position: absolute;
+  right: 14px;
+  max-width: calc(100% - 28px);
   background: white;
   border: 1px solid var(--accent);
   border-radius: 8px;
@@ -630,6 +633,6 @@ button { font-family: var(--sans); }
   .narration { padding: 20px; }
   .voice-panel { flex-direction: column; align-items: stretch; }
   .voice-controls { justify-content: space-between; }
-  .showcase-viewport { height: 360px; }
+  .showcase-viewport { --viewport-h: 360px; }
   .subtitle-bar { font-size: 13px; }
 }

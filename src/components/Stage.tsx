@@ -28,14 +28,10 @@ const ANNOTATIONS = [
 function Showcase({ lesson, playKey }: { lesson: Lesson; playKey: number }) {
   const { t } = useLanguage();
   const [shown, setShown] = useState<Set<number>>(new Set());
-  const [scrolling, setScrolling] = useState(false);
 
   useEffect(() => {
     if (playKey === 0) return;
-    setScrolling(false);
     setShown(new Set());
-    // restart the CSS animation on the next frame
-    const raf = requestAnimationFrame(() => setScrolling(true));
     const timers: number[] = [];
     ANNOTATIONS.forEach((a) => {
       timers.push(window.setTimeout(() => setShown((s) => new Set(s).add(a.id)), a.show));
@@ -49,15 +45,13 @@ function Showcase({ lesson, playKey }: { lesson: Lesson; playKey: number }) {
         }, a.hide),
       );
     });
-    return () => {
-      cancelAnimationFrame(raf);
-      timers.forEach(clearTimeout);
-    };
+    return () => timers.forEach(clearTimeout);
   }, [playKey]);
 
   return (
     <div className="dashboard-showcase">
-      <div className={`showcase-viewport${scrolling ? ' auto-scroll' : ''}`}>
+      {/* key remounts the viewport on each (re)play, restarting the CSS scroll animation */}
+      <div className="showcase-viewport auto-scroll" key={playKey}>
         <div className="showcase-indicator">
           <span className="pulse-dot" />
           <span>Live · Auto-scroll</span>
@@ -66,7 +60,7 @@ function Showcase({ lesson, playKey }: { lesson: Lesson; playKey: number }) {
           <div
             key={a.id}
             className={`showcase-annotation${shown.has(a.id) ? ' shown' : ''}`}
-            style={{ top: a.top, left: 'calc(50% + 280px)' }}
+            style={{ top: a.top }}
           >
             <span className="label">{t(a.labelKey)}</span>
             <span>{t(a.textKey)}</span>

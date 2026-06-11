@@ -121,17 +121,21 @@ export function speak(text: string, opts: SpeakOptions): void {
     opts.onStart?.();
     startKeepAlive();
     // Fallback progress estimator for voices that never fire boundary events
-    // (~13 chars/sec at rate 1 is a reasonable speaking pace).
+    // (e.g. Chrome's Google network voices). Indic scripts pack more speech
+    // per character than Latin, so they advance slower. A small lead is added
+    // so subtitles err on the side of early rather than late.
+    const charsPerSec = /[ऀ-ൿ]/.test(text) ? 10.5 : 15;
+    const leadSec = 0.4;
     const startedAt = performance.now();
     estimator = window.setInterval(() => {
       if (boundaryFired) {
         clearEstimator();
         return;
       }
-      const elapsed = (performance.now() - startedAt) / 1000;
-      const estChars = Math.min(total, elapsed * 13 * opts.rate);
+      const elapsed = (performance.now() - startedAt) / 1000 + leadSec;
+      const estChars = Math.min(total, elapsed * charsPerSec * opts.rate);
       opts.onProgress?.(estChars / total, Math.floor(estChars));
-    }, 250);
+    }, 200);
   };
 
   utterance.onboundary = (e) => {
