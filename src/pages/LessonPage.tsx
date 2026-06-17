@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import VoicePanel from '../components/VoicePanel';
 import Stage from '../components/Stage';
 import { useLanguage } from '../context/LanguageContext';
-import { ROLES, getLesson, MODULES } from '../data/catalog';
+import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
 import type { RoleId } from '../data/types';
 import {
   cancelSpeech,
@@ -157,6 +157,8 @@ export default function LessonPage() {
   const stepData = content.steps[step];
   const layout = lesson.layouts[step];
   const isLast = step === totalSteps - 1;
+  const lessonTag = lessonTagFor(module, lesson.lessonNumber);
+  const stepTag = stepTagFor(lessonTag, step);
 
   function goTo(index: number, andSpeak: boolean) {
     stopAll();
@@ -206,7 +208,7 @@ export default function LessonPage() {
             <div className="header-meta">
               <div>
                 <span className="label">{t('moduleWord').toUpperCase()} {String(module.number).padStart(2, '0')}</span>{' '}
-                · {module.name[lang]}
+                · {module.name[lang]} <span className="tag-chip">{lessonTag}</span>
               </div>
               <div style={{ marginTop: 4 }}>
                 <Link to={`/${role}`} className="header-link">
@@ -277,7 +279,7 @@ export default function LessonPage() {
         />
 
         <div className="narration">
-          <span className="narration-label">{t('narration')}</span>
+          <span className="narration-label">{t('narration')} · {stepTag}</span>
           <div className="narration-step">
             <div className="step-number">{step + 1}</div>
             <div className="step-divider" />

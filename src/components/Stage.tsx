@@ -3,6 +3,7 @@ import type { Lesson, StepLayout } from '../data/types';
 import { useLanguage } from '../context/LanguageContext';
 import GuideCursor from './GuideCursor';
 import SubtitleBar from './SubtitleBar';
+import { WIDGETS } from './widgets';
 
 interface StageProps {
   lesson: Lesson;
@@ -116,6 +117,16 @@ export default function Stage(props: StageProps) {
 
         {layout.mode === 'showcase' ? (
           <Showcase lesson={lesson} playKey={props.playKey} />
+        ) : layout.mode === 'widget' ? (
+          <div className="widget-stage-wrap">
+            <div className="widget-stage">
+              {(() => {
+                const Comp = layout.widget ? WIDGETS[layout.widget] : undefined;
+                return Comp ? <Comp {...(layout.widgetState ?? {})} /> : null;
+              })()}
+              <GuideCursor keyframes={layout.cursor ?? []} progress={progress} active={speaking} />
+            </div>
+          </div>
         ) : (
           <div className="screenshot-container">
             <div className="screenshot-inner">

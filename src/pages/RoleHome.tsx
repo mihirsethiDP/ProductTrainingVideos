@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
-import { ROLES, getLesson, modulesForRole } from '../data/catalog';
+import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
 import { getLessonProgress } from '../lib/progress';
 
@@ -44,6 +44,7 @@ export default function RoleHome() {
             <div className="module-head">
               <div className="module-number">{String(mod.number).padStart(2, '0')}</div>
               <div className="module-name">{mod.name[lang]}</div>
+              <span className="tag-chip">{mod.tag}</span>
               <div className="module-desc">{mod.description[lang]}</div>
             </div>
             <div className="lesson-list">
@@ -59,6 +60,7 @@ export default function RoleHome() {
                           {t('lessonWord')} {idx + 1} · {t('comingSoonHint')}
                         </div>
                       </div>
+                      <span className="tag-chip">{lessonTagFor(mod, idx + 1)}</span>
                       <span className="badge soon">{t('comingSoon')}</span>
                     </div>
                   );
@@ -69,6 +71,7 @@ export default function RoleHome() {
                   ? content.title.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
                   : lesson.id;
                 const thumb = lesson.screenshots.fullDashboard ?? Object.values(lesson.screenshots)[0];
+                const lessonTag = lessonTagFor(mod, lesson.lessonNumber);
                 const cta = progress?.completed
                   ? t('reviewLesson')
                   : progress
@@ -78,7 +81,11 @@ export default function RoleHome() {
                 return (
                   <div className="lesson-row playable" key={ref.id} onClick={open}>
                     <div className="lesson-thumb">
-                      {thumb && <img src={thumb} alt="" loading="lazy" />}
+                      {thumb ? (
+                        <img src={thumb} alt="" loading="lazy" />
+                      ) : (
+                        <div className="thumb-fallback">{lessonTag}</div>
+                      )}
                       <div className="play-badge">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                           <polygon points="6,4 20,12 6,20" />
@@ -92,6 +99,7 @@ export default function RoleHome() {
                         {content.steps.length} {t('stepWord').toLowerCase()}s
                       </div>
                     </div>
+                    <span className="tag-chip">{lessonTag}</span>
                     {progress?.completed ? (
                       <span className="badge done">✓ {t('completedBadge')}</span>
                     ) : progress ? (

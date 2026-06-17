@@ -1,22 +1,30 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
+import lessonRangeNumber from './lessons/module-02-widgets/lesson-01-range-number';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
   [lesson01.id]: lesson01,
+  [lessonRangeNumber.id]: lessonRangeNumber,
 };
 
 /**
- * Module catalog. The Dashboard Fundamentals module is shared by all three
- * audiences; the other modules are role-specific placeholders that light up
- * as new videos are added.
+ * Module catalog. Dashboard Fundamentals and Widget Deep-Dive are shared by all
+ * three audiences; the remaining modules are role-specific and fill in as new
+ * videos are added.
+ *
+ * Tagging: every module has a short `tag` (M1, M2, …). A lesson's tag is
+ * `<moduleTag>.L<lessonNumber>` and a step's tag is `<lessonTag>.S<n>`. These
+ * tags are shown in the UI so any piece of content can be referenced for edits
+ * (e.g. "change M2.L1.S3").
  */
 export const MODULES: ModuleDef[] = [
   {
     id: 'module-01-dashboard',
     number: 1,
+    tag: 'M1',
     roles: ['operator', 'supervisor', 'internal'],
     name: {
       en: 'Dashboard Fundamentals',
@@ -30,14 +38,35 @@ export const MODULES: ModuleDef[] = [
       ta: 'இயக்குனரின் பணியிடம் — பக்கத் தேர்விலிருந்து பகிர்வு வரை, டாஷ்போர்டின் ஒவ்வொரு கட்டுப்பாடும்.',
       mr: 'ऑपरेटरचे कॉकपिट — पृष्ठ निवडीपासून शेअरिंगपर्यंत, डॅशबोर्डवरील प्रत्येक नियंत्रण.',
     },
+    lessons: [{ id: 'lesson-01-overview' }],
+  },
+  {
+    id: 'module-02-widgets',
+    number: 2,
+    tag: 'M2',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Widget Deep-Dive',
+      hi: 'विजेट गहन अध्ययन',
+      ta: 'விட்ஜெட் ஆழ்ந்த பார்வை',
+      mr: 'विजेट सखोल अभ्यास',
+    },
+    description: {
+      en: 'One widget at a time — what each one shows, how it gets its data, and how to read it.',
+      hi: 'एक बार में एक विजेट — हर एक क्या दिखाता है, उसका डेटा कैसे आता है, और उसे कैसे पढ़ें।',
+      ta: 'ஒரு நேரத்தில் ஒரு விட்ஜெட் — ஒவ்வொன்றும் எதைக் காட்டுகிறது, தரவு எப்படி வருகிறது, படிப்பது எப்படி.',
+      mr: 'एका वेळी एक विजेट — प्रत्येक काय दाखवतो, डेटा कसा येतो, आणि तो कसा वाचायचा.',
+    },
     lessons: [
-      { id: 'lesson-01-overview' },
-      { id: 'lesson-02-widgets', comingSoon: true },
+      { id: 'lesson-01-range-number' },
+      { id: 'lesson-02-gauge', comingSoon: true },
+      { id: 'lesson-03-map-tickets', comingSoon: true },
     ],
   },
   {
-    id: 'module-02-daily-operations',
-    number: 2,
+    id: 'module-03-daily-operations',
+    number: 3,
+    tag: 'M3',
     roles: ['operator'],
     name: {
       en: 'Daily Operations',
@@ -46,19 +75,20 @@ export const MODULES: ModuleDef[] = [
       mr: 'दैनंदिन कामकाज',
     },
     description: {
-      en: 'Widget deep-dives, tickets, manual inputs, and the readings you check every shift.',
-      hi: 'विजेट की गहराई, टिकट, मैनुअल इनपुट, और हर शिफ्ट में जाँची जाने वाली रीडिंग्स।',
-      ta: 'விட்ஜெட் விவரங்கள், டிக்கெட்டுகள், கைமுறை உள்ளீடுகள், ஒவ்வொரு ஷிஃப்டிலும் சரிபார்க்கும் அளவீடுகள்.',
-      mr: 'विजेट तपशील, तिकिटे, मॅन्युअल इनपुट, आणि प्रत्येक शिफ्टमध्ये तपासायची वाचने.',
+      en: 'Tickets, manual inputs, and the readings you check every shift.',
+      hi: 'टिकट, मैनुअल इनपुट, और हर शिफ्ट में जाँची जाने वाली रीडिंग्स।',
+      ta: 'டிக்கெட்டுகள், கைமுறை உள்ளீடுகள், ஒவ்வொரு ஷிஃப்டிலும் சரிபார்க்கும் அளவீடுகள்.',
+      mr: 'तिकिटे, मॅन्युअल इनपुट, आणि प्रत्येक शिफ्टमध्ये तपासायची वाचने.',
     },
     lessons: [
-      { id: 'lesson-widgets-map-tickets', comingSoon: true },
-      { id: 'lesson-widgets-gauges', comingSoon: true },
+      { id: 'lesson-tickets', comingSoon: true },
+      { id: 'lesson-manual-input', comingSoon: true },
     ],
   },
   {
-    id: 'module-03-reports-insights',
-    number: 3,
+    id: 'module-04-reports-insights',
+    number: 4,
+    tag: 'M4',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -78,8 +108,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-04-internal-tools',
-    number: 4,
+    id: 'module-05-internal-tools',
+    number: 5,
+    tag: 'M5',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',
@@ -106,4 +137,13 @@ export function modulesForRole(role: RoleId): ModuleDef[] {
 
 export function getLesson(id: string): Lesson | undefined {
   return LESSONS[id];
+}
+
+// ---- content tags ----
+export function lessonTagFor(module: ModuleDef, lessonNumber: number): string {
+  return `${module.tag}.L${lessonNumber}`;
+}
+
+export function stepTagFor(lessonTag: string, stepIndex: number): string {
+  return `${lessonTag}.S${stepIndex + 1}`;
 }

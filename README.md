@@ -39,13 +39,42 @@ src/
 
 Each role sees its own training path. **Module 01 — Dashboard Fundamentals is shared by all three.** Role-specific modules (Daily Operations, Reports & Team Access, Internal Tools) are scaffolded as "coming soon" and light up as lessons are added.
 
+## Content tags
+
+Every module, lesson, and step has a short tag so any piece of content can be
+referenced for edits — e.g. "change the tip in **M2.L1.S3**". The tags are shown
+in the UI (a chip on each module/lesson, and in the narration card's top-right label).
+
+- **Module** → `tag` field in `catalog.ts` (`M1`, `M2`, …)
+- **Lesson** → `<moduleTag>.L<lessonNumber>` (e.g. `M2.L1`)
+- **Step**   → `<lessonTag>.S<n>`, 1-based (e.g. `M2.L1.S3`)
+
+To act on a tag: the module number → the module in `catalog.ts` → its lesson by
+`lessonNumber` → the lesson file → `steps[n-1]` and `layouts[n-1]`.
+
+## Two ways to show a step: screenshot or live widget
+
+A lesson step's `layout.mode` can be:
+- `showcase` — the auto-scrolling full-dashboard tour (lesson 1 intro).
+- `detail` — a static screenshot with an optional spotlight box.
+- `widget` — a **live, recreated widget component** (no screenshot). Set
+  `widget` to a key in `src/components/widgets/index.ts` and pass `widgetState`
+  to drive it (highlight a part, open a menu, show a time-frame badge). This is
+  how Module 2 widget lessons are built — it's fully interactive and avoids
+  needing a pixel-perfect screenshot per state.
+
 ## Adding a new lesson
 
-1. Drop screenshots into `public/screenshots/module-XX/`.
-2. Create `src/data/lessons/module-XX/lesson-YY-name.ts` (copy lesson-01 as a template):
+1. For screenshot lessons, drop images into `public/screenshots/module-XX/`.
+   For widget lessons, add the widget component under `src/components/widgets/`
+   and register it in `widgets/index.ts`.
+2. Create `src/data/lessons/module-XX/lesson-YY-name.ts` (copy an existing lesson):
    - `content` — title/subtitle/steps per language (`body` = on-screen HTML, `voice` = spoken text).
-   - `layouts` — one per step: screenshot key, optional `spotlight` (% coords), optional `cursor` keyframes (`at` = 0–1 fraction of narration progress, `x`/`y` = % position, `click: true` for a ripple).
-3. Register it in `src/data/catalog.ts`: add to `LESSONS` and reference it from a module's `lessons` array (remove `comingSoon`).
+   - `layouts` — one per step: `mode`, the screenshot/widget reference, optional
+     `spotlight` (% coords), optional `cursor` keyframes (`at` = 0–1 fraction of
+     narration progress, `x`/`y` = % position, `click: true` for a ripple).
+3. Register it in `src/data/catalog.ts`: add to `LESSONS` and reference it from a
+   module's `lessons` array (remove `comingSoon`).
 
 ## Subtitles & guide cursor
 
