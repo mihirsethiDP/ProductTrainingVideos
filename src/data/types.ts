@@ -36,17 +36,29 @@ export interface CursorKeyframe {
  * optional so each step can override only what it needs; the widget supplies
  * realistic defaults. Used by `mode: 'widget'` layouts.
  */
+export interface ThresholdBand {
+  from: number;
+  to: number;
+  level: 'good' | 'warning' | 'critical';
+}
+
 export interface WidgetState {
   title?: string;
   value?: string;
   unitTag?: string;
+  unit?: string; // shown small after the value, e.g. "%"
   fromLabel?: string;
   toLabel?: string;
   changePct?: string;
+  accent?: 'purple' | 'teal' | 'pink'; // widget theme colour
   aggregation?: string; // selected aggregation, shown as a badge / menu selection
   aggregationMenu?: boolean; // render the aggregation options dropdown open
   timeframeLabel?: string; // e.g. "Last 24 Hours" badge
-  highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | null;
+  // gauge / threshold config
+  min?: number;
+  max?: number;
+  thresholds?: ThresholdBand[]; // good / warning / critical bands
+  highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
 export interface StepLayout {

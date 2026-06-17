@@ -1,4 +1,5 @@
 import type { WidgetState } from '../../data/types';
+import { ACCENTS, LEVEL_COLORS, valueFraction, zoneColor } from './shared';
 
 // The product's aggregation options, in the order they appear in the app.
 const AGGREGATIONS = [
@@ -14,24 +15,34 @@ const AGGREGATIONS = [
 /**
  * A faithful, interactive recreation of the DigitalPaani "Range Number" widget.
  * Driven entirely by WidgetState so each lesson step can highlight a different
- * part, open the aggregation menu, or show a time-frame badge.
+ * part, open the aggregation menu, show a time-frame badge, or display
+ * good/warning/critical thresholds (a colour bar + zone-coloured value).
  */
 export default function RangeNumberWidget(props: WidgetState) {
   const {
     title = 'STP Energy Consumption',
     value = '143.49',
+    unit,
     unitTag = 'STP',
     fromLabel = 'Jun 16 | 15:04',
     toLabel = 'Jun 17 | 15:04',
     changePct = '0',
+    accent = 'purple',
     aggregation,
     aggregationMenu = false,
     timeframeLabel,
+    min = 0,
+    max = 100,
+    thresholds,
     highlight = null,
   } = props;
 
+  const acc = ACCENTS[accent];
+  const valueColor = (thresholds && zoneColor(value, thresholds)) || acc.text;
+  const frac = valueFraction(value, min, max);
+
   return (
-    <div className="rnw">
+    <div className={`rnw rnw-${accent}`} style={{ ['--rnw-accent' as string]: acc.solid }}>
       <div className="rnw-head">
         <span className="rnw-title">{title}</span>
         <span className={`rnw-menu${highlight === 'menu' ? ' ring' : ''}`}>
@@ -49,8 +60,7 @@ export default function RangeNumberWidget(props: WidgetState) {
         {aggregationMenu && (
           <div className="rnw-aggmenu">
             {AGGREGATIONS.map((a) => {
-              const sel =
-                !!aggregation && a.toLowerCase().startsWith(aggregation.toLowerCase());
+              const sel = !!aggregation && a.toLowerCase().startsWith(aggregation.toLowerCase());
               return (
                 <div key={a} className={`item${sel ? ' sel' : ''}`}>
                   <span>{a}</span>
@@ -61,11 +71,28 @@ export default function RangeNumberWidget(props: WidgetState) {
           </div>
         )}
 
-        {!aggregationMenu && aggregation && (
-          <span className="rnw-agg-badge">{aggregation}</span>
-        )}
+        {!aggregationMenu && aggregation && <span className="rnw-agg-badge">{aggregation}</span>}
 
-        <div className={`rnw-value${highlight === 'value' ? ' ring' : ''}`}>{value}</div>
+        <div className={`rnw-value${highlight === 'value' ? ' ring' : ''}`} style={{ color: valueColor }}>
+          {value}
+          {unit && <span className="rnw-value-unit">{unit}</span>}
+        </div>
+
+        {thresholds && (
+          <div className={`rnw-threshbar${highlight === 'thresholds' ? ' ring' : ''}`}>
+            {thresholds.map((b, i) => (
+              <span
+                key={i}
+                className="seg"
+                style={{
+                  width: `${((b.to - b.from) / (max - min)) * 100}%`,
+                  background: LEVEL_COLORS[b.level],
+                }}
+              />
+            ))}
+            <span className="marker" style={{ left: `${frac * 100}%`, borderColor: acc.solid }} />
+          </div>
+        )}
 
         <div className={`rnw-tag${highlight === 'tag' ? ' ring' : ''}`}>
           <svg viewBox="0 0 24 24" fill="currentColor">

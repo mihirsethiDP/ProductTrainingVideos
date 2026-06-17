@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import type { WidgetState } from '../../data/types';
 import RangeNumberWidget from './RangeNumberWidget';
+import GaugeWidget from './GaugeWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -8,4 +9,5 @@ import RangeNumberWidget from './RangeNumberWidget';
  */
 export const WIDGETS: Record<string, FC<WidgetState>> = {
   rangeNumber: RangeNumberWidget,
+  gauge: GaugeWidget,
 };
