@@ -17,6 +17,28 @@ function Pump({ x, y, on, label }: { x: number; y: number; on: boolean; label: s
   );
 }
 
+function Blower({ x, y, on, label }: { x: number; y: number; on: boolean; label: string }) {
+  const col = on ? '#3aaa35' : '#9aa7b8';
+  return (
+    <g>
+      <circle cx={x} cy={y} r="25" fill="#eef1f4" stroke="#c4ccd6" strokeWidth="2" />
+      <rect x={x + 20} y={y - 9} width="16" height="18" fill="#e2e6eb" stroke="#c4ccd6" />
+      <g className={on ? 'viz-spin' : ''} style={{ transformBox: 'fill-box', transformOrigin: 'center' } as React.CSSProperties} transform={`translate(${x} ${y})`}>
+        {Array.from({ length: 8 }, (_, i) => {
+          const a = (i * 45 * Math.PI) / 180;
+          const tx = Math.cos(a) * 15;
+          const ty = Math.sin(a) * 15;
+          return <rect key={i} x={tx - 3} y={ty - 3} width="6" height="6" fill={col} transform={`rotate(${i * 45} ${tx} ${ty})`} />;
+        })}
+        <circle r="13" fill={col} />
+        <circle r="6" fill="#fff" />
+      </g>
+      <text x={x} y={y + 46} textAnchor="middle" className="viz-label">{label}</text>
+      <circle cx={x + 30} cy={y - 20} r="4" fill={on ? '#3aaa35' : '#d23b30'} />
+    </g>
+  );
+}
+
 function Tank({ x, y, w, h, level, label, content = 'water', bubbles }: { x: number; y: number; w: number; h: number; level: number; label: string; content?: 'water' | 'sludge'; bubbles?: boolean }) {
   const fillH = (h * level) / 100;
   const fillY = y + (h - fillH);
@@ -151,7 +173,7 @@ export default function VisualizationWidget({ viz }: WidgetState) {
           <svg viewBox="0 0 900 400" className="viz-svg">
             {v.highlight === 'level' && <rect x="24" y="96" width="190" height="220" className="viz-hl" />}
             {v.highlight === 'onoff' && <rect x="300" y="70" width="130" height="260" className="viz-hl" />}
-            {v.highlight === 'animation' && <rect x="190" y="70" width="430" height="260" className="viz-hl" />}
+            {v.highlight === 'animation' && <rect x="190" y="40" width="660" height="290" className="viz-hl" />}
 
             <Pipe d="M170 200 H300" flowing={anyFlow} />
             <Pipe d="M300 200 V120 H334" flowing={v.pump1On} />
@@ -166,6 +188,8 @@ export default function VisualizationWidget({ viz }: WidgetState) {
             <Pump x={360} y={120} on={v.pump1On} label="Reactor Feed Pump 1" />
             <Pump x={360} y={280} on={v.pump2On} label="Reactor Feed Pump 2" />
             <Tank x={600} y={110} w={180} h={170} level={v.aerationLevel} label="Aeration Tank" bubbles={anyFlow} />
+            <Pipe d="M700 88 V110" flowing={anyFlow} color="#7cc242" />
+            <Blower x={700} y={64} on={anyFlow} label="Air Blower" />
           </svg>
         )}
       </div>

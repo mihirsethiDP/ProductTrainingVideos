@@ -57,8 +57,8 @@ const lesson: Lesson = {
         },
         {
           label: 'Animation', title: 'It comes alive',
-          body: "This is what makes it special — it <strong>animates</strong>. Running pumps <strong>spin</strong>, flowing pipes show <strong>moving water</strong>, blowers turn, and aeration tanks <strong>bubble</strong>. The plant on your screen behaves exactly like the real one.",
-          voice: "And here's what really sets it apart — it moves. When a pump is running, its impeller spins. When water is flowing, the pipe shows it streaming along. Blowers turn, mixers rotate, and aeration tanks bubble away. Switch a pump on, and instantly the pipe downstream comes alive with flow. The plant on your screen behaves exactly like the real one out in the field. It isn't a diagram — it's the plant, alive.",
+          body: "This is what makes it special — it <strong>animates</strong>, and each machine moves in its own way. A running <strong>pump</strong> spins its <strong>impeller</strong>; a <strong>blower</strong> spins its <strong>gear-style rotor</strong>; flowing pipes show <strong>moving water</strong>; and aeration tanks <strong>bubble</strong>.",
+          voice: "And here's what really sets it apart — it moves, and each machine animates in its own distinct way. A running pump spins its impeller — that four-bladed propeller. A blower is different — it spins a gear-like rotor, the way a real air blower does. When water is flowing, the pipe shows it streaming along. And aeration tanks bubble away as the blower feeds them air. Switch a pump on, and instantly the pipe downstream comes alive with flow. The plant on your screen behaves exactly like the real one out in the field. It isn't a diagram — it's the plant, alive.",
         },
         {
           label: 'Back-Dated', title: 'Replay any moment in the past',
@@ -103,8 +103,8 @@ const lesson: Lesson = {
         },
         {
           label: 'एनिमेशन', title: 'यह जीवंत हो उठता है',
-          body: 'यही इसे ख़ास बनाता है — यह <strong>एनिमेट</strong> होता है। चलते पंप <strong>घूमते</strong> हैं, बहते पाइप <strong>चलता पानी</strong> दिखाते हैं, ब्लोअर घूमते हैं, और वातन टैंक <strong>बुलबुले</strong> छोड़ते हैं। स्क्रीन पर प्लांट ठीक असली जैसा व्यवहार करता है।',
-          voice: 'और यही इसे वास्तव में अलग बनाता है — यह चलता है। जब कोई पंप चल रहा होता है, उसका इम्पेलर घूमता है। जब पानी बह रहा होता है, पाइप उसे बहता हुआ दिखाता है। ब्लोअर घूमते हैं, मिक्सर घूमते हैं, और वातन टैंक बुलबुले छोड़ते हैं। एक पंप चालू करें, और तुरंत नीचे का पाइप प्रवाह से जीवंत हो उठता है। स्क्रीन पर प्लांट ठीक वैसे ही व्यवहार करता है जैसे फ़ील्ड में असली। यह कोई आरेख नहीं — यह प्लांट है, जीवंत।',
+          body: 'यही इसे ख़ास बनाता है — यह <strong>एनिमेट</strong> होता है, और हर मशीन अपने अंदाज़ में चलती है। चलता <strong>पंप</strong> अपना <strong>इम्पेलर</strong> घुमाता है; <strong>ब्लोअर</strong> अपना <strong>गियर जैसा रोटर</strong> घुमाता है; बहते पाइप <strong>चलता पानी</strong> दिखाते हैं; और वातन टैंक <strong>बुलबुले</strong> छोड़ते हैं।',
+          voice: 'और यही इसे वास्तव में अलग बनाता है — यह चलता है, और हर मशीन अपने अलग अंदाज़ में एनिमेट होती है। चलता पंप अपना इम्पेलर घुमाता है — वह चार-ब्लेड वाला प्रोपेलर। ब्लोअर अलग है — यह एक गियर जैसा रोटर घुमाता है, जैसे असली एयर ब्लोअर करता है। जब पानी बह रहा होता है, पाइप उसे बहता हुआ दिखाता है। और वातन टैंक बुलबुले छोड़ते हैं जैसे ब्लोअर उन्हें हवा देता है। एक पंप चालू करें, और तुरंत नीचे का पाइप प्रवाह से जीवंत हो उठता है। स्क्रीन पर प्लांट ठीक वैसे ही व्यवहार करता है जैसे फ़ील्ड में असली। यह कोई आरेख नहीं — यह प्लांट है, जीवंत।',
         },
         {
           label: 'बैक-डेटेड', title: 'अतीत का कोई भी पल फिर से चलाएँ',
@@ -149,8 +149,8 @@ const lesson: Lesson = {
         },
         {
           label: 'அனிமேஷன்', title: 'இது உயிர்பெறுகிறது',
-          body: 'இதைச் சிறப்பாக்குவது இதுதான் — இது <strong>அசைகிறது</strong>. இயங்கும் பம்புகள் <strong>சுழல்கின்றன</strong>, பாயும் குழாய்கள் <strong>நகரும் தண்ணீரைக்</strong> காட்டுகின்றன, ப்ளோயர்கள் சுழல்கின்றன, காற்றோட்டத் தொட்டிகள் <strong>குமிழியிடுகின்றன</strong>. திரையில் உள்ள ஆலை உண்மையானது போலவே செயல்படுகிறது.',
-          voice: 'இதை உண்மையில் வேறுபடுத்துவது இதுதான் — இது நகர்கிறது. ஒரு பம்ப் இயங்கும்போது, அதன் இம்பெல்லர் சுழல்கிறது. தண்ணீர் பாயும்போது, குழாய் அதைப் பாய்வதைக் காட்டுகிறது. ப்ளோயர்கள் சுழல்கின்றன, மிக்சர்கள் சுழல்கின்றன, காற்றோட்டத் தொட்டிகள் குமிழியிடுகின்றன. ஒரு பம்பை இயக்குங்கள், உடனே கீழ்நோக்கிய குழாய் பாய்வுடன் உயிர்பெறுகிறது. திரையில் உள்ள ஆலை வயலில் உள்ள உண்மையானது போலவே செயல்படுகிறது. இது வரைபடம் அல்ல — இது ஆலை, உயிருடன்.',
+          body: 'இதைச் சிறப்பாக்குவது இதுதான் — இது <strong>அசைகிறது</strong>, ஒவ்வொரு இயந்திரமும் தனக்கேயான முறையில் நகர்கிறது. இயங்கும் <strong>பம்ப்</strong> அதன் <strong>இம்பெல்லரை</strong> சுழற்றுகிறது; <strong>ப்ளோயர்</strong> அதன் <strong>கியர் போன்ற ரோட்டரை</strong> சுழற்றுகிறது; பாயும் குழாய்கள் <strong>நகரும் தண்ணீரைக்</strong> காட்டுகின்றன; காற்றோட்டத் தொட்டிகள் <strong>குமிழியிடுகின்றன</strong>.',
+          voice: 'இதை உண்மையில் வேறுபடுத்துவது இதுதான் — இது நகர்கிறது, ஒவ்வொரு இயந்திரமும் தனக்கேயான தனித்த முறையில் அசைகிறது. இயங்கும் பம்ப் அதன் இம்பெல்லரை — அந்த நான்கு-இதழ் ப்ரொப்பெல்லரை — சுழற்றுகிறது. ப்ளோயர் வேறுபட்டது — அது ஒரு கியர் போன்ற ரோட்டரை சுழற்றுகிறது, ஒரு உண்மையான ஏர் ப்ளோயர் செய்வது போல. தண்ணீர் பாயும்போது, குழாய் அதைப் பாய்வதைக் காட்டுகிறது. ப்ளோயர் அவற்றுக்குக் காற்றூட்டும்போது காற்றோட்டத் தொட்டிகள் குமிழியிடுகின்றன. ஒரு பம்பை இயக்குங்கள், உடனே கீழ்நோக்கிய குழாய் பாய்வுடன் உயிர்பெறுகிறது. திரையில் உள்ள ஆலை வயலில் உள்ள உண்மையானது போலவே செயல்படுகிறது. இது வரைபடம் அல்ல — இது ஆலை, உயிருடன்.',
         },
         {
           label: 'பின்-தேதி', title: 'கடந்த எந்தக் கணத்தையும் மீண்டும் இயக்கு',
@@ -195,8 +195,8 @@ const lesson: Lesson = {
         },
         {
           label: 'अॅनिमेशन', title: 'ती जिवंत होते',
-          body: 'हेच तिला खास बनवते — ती <strong>अॅनिमेट</strong> होते. चालणारे पंप <strong>फिरतात</strong>, वाहणारे पाइप <strong>हलणारे पाणी</strong> दाखवतात, ब्लोअर फिरतात, आणि वायुवीजन टँक <strong>बुडबुडे</strong> सोडतात. स्क्रीनवरचा प्लांट अगदी खऱ्यासारखा वागतो.',
-          voice: 'आणि हेच तिला खरोखर वेगळे बनवते — ती हलते. पंप चालू असताना, त्याचा इम्पेलर फिरतो. पाणी वाहत असताना, पाइप ते वाहताना दाखवतो. ब्लोअर फिरतात, मिक्सर फिरतात, आणि वायुवीजन टँक बुडबुडे सोडतात. एक पंप चालू करा, आणि लगेच खालचा पाइप प्रवाहाने जिवंत होतो. स्क्रीनवरचा प्लांट फील्डमधल्या खऱ्यासारखाच वागतो. हा आकृती नाही — हा प्लांट आहे, जिवंत.',
+          body: 'हेच तिला खास बनवते — ती <strong>अॅनिमेट</strong> होते, आणि प्रत्येक मशीन स्वतःच्या पद्धतीने हलते. चालणारा <strong>पंप</strong> त्याचा <strong>इम्पेलर</strong> फिरवतो; <strong>ब्लोअर</strong> त्याचा <strong>गियरसारखा रोटर</strong> फिरवतो; वाहणारे पाइप <strong>हलणारे पाणी</strong> दाखवतात; आणि वायुवीजन टँक <strong>बुडबुडे</strong> सोडतात.',
+          voice: 'आणि हेच तिला खरोखर वेगळे बनवते — ती हलते, आणि प्रत्येक मशीन स्वतःच्या वेगळ्या पद्धतीने अॅनिमेट होते. चालणारा पंप त्याचा इम्पेलर फिरवतो — तो चार-ब्लेडचा प्रोपेलर. ब्लोअर वेगळा आहे — तो एका गियरसारख्या रोटरला फिरवतो, अगदी खऱ्या एअर ब्लोअरसारखा. पाणी वाहत असताना, पाइप ते वाहताना दाखवतो. आणि ब्लोअर त्यांना हवा देताना वायुवीजन टँक बुडबुडे सोडतात. एक पंप चालू करा, आणि लगेच खालचा पाइप प्रवाहाने जिवंत होतो. स्क्रीनवरचा प्लांट फील्डमधल्या खऱ्यासारखाच वागतो. हा आकृती नाही — हा प्लांट आहे, जिवंत.',
         },
         {
           label: 'बॅक-डेटेड', title: 'भूतकाळातील कोणताही क्षण पुन्हा चालवा',
