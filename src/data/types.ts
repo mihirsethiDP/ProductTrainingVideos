@@ -166,6 +166,24 @@ export interface DataInputData {
   highlight?: 'ranges' | 'value' | 'state' | 'media' | 'submit' | 'frequency' | null;
 }
 
+// ----- OCR Data Input -----
+export interface OcrEntry {
+  label: string;
+  value: string;
+}
+export interface OcrMapping {
+  logbookField: string;
+  sensorTag: string;
+}
+export interface OcrData {
+  mode: 'logbook' | 'template' | 'flow';
+  title?: string;
+  entries?: OcrEntry[];
+  mappings?: OcrMapping[];
+  scanState?: 'idle' | 'scanning' | 'done';
+  highlight?: 'photo' | 'upload' | 'mapping' | 'reuse' | 'result' | null;
+}
+
 // ----- Sankey (flow distribution) -----
 export interface SankeyNode {
   id: string;
@@ -248,6 +266,8 @@ export interface WidgetState {
   sankey?: SankeyData;
   // data input
   dataInput?: DataInputData;
+  // ocr data input
+  ocr?: OcrData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
