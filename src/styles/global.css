@@ -1,6 +1,7 @@
 :root {
-  --ink: #0a1f3a;
-  --ink-soft: #2a3f5f;
+  --brand: #193458;
+  --ink: #193458;
+  --ink-soft: #3d557a;
   --paper: #f5f1e8;
   --paper-warm: #ede5d3;
   --water: #1e6091;
@@ -42,11 +43,10 @@ button { font-family: var(--sans); }
 }
 .brand-mark { display: flex; align-items: center; gap: 12px; }
 .brand-icon {
-  width: 38px; height: 38px; background: var(--water-deep);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  color: var(--paper); font-family: var(--serif);
-  font-weight: 700; font-size: 18px; font-style: italic;
+  width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  color: var(--brand);
 }
+.brand-logo { display: block; }
 .brand-name { font-family: var(--serif); font-weight: 600; font-size: 18px; color: var(--ink); }
 .brand-text {
   font-family: var(--serif); font-size: 14px;

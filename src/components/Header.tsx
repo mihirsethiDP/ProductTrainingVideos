@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import LanguageSelector from './LanguageSelector';
+import BrandLogo from './BrandLogo';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Header({ meta }: { meta?: ReactNode }) {
@@ -8,7 +9,7 @@ export default function Header({ meta }: { meta?: ReactNode }) {
   return (
     <div className="header">
       <Link to="/" className="brand-mark">
-        <div className="brand-icon">P</div>
+        <div className="brand-icon"><BrandLogo size={34} /></div>
         <div>
           <div className="brand-name">DigitalPaani</div>
           <div className="brand-text">{t('brandText')}</div>
