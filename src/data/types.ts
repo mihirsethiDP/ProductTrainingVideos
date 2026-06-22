@@ -113,6 +113,25 @@ export interface GraphData {
   highlight?: 'ranges' | 'legend' | 'end' | 'choose' | 'menu' | null;
 }
 
+// ----- Scatter Graph (sensor vs sensor) -----
+export interface ScatterPoint {
+  x: number;
+  y: number;
+}
+export interface ScatterData {
+  title?: string;
+  seriesName: string;
+  color: string;
+  points: ScatterPoint[];
+  xLabel: string;
+  yLabel: string;
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
+  highlight?: 'xaxis' | 'yaxis' | 'points' | 'legend' | null;
+}
+
 // ----- Smart Hours (dashboard time-range feature) -----
 export interface SmartHoursData {
   periodLabel: string; // "Jun 21 - Jun 22, 2026"
@@ -167,6 +186,8 @@ export interface WidgetState {
   graph?: GraphData;
   // smart hours
   smartHours?: SmartHoursData;
+  // scatter graph
+  scatter?: ScatterData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

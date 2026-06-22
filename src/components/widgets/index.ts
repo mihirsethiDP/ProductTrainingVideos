@@ -7,6 +7,7 @@ import AdvancedTableWidget from './AdvancedTableWidget';
 import SimpleTableWidget from './SimpleTableWidget';
 import GraphWidget from './GraphWidget';
 import SmartHoursWidget from './SmartHoursWidget';
+import ScatterGraphWidget from './ScatterGraphWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -20,4 +21,5 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   simpleTable: SimpleTableWidget,
   graph: GraphWidget,
   smartHours: SmartHoursWidget,
+  scatter: ScatterGraphWidget,
 };
