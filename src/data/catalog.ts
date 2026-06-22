@@ -9,6 +9,8 @@ import lessonTable from './lessons/module-02-widgets/lesson-05-table';
 import lessonGraphs from './lessons/module-02-widgets/lesson-06-graphs';
 import lessonScatter from './lessons/module-02-widgets/lesson-07-scatter';
 import lessonSankey from './lessons/module-02-widgets/lesson-08-sankey';
+import lessonDataInput1 from './lessons/module-03-data-input/lesson-01-entering-readings';
+import lessonDataInput2 from './lessons/module-03-data-input/lesson-02-types-and-bulk';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -24,6 +26,8 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonGraphs.id]: lessonGraphs,
   [lessonScatter.id]: lessonScatter,
   [lessonSankey.id]: lessonSankey,
+  [lessonDataInput1.id]: lessonDataInput1,
+  [lessonDataInput2.id]: lessonDataInput2,
 };
 
 /**
@@ -86,9 +90,31 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-03-daily-operations',
+    id: 'module-03-data-input',
     number: 3,
     tag: 'M3',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Data Input',
+      hi: 'डेटा इनपुट',
+      ta: 'டேட்டா இன்புட்',
+      mr: 'डेटा इनपुट',
+    },
+    description: {
+      en: 'How operators log readings by hand — sensor types, acceptance and warning ranges, media proof, and bulk entry.',
+      hi: 'ऑपरेटर हाथ से रीडिंग कैसे दर्ज करते हैं — सेंसर प्रकार, स्वीकृति और चेतावनी रेंज, मीडिया प्रमाण, और बल्क प्रविष्टि।',
+      ta: 'இயக்குனர்கள் கையால் அளவீடுகளை எப்படிப் பதிவு செய்கிறார்கள் — சென்சார் வகைகள், ஏற்பு மற்றும் எச்சரிக்கை வரம்புகள், மீடியா சான்று, மொத்த உள்ளீடு.',
+      mr: 'ऑपरेटर हाताने रीडिंग कशी नोंदवतात — सेन्सर प्रकार, स्वीकृती आणि इशारा श्रेणी, मीडिया पुरावा, आणि बल्क प्रविष्टी.',
+    },
+    lessons: [
+      { id: 'lesson-01-entering-readings' },
+      { id: 'lesson-02-types-and-bulk' },
+    ],
+  },
+  {
+    id: 'module-04-daily-operations',
+    number: 4,
+    tag: 'M4',
     roles: ['operator'],
     name: {
       en: 'Daily Operations',
@@ -104,13 +130,13 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'lesson-tickets', comingSoon: true },
-      { id: 'lesson-manual-input', comingSoon: true },
+      { id: 'lesson-shift-log', comingSoon: true },
     ],
   },
   {
-    id: 'module-04-reports-insights',
-    number: 4,
-    tag: 'M4',
+    id: 'module-05-reports-insights',
+    number: 5,
+    tag: 'M5',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -130,9 +156,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-05-internal-tools',
-    number: 5,
-    tag: 'M5',
+    id: 'module-06-internal-tools',
+    number: 6,
+    tag: 'M6',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

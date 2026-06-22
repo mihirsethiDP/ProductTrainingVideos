@@ -119,7 +119,12 @@ export default function Stage(props: StageProps) {
           <Showcase lesson={lesson} playKey={props.playKey} />
         ) : layout.mode === 'widget' ? (
           <div className="widget-stage-wrap">
-            <div className={`widget-stage${['advancedTable', 'graph', 'smartHours', 'scatter', 'sankey'].includes(layout.widget ?? '') ? ' widget-stage-wide' : ''}`}>
+            <div className={`widget-stage${
+              ['advancedTable', 'graph', 'smartHours', 'scatter', 'sankey'].includes(layout.widget ?? '') ||
+              (layout.widget === 'dataInput' && layout.widgetState?.dataInput?.mode === 'table')
+                ? ' widget-stage-wide'
+                : ''
+            }`}>
               {(() => {
                 const Comp = layout.widget ? WIDGETS[layout.widget] : undefined;
                 return Comp ? <Comp {...(layout.widgetState ?? {})} /> : null;

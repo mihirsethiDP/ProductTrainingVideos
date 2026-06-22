@@ -933,9 +933,81 @@ button { font-family: var(--sans); }
 .snk-foot > span:first-child { padding: 10px 16px; }
 .snk-foot-box { background: #2b7bd6; color: #fff; padding: 10px 28px; font-weight: 700; }
 
+/* ===== DATA INPUT (table) ===== */
+.di {
+  width: 1080px; max-width: 100%;
+  background: #fff; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10, 31, 58, 0.16);
+  font-size: 13px;
+}
+.di-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; }
+.di-title { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); }
+.di-actions { display: flex; gap: 8px; }
+.di-btn { border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: var(--ink-soft); }
+.di-btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+.di-filters { display: flex; gap: 10px; padding: 0 18px 12px; }
+.di-search { flex: 2; background: #f1f4f8; border-radius: 8px; padding: 9px 12px; color: var(--ink-soft); font-size: 12px; }
+.di-filter { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; color: var(--ink-soft); font-size: 12px; }
+.di-scroll { overflow-x: auto; }
+.di-table { width: 100%; border-collapse: collapse; }
+.di-table th { text-align: left; font-size: 12px; color: var(--ink-soft); background: #f5f8fc; padding: 10px 18px; border-bottom: 1px solid var(--line); }
+.di-table td { padding: 12px 18px; border-bottom: 1px solid #eef2f7; vertical-align: middle; }
+.di-sensor { font-weight: 700; color: var(--ink); }
+.di-asset { font-size: 11px; color: var(--water); margin-top: 2px; }
+.di-ranges { font-size: 12px; color: var(--water-deep); }
+.di-rlabel { color: var(--ink-soft); font-weight: 600; }
+.di-input {
+  display: inline-block; min-width: 130px; border: 1px solid var(--line); border-radius: 6px;
+  padding: 8px 12px; color: var(--ink-soft); background: #fff; font-size: 12px;
+}
+.di-input.ok { border-color: var(--leaf); color: var(--ink); }
+.di-input.warning { border-color: var(--accent); color: var(--ink); background: rgba(212,160,23,0.08); }
+.di-input.error { border-color: var(--coral); color: var(--coral); background: rgba(199,78,63,0.08); }
+.di-freq { color: var(--water); font-size: 12px; }
+.di-dash { color: var(--ink-soft); }
+.di-badge { font-family: var(--mono); font-size: 10px; padding: 4px 9px; border-radius: 20px; white-space: nowrap; }
+.di-badge.ok { background: rgba(45,134,89,0.12); color: var(--leaf); }
+.di-badge.warning { background: rgba(212,160,23,0.16); color: #a37c10; }
+.di-badge.error { background: rgba(199,78,63,0.12); color: var(--coral); }
+
+/* ===== DATA INPUT (card) ===== */
+.di-card {
+  width: 400px; max-width: 92vw;
+  background: #fff; border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10, 31, 58, 0.18);
+  padding: 18px;
+}
+.di-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.di-card-sensor { font-weight: 700; font-size: 16px; color: var(--ink); }
+.di-card-asset { font-size: 12px; color: var(--water); margin-top: 2px; }
+.di-type { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--paper-warm); color: var(--ink-soft); padding: 4px 9px; border-radius: 6px; }
+.di-card-ranges { display: flex; gap: 16px; margin-top: 14px; font-size: 12px; color: var(--water-deep); border-radius: 6px; padding: 4px; }
+.di-field { margin-top: 16px; border-radius: 8px; padding: 2px; }
+.di-field-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.di-value-box { margin-top: 6px; border: 1.5px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 18px; font-weight: 700; color: var(--ink); }
+.di-value-box.idle { color: var(--ink-soft); font-weight: 400; }
+.di-value-box.error { border-color: var(--coral); color: var(--coral); background: rgba(199,78,63,0.06); }
+.di-value-box.warning { border-color: var(--accent); background: rgba(212,160,23,0.06); }
+.di-value-box.ok { border-color: var(--leaf); }
+.di-bool { display: flex; gap: 10px; margin-top: 6px; }
+.di-bool-btn { flex: 1; text-align: center; border: 1.5px solid var(--line); border-radius: 8px; padding: 12px; font-weight: 600; color: var(--ink-soft); }
+.di-bool-btn.on { background: var(--water-deep); color: #fff; border-color: var(--water-deep); }
+.di-banner { margin-top: 14px; border-radius: 8px; padding: 11px 14px; font-size: 13px; line-height: 1.4; border-left: 3px solid; }
+.di-banner.error { background: rgba(199,78,63,0.1); color: var(--coral); border-color: var(--coral); }
+.di-banner.warning { background: rgba(212,160,23,0.12); color: #a37c10; border-color: var(--accent); }
+.di-banner.ok { background: rgba(45,134,89,0.12); color: var(--leaf); border-color: var(--leaf); }
+.di-media { margin-top: 14px; border: 1px dashed var(--line); border-radius: 10px; padding: 12px; }
+.di-media-title { font-size: 12px; font-weight: 600; color: var(--ink); }
+.di-media-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.di-media-btn { border: 1px solid var(--water); color: var(--water-deep); border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; }
+.di-media-ok { color: var(--leaf); font-size: 12px; font-weight: 600; }
+.di-media-err { color: var(--coral); font-size: 11px; font-weight: 700; margin-left: auto; }
+.di-submit { margin-top: 16px; background: var(--ink); color: var(--paper); text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; }
+.di-submit.disabled { opacity: 0.45; }
+
 /* highlight ring used by the guide to emphasise a widget part */
-.rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring, .scg .ring { position: relative; }
-.rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after, .scg .ring::after {
+.rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring, .scg .ring, .di .ring, .di-card .ring { position: relative; }
+.rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after, .scg .ring::after, .di .ring::after, .di-card .ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: 6px;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18), 0 0 14px rgba(212, 160, 23, 0.5);

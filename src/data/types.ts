@@ -132,6 +132,40 @@ export interface ScatterData {
   highlight?: 'xaxis' | 'yaxis' | 'points' | 'legend' | null;
 }
 
+// ----- Data Input -----
+export interface DataInputRow {
+  sensor: string;
+  asset: string;
+  validRange?: string;
+  safeRange?: string;
+  frequency: string;
+  enterValue?: string; // a typed value (bulk demo)
+  status?: 'ok' | 'warning' | 'error' | null;
+  ring?: boolean;
+}
+export interface DataInputCard {
+  sensor: string;
+  asset: string;
+  typeLabel: string; // "Number" | "Boolean" | "Text" | "Image"
+  validRange?: string;
+  safeRange?: string;
+  enteredValue?: string;
+  textValue?: string;
+  booleanValue?: 'yes' | 'no' | null;
+  state?: 'idle' | 'error' | 'warning' | 'ok';
+  message?: string;
+  media?: 'all' | 'live' | null; // media upload requirement
+  mediaState?: 'pending' | 'missing' | 'done';
+}
+export interface DataInputData {
+  mode: 'table' | 'card';
+  title?: string;
+  rows?: DataInputRow[];
+  card?: DataInputCard;
+  submitLabel?: string;
+  highlight?: 'ranges' | 'value' | 'state' | 'media' | 'submit' | 'frequency' | null;
+}
+
 // ----- Sankey (flow distribution) -----
 export interface SankeyNode {
   id: string;
@@ -212,6 +246,8 @@ export interface WidgetState {
   scatter?: ScatterData;
   // sankey
   sankey?: SankeyData;
+  // data input
+  dataInput?: DataInputData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
