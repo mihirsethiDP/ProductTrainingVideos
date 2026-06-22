@@ -167,21 +167,24 @@ export interface DataInputData {
 }
 
 // ----- OCR Data Input -----
-export interface OcrEntry {
+export interface OcrLogbookRow {
   label: string;
-  value: string;
+  reading: string;
 }
-export interface OcrMapping {
-  logbookField: string;
-  sensorTag: string;
+export interface OcrField {
+  field: string;
+  dayConsumption: string;
+  parameter?: string;
 }
 export interface OcrData {
-  mode: 'logbook' | 'template' | 'flow';
-  title?: string;
-  entries?: OcrEntry[];
-  mappings?: OcrMapping[];
-  scanState?: 'idle' | 'scanning' | 'done';
-  highlight?: 'photo' | 'upload' | 'mapping' | 'reuse' | 'result' | null;
+  mode: 'upload' | 'review';
+  asset?: string;
+  template?: string;
+  processing?: boolean; // show the "Processing your image" state
+  logbookRows?: OcrLogbookRow[]; // the uploaded logbook image mock
+  fields?: OcrField[]; // extracted, editable data
+  dateTime?: string;
+  highlight?: 'asset' | 'template' | 'upload' | 'image' | 'extracted' | 'save' | null;
 }
 
 // ----- Sankey (flow distribution) -----
