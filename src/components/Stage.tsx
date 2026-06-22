@@ -121,7 +121,7 @@ export default function Stage(props: StageProps) {
           <div className="widget-stage-wrap">
             <div className={`widget-stage${
               ['advancedTable', 'graph', 'smartHours', 'scatter', 'sankey'].includes(layout.widget ?? '') ||
-              (layout.widget === 'dataInput' && layout.widgetState?.dataInput?.mode === 'table') ||
+              (layout.widget === 'dataInput' && (layout.widgetState?.dataInput?.mode === 'table' || layout.widgetState?.dataInput?.mode === 'preview')) ||
               layout.widget === 'ocr'
                 ? ' widget-stage-wide'
                 : ''

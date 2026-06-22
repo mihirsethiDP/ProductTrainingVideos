@@ -12,6 +12,7 @@ import lessonSankey from './lessons/module-02-widgets/lesson-08-sankey';
 import lessonDataInput1 from './lessons/module-03-data-input/lesson-01-entering-readings';
 import lessonDataInput2 from './lessons/module-03-data-input/lesson-02-types-and-bulk';
 import lessonDataInput3 from './lessons/module-03-data-input/lesson-03-ocr';
+import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-upload';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -30,6 +31,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonDataInput1.id]: lessonDataInput1,
   [lessonDataInput2.id]: lessonDataInput2,
   [lessonDataInput3.id]: lessonDataInput3,
+  [lessonDataInput4.id]: lessonDataInput4,
 };
 
 /**
@@ -112,6 +114,7 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-01-entering-readings' },
       { id: 'lesson-02-types-and-bulk' },
       { id: 'lesson-03-ocr' },
+      { id: 'lesson-04-bulk-upload' },
     ],
   },
   {

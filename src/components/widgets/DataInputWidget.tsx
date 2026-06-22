@@ -10,6 +10,81 @@ export default function DataInputWidget({ dataInput }: WidgetState) {
   if (!dataInput) return null;
   const d: DataInputData = dataInput;
 
+  if (d.mode === 'fileUpload') {
+    return (
+      <div className="di-fileup">
+        <div className="di-fileup-head">
+          <span className="di-fileup-title">Data Input Upload</span>
+          <span className="di-fileup-x">✕</span>
+        </div>
+        <div className={`di-fileup-drop${d.highlight === 'upload' ? ' ring' : ''}`}>
+          <span className="di-fileup-req">CSV or Excel file *</span>
+          <div className="di-fileup-cloud">☁</div>
+          <div className="di-fileup-text">Upload with drag and drop or <strong>Browse</strong></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (d.mode === 'preview') {
+    const p = d.preview!;
+    return (
+      <div className="di-prev">
+        <div className="di-prev-head">
+          <div>
+            <div className="di-prev-title">Data Input Preview</div>
+            <div className="di-prev-sub">Review the uploaded values. Hover a cell for error details; use the pencil to edit editable cells before submitting.</div>
+          </div>
+          <div className={`di-prev-stats${d.highlight === 'stats' ? ' ring' : ''}`}>
+            <strong>Validation Stats:</strong> Total: {p.total} · <span className="di-st-ok">Success: {p.success}</span> · <span className="di-st-fail">Failed: {p.failed}</span>
+          </div>
+        </div>
+        <div className="di-prev-scroll">
+          <table className="di-prev-table">
+            <thead>
+              <tr>
+                {p.extraColumns?.map((c) => (
+                  <th key={c.header} className={`di-prev-extra${d.highlight === 'detect' ? ' dim' : ''}`}>{c.header}</th>
+                ))}
+                <th className={`di-prev-tag${d.highlight === 'detect' ? ' axis' : ''}`}>Sensor Tag</th>
+                {p.timeColumns.map((t, i) => (
+                  <th key={i} className={`di-prev-time${d.highlight === 'detect' ? ' axis' : ''}${d.highlight === 'editcol' ? ' ring' : ''}`}>
+                    {t} <span className="di-pencil">✎</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {p.rows.map((row, ri) => (
+                <tr key={ri}>
+                  {p.extraColumns?.map((c) => (
+                    <td key={c.header} className={`di-prev-extra${d.highlight === 'detect' ? ' dim' : ''}`}>{c.values[ri] ?? ''}</td>
+                  ))}
+                  <td className={`di-prev-tag${d.highlight === 'detect' ? ' axis' : ''}`}>{row.tag} <span className="di-pencil">✎</span></td>
+                  {row.cells.map((cell, ci) => (
+                    <td key={ci} className={`di-prev-cell ${cell.level}`}>{cell.value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="di-prev-foot">
+          <div className="di-prev-legend">
+            <span><i className="di-sw safe" /> Safe</span>
+            <span><i className="di-sw warning" /> Warning</span>
+            <span><i className="di-sw error" /> Error</span>
+            <span><i className="di-sw validation" /> Validation Error</span>
+          </div>
+          <div className="di-prev-actions">
+            <span className={`di-prev-btn${d.highlight === 'revalidate' ? ' ring' : ''}`}>REVALIDATE</span>
+            <span className={`di-prev-btn dark${d.highlight === 'submit' ? ' ring' : ''}`}>SUBMIT</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (d.mode === 'table') {
     return (
       <div className="di">

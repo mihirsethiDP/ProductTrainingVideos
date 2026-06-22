@@ -157,13 +157,28 @@ export interface DataInputCard {
   media?: 'all' | 'live' | null; // media upload requirement
   mediaState?: 'pending' | 'missing' | 'done';
 }
+export interface DataInputPreviewCell {
+  value: string;
+  level: 'safe' | 'warning' | 'error' | 'validation';
+}
+export interface DataInputPreview {
+  extraColumns?: { header: string; values: string[] }[]; // descriptive columns (Parameters, Unit, Limiting)
+  timeColumns: string[]; // timestamp headers
+  rows: { tag: string; cells: DataInputPreviewCell[] }[];
+  total: number;
+  success: number;
+  failed: number;
+}
 export interface DataInputData {
-  mode: 'table' | 'card';
+  mode: 'table' | 'card' | 'fileUpload' | 'preview';
   title?: string;
   rows?: DataInputRow[];
   card?: DataInputCard;
+  preview?: DataInputPreview;
   submitLabel?: string;
-  highlight?: 'ranges' | 'value' | 'state' | 'media' | 'submit' | 'frequency' | null;
+  highlight?:
+    | 'ranges' | 'value' | 'state' | 'media' | 'submit' | 'frequency'
+    | 'upload' | 'detect' | 'stats' | 'editcol' | 'revalidate' | 'legend' | null;
 }
 
 // ----- OCR Data Input -----
