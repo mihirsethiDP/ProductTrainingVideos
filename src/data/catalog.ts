@@ -17,6 +17,7 @@ import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor
 import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
 import lessonInsights1 from './lessons/module-05-insights/lesson-01-insights-page';
 import lessonInsights2 from './lessons/module-05-insights/lesson-02-on-the-go';
+import lessonViz from './lessons/module-06-visualization/lesson-01-digital-twin';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -40,6 +41,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonInventory2.id]: lessonInventory2,
   [lessonInsights1.id]: lessonInsights1,
   [lessonInsights2.id]: lessonInsights2,
+  [lessonViz.id]: lessonViz,
 };
 
 /**
@@ -170,9 +172,28 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-06-daily-operations',
+    id: 'module-06-visualization',
     number: 6,
     tag: 'M6',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Visualization',
+      hi: 'विज़ुअलाइज़ेशन',
+      ta: 'விஷுவலைசேஷன்',
+      mr: 'व्हिज्युअलायझेशन',
+    },
+    description: {
+      en: 'The digital twin — a live, animated replica of your plant, with historical playback and section-by-section Pages.',
+      hi: 'डिजिटल ट्विन — आपके प्लांट की एक लाइव, एनिमेटेड प्रतिकृति, ऐतिहासिक प्लेबैक और सेक्शन-दर-सेक्शन पेज के साथ।',
+      ta: 'டிஜிட்டல் ட்வின் — உங்கள் ஆலையின் நேரலை, அசையும் பிரதி, வரலாற்று மறுஇயக்கம் மற்றும் பிரிவு வாரியான பக்கங்களுடன்.',
+      mr: 'डिजिटल ट्विन — तुमच्या प्लांटची एक लाइव्ह, अॅनिमेटेड प्रतिकृती, ऐतिहासिक प्लेबॅक आणि विभाग-निहाय पेजेससह.',
+    },
+    lessons: [{ id: 'lesson-01-digital-twin' }],
+  },
+  {
+    id: 'module-07-daily-operations',
+    number: 7,
+    tag: 'M7',
     roles: ['operator'],
     name: {
       en: 'Daily Operations',
@@ -192,9 +213,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-07-reports-insights',
-    number: 7,
-    tag: 'M7',
+    id: 'module-08-reports-insights',
+    number: 8,
+    tag: 'M8',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -214,9 +235,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-08-internal-tools',
-    number: 8,
-    tag: 'M8',
+    id: 'module-09-internal-tools',
+    number: 9,
+    tag: 'M9',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

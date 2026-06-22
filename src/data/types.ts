@@ -181,6 +181,20 @@ export interface DataInputData {
     | 'upload' | 'detect' | 'stats' | 'editcol' | 'revalidate' | 'legend' | null;
 }
 
+// ----- Visualization (digital twin) -----
+export interface VizData {
+  plant: string;
+  date: string;
+  live: boolean; // true = LIVE, false = back-dated history
+  page: string;
+  pageMenu?: string[]; // open the Select Page dropdown
+  collectionLevel: number; // 0..100
+  aerationLevel: number;
+  pump1On: boolean;
+  pump2On: boolean;
+  highlight?: 'level' | 'onoff' | 'animation' | 'backdated' | 'pages' | null;
+}
+
 // ----- Insights -----
 export type InsightType = 'Warning' | 'Issue' | 'Achievement';
 export type InsightPriority = 'high' | 'medium' | 'low';
@@ -391,6 +405,8 @@ export interface WidgetState {
   inventory?: InventoryData;
   // insights
   insights?: InsightsData;
+  // visualization (digital twin)
+  viz?: VizData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

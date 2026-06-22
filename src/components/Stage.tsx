@@ -124,7 +124,8 @@ export default function Stage(props: StageProps) {
               (layout.widget === 'dataInput' && (layout.widgetState?.dataInput?.mode === 'table' || layout.widgetState?.dataInput?.mode === 'preview')) ||
               layout.widget === 'ocr' ||
               (layout.widget === 'inventory' && ['supTable', 'supLog', 'opCategories'].includes(layout.widgetState?.inventory?.mode ?? '')) ||
-              (layout.widget === 'insights' && ['page', 'digest', 'detail'].includes(layout.widgetState?.insights?.mode ?? ''))
+              (layout.widget === 'insights' && ['page', 'digest', 'detail'].includes(layout.widgetState?.insights?.mode ?? '')) ||
+              layout.widget === 'visualization'
                 ? ' widget-stage-wide'
                 : ''
             }`}>
