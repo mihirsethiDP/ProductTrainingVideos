@@ -123,7 +123,8 @@ export default function Stage(props: StageProps) {
               ['advancedTable', 'graph', 'smartHours', 'scatter', 'sankey'].includes(layout.widget ?? '') ||
               (layout.widget === 'dataInput' && (layout.widgetState?.dataInput?.mode === 'table' || layout.widgetState?.dataInput?.mode === 'preview')) ||
               layout.widget === 'ocr' ||
-              (layout.widget === 'inventory' && ['supTable', 'supLog', 'opCategories'].includes(layout.widgetState?.inventory?.mode ?? ''))
+              (layout.widget === 'inventory' && ['supTable', 'supLog', 'opCategories'].includes(layout.widgetState?.inventory?.mode ?? '')) ||
+              (layout.widget === 'insights' && ['page', 'digest'].includes(layout.widgetState?.insights?.mode ?? ''))
                 ? ' widget-stage-wide'
                 : ''
             }`}>

@@ -181,6 +181,43 @@ export interface DataInputData {
     | 'upload' | 'detect' | 'stats' | 'editcol' | 'revalidate' | 'legend' | null;
 }
 
+// ----- Insights -----
+export type InsightType = 'Warning' | 'Issue' | 'Achievement';
+export type InsightPriority = 'high' | 'medium' | 'low';
+export interface InsightRow {
+  name: string;
+  desc: string;
+  ago: string;
+  status: 'Open' | 'Closed';
+  priority: InsightPriority;
+  asset: string;
+  equipment?: string;
+  type: InsightType;
+  action?: string;
+  ring?: boolean;
+}
+export interface InsightsData {
+  mode: 'page' | 'detail' | 'whatsapp' | 'digest';
+  // page
+  stats?: { all: string; openAlarms: string; closedAlarms: string; achievements: string };
+  insights?: InsightRow[];
+  // detail / whatsapp
+  insight?: InsightRow;
+  zeroAuth?: boolean;
+  // digest
+  digest?: {
+    range: string;
+    newCount: string;
+    closedCount: string;
+    openTotal: string;
+    latest: InsightRow;
+    plants?: string[];
+  };
+  highlight?:
+    | 'stats' | 'filters' | 'types' | 'priority' | 'create' | 'row'
+    | 'action' | 'zeroauth' | 'link' | 'counts' | 'latest' | 'plants' | null;
+}
+
 // ----- Inventory Management -----
 export interface InventoryItem {
   name: string;
@@ -343,6 +380,8 @@ export interface WidgetState {
   ocr?: OcrData;
   // inventory
   inventory?: InventoryData;
+  // insights
+  insights?: InsightsData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

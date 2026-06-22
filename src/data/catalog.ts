@@ -15,6 +15,8 @@ import lessonDataInput3 from './lessons/module-03-data-input/lesson-03-ocr';
 import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-upload';
 import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor';
 import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
+import lessonInsights1 from './lessons/module-05-insights/lesson-01-insights-page';
+import lessonInsights2 from './lessons/module-05-insights/lesson-02-on-the-go';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -36,6 +38,8 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonDataInput4.id]: lessonDataInput4,
   [lessonInventory1.id]: lessonInventory1,
   [lessonInventory2.id]: lessonInventory2,
+  [lessonInsights1.id]: lessonInsights1,
+  [lessonInsights2.id]: lessonInsights2,
 };
 
 /**
@@ -144,9 +148,31 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-05-daily-operations',
+    id: 'module-05-insights',
     number: 5,
     tag: 'M5',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Insights',
+      hi: 'इनसाइट्स',
+      ta: 'இன்சைட்ஸ்',
+      mr: 'इनसाइट्स',
+    },
+    description: {
+      en: 'How the platform flags what needs attention — the Insights page, plus instant WhatsApp zero-auth links and the Insights Digest.',
+      hi: 'प्लेटफ़ॉर्म कैसे संकेत देता है कि किस पर ध्यान चाहिए — इनसाइट्स पेज, साथ ही तुरंत WhatsApp ज़ीरो-ऑथ लिंक और इनसाइट्स डाइजेस्ट।',
+      ta: 'எது கவனம் தேவை என்பதை தளம் எப்படிச் சுட்டிக்காட்டுகிறது — இன்சைட்ஸ் பக்கம், உடனடி வாட்ஸ்ஆப் ஜீரோ-ஆத் இணைப்புகள், இன்சைட்ஸ் டைஜெஸ்ட்.',
+      mr: 'कशाकडे लक्ष हवे हे प्लॅटफॉर्म कसे दर्शवते — इनसाइट्स पेज, तसेच तात्काळ WhatsApp झिरो-ऑथ लिंक आणि इनसाइट्स डायजेस्ट.',
+    },
+    lessons: [
+      { id: 'lesson-01-insights-page' },
+      { id: 'lesson-02-on-the-go' },
+    ],
+  },
+  {
+    id: 'module-06-daily-operations',
+    number: 6,
+    tag: 'M6',
     roles: ['operator'],
     name: {
       en: 'Daily Operations',
@@ -166,9 +192,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-06-reports-insights',
-    number: 6,
-    tag: 'M6',
+    id: 'module-07-reports-insights',
+    number: 7,
+    tag: 'M7',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -188,9 +214,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-07-internal-tools',
-    number: 7,
-    tag: 'M7',
+    id: 'module-08-internal-tools',
+    number: 8,
+    tag: 'M8',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',
