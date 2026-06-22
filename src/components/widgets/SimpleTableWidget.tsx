@@ -21,6 +21,13 @@ export default function SimpleTableWidget({ simpleTable, title }: WidgetState) {
             <line x1="4" y1="17" x2="20" y2="17" />
           </svg>
         </span>
+        {simpleTable.menuItems && (
+          <div className={`stbl-switchmenu${simpleTable.highlight === 'menu' ? ' ring' : ''}`}>
+            {simpleTable.menuItems.map((m) => (
+              <div key={m} className="stbl-switch-item">{m}</div>
+            ))}
+          </div>
+        )}
       </div>
 
       {simpleTable.plantTag && (

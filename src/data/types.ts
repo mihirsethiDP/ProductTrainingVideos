@@ -81,7 +81,48 @@ export interface SimpleTableData {
   title?: string;
   plantTag?: string;
   rows: SimpleTableRow[];
-  highlight?: 'values' | 'plant' | null;
+  menuItems?: string[]; // chart-switch menu, e.g. ["Bar Graph", "Line Graph"]
+  highlight?: 'values' | 'plant' | 'menu' | null;
+}
+
+// ----- Graph (line / bar) -----
+export interface GraphSeries {
+  name: string;
+  color: string;
+  points: number[];
+  endLabel?: string;
+}
+export interface GraphFixedRange {
+  from: number;
+  to: number;
+  level: 'good' | 'warning' | 'critical';
+}
+export interface GraphData {
+  type: 'line' | 'bar';
+  title?: string;
+  plantTag?: string;
+  series: GraphSeries[];
+  xLabels: string[];
+  yMin: number;
+  yMax: number;
+  yStep?: number;
+  fixedRanges?: GraphFixedRange[];
+  thresholdLine?: number;
+  fullIcons?: boolean; // header shows the icon row (download/expand/choose-chart/edit/info)
+  menuItems?: string[]; // open chart-switch menu, e.g. ["Table", "Bar Graph"]
+  highlight?: 'ranges' | 'legend' | 'end' | 'choose' | 'menu' | null;
+}
+
+// ----- Smart Hours (dashboard time-range feature) -----
+export interface SmartHoursData {
+  periodLabel: string; // "Jun 21 - Jun 22, 2026"
+  from: string; // "11:00 PM"
+  to: string; // "11:00 PM"
+  preset: string; // selected preset, e.g. "Last 24 Hours"
+  smartActive: boolean;
+  granularity: 'Hours' | 'Days';
+  note?: string; // caption under the period, e.g. the use-case being shown
+  highlight?: 'smart' | 'fromto' | 'preset' | null;
 }
 
 // ----- Advanced Table (3-axis: Time × Sensor × Aggregation) -----
@@ -122,6 +163,10 @@ export interface WidgetState {
   advTable?: AdvTableData;
   // simple table
   simpleTable?: SimpleTableData;
+  // graph
+  graph?: GraphData;
+  // smart hours
+  smartHours?: SmartHoursData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

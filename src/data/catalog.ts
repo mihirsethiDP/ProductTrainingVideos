@@ -1,21 +1,25 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
+import lessonSmartHours from './lessons/module-01-dashboard/lesson-02-smart-hours';
 import lessonRangeNumber from './lessons/module-02-widgets/lesson-01-range-number';
 import lessonGauge from './lessons/module-02-widgets/lesson-02-gauge';
 import lessonElastic from './lessons/module-02-widgets/lesson-03-elastic-table';
 import lessonAdvanced from './lessons/module-02-widgets/lesson-04-advanced-table';
 import lessonTable from './lessons/module-02-widgets/lesson-05-table';
+import lessonGraphs from './lessons/module-02-widgets/lesson-06-graphs';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
   [lesson01.id]: lesson01,
+  [lessonSmartHours.id]: lessonSmartHours,
   [lessonRangeNumber.id]: lessonRangeNumber,
   [lessonGauge.id]: lessonGauge,
   [lessonElastic.id]: lessonElastic,
   [lessonAdvanced.id]: lessonAdvanced,
   [lessonTable.id]: lessonTable,
+  [lessonGraphs.id]: lessonGraphs,
 };
 
 /**
@@ -46,7 +50,7 @@ export const MODULES: ModuleDef[] = [
       ta: 'இயக்குனரின் பணியிடம் — பக்கத் தேர்விலிருந்து பகிர்வு வரை, டாஷ்போர்டின் ஒவ்வொரு கட்டுப்பாடும்.',
       mr: 'ऑपरेटरचे कॉकपिट — पृष्ठ निवडीपासून शेअरिंगपर्यंत, डॅशबोर्डवरील प्रत्येक नियंत्रण.',
     },
-    lessons: [{ id: 'lesson-01-overview' }],
+    lessons: [{ id: 'lesson-01-overview' }, { id: 'lesson-02-smart-hours' }],
   },
   {
     id: 'module-02-widgets',
@@ -71,7 +75,8 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-03-elastic-table' },
       { id: 'lesson-04-advanced-table' },
       { id: 'lesson-05-table' },
-      { id: 'lesson-06-map-tickets', comingSoon: true },
+      { id: 'lesson-06-graphs' },
+      { id: 'lesson-07-map-tickets', comingSoon: true },
     ],
   },
   {

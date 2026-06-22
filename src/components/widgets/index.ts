@@ -5,6 +5,8 @@ import GaugeWidget from './GaugeWidget';
 import ElasticTableWidget from './ElasticTableWidget';
 import AdvancedTableWidget from './AdvancedTableWidget';
 import SimpleTableWidget from './SimpleTableWidget';
+import GraphWidget from './GraphWidget';
+import SmartHoursWidget from './SmartHoursWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -16,4 +18,6 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   elasticTable: ElasticTableWidget,
   advancedTable: AdvancedTableWidget,
   simpleTable: SimpleTableWidget,
+  graph: GraphWidget,
+  smartHours: SmartHoursWidget,
 };

@@ -797,10 +797,100 @@ button { font-family: var(--sans); }
 .stbl-row:nth-child(even) { background: #f5f6f8; }
 .stbl-label { color: #245b78; }
 .stbl-value { color: var(--ink); font-weight: 600; border-radius: 4px; padding: 0 2px; }
+.stbl-head { position: relative; }
+.stbl-switchmenu {
+  position: absolute; top: calc(100% - 2px); right: 12px; z-index: 20;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(10, 31, 58, 0.2); overflow: hidden; min-width: 130px;
+}
+.stbl-switch-item { padding: 9px 16px; font-size: 13px; color: var(--ink); }
+.stbl-switch-item:hover { background: var(--paper); }
+.stbl-switch-item + .stbl-switch-item { border-top: 1px solid #f0ead9; }
+
+/* ===== GRAPH WIDGET ===== */
+.gr {
+  width: 560px; max-width: 100%;
+  background: #fff; border-radius: 10px; overflow: visible;
+  border: 1px solid #9bd3b6;
+  box-shadow: 0 16px 40px rgba(10, 31, 58, 0.16);
+}
+.gr-head {
+  position: relative; display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: #eaf5ef; border-radius: 10px 10px 0 0;
+}
+.gr-title { font-weight: 700; font-size: 14px; color: var(--ink); }
+.gr-controls { display: flex; align-items: center; gap: 10px; color: #5b6b7f; }
+.gr-ic { font-size: 14px; cursor: default; }
+.gr-burger { font-size: 18px; }
+.gr-choose { border-radius: 4px; padding: 0 2px; }
+.gr-menu {
+  position: absolute; top: calc(100% - 2px); right: 12px; z-index: 20;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(10, 31, 58, 0.2); overflow: hidden; min-width: 120px;
+}
+.gr-menu-item { padding: 9px 16px; font-size: 13px; color: var(--ink); }
+.gr-menu-item + .gr-menu-item { border-top: 1px solid #f0ead9; }
+.gr-plantbar { display: flex; justify-content: flex-end; padding: 8px 16px 0; }
+.gr-plant { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #8a93a0; }
+.gr-plant svg { width: 14px; height: 14px; }
+.gr-legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; padding: 8px 16px 2px; }
+.gr-leg { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: #6b7a90; font-weight: 600; }
+.gr-leg-swatch { width: 22px; height: 5px; border-radius: 3px; }
+.gr-svg { width: 100%; height: auto; display: block; padding: 4px 8px 8px; }
+.gr-axis { font-family: var(--mono); font-size: 9px; fill: #9aa7b8; }
+.gr-endlabel { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+
+/* ===== SMART HOURS ===== */
+.sh {
+  width: 720px; max-width: 100%;
+  background: #fff; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10, 31, 58, 0.16);
+  display: flex; gap: 0; font-size: 13px;
+}
+.sh-left { width: 270px; flex-shrink: 0; padding: 18px; border-right: 1px solid #eef2f7; }
+.sh-eyebrow { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--ink-soft); }
+.sh-period { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--ink); margin-top: 4px; }
+.sh-note { font-size: 11px; color: var(--water-deep); margin-top: 4px; font-weight: 600; }
+.sh-fromto { display: flex; gap: 10px; margin-top: 12px; border-radius: 8px; }
+.sh-field { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.sh-field-label { display: block; font-size: 9px; color: var(--ink-soft); }
+.sh-field-value { font-size: 13px; color: var(--ink); font-weight: 500; }
+.sh-format { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+.sh-format-label { font-size: 11px; color: var(--ink-soft); margin-right: 2px; }
+.sh-seg { font-size: 11px; padding: 5px 10px; border-radius: 16px; background: #fff; color: var(--ink-soft); border: 1px solid var(--line); }
+.sh-seg.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.sh-card { margin-top: 14px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #fff; }
+.sh-card.active { background: #eef2f7; border-color: #c4d2e2; }
+.sh-card-top { display: flex; align-items: center; gap: 8px; }
+.sh-check { color: var(--water-deep); font-size: 15px; }
+.sh-card-title { font-weight: 700; color: var(--ink); }
+.sh-badge { margin-left: auto; background: var(--ink); color: #fff; font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.05em; }
+.sh-card-desc { font-size: 11px; color: var(--ink-soft); margin-top: 6px; line-height: 1.4; }
+.sh-card-window { font-size: 12px; color: var(--ink); font-weight: 600; margin-top: 8px; }
+.sh-gran { margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.sh-gran-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--ink-soft); margin-bottom: 8px; }
+.sh-radio { display: flex; align-items: center; gap: 8px; padding: 4px 0; color: var(--ink); }
+.sh-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+.sh-dot.on { border-color: var(--water-deep); background: radial-gradient(var(--water-deep) 40%, #fff 45%); }
+.sh-right { flex: 1; padding: 18px; min-width: 0; }
+.sh-presets { display: flex; flex-wrap: wrap; gap: 8px; border-radius: 8px; }
+.sh-preset { font-size: 11px; padding: 6px 12px; border-radius: 16px; border: 1px solid var(--line); color: var(--ink-soft); }
+.sh-preset.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.sh-cal { margin-top: 16px; }
+.sh-cal-title { text-align: center; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.sh-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.sh-cal-h { text-align: center; font-size: 10px; color: var(--ink-soft); }
+.sh-cal-d { text-align: center; font-size: 11px; padding: 5px 0; color: var(--ink); border-radius: 50%; }
+.sh-cal-d.sel { background: var(--water-deep); color: #fff; font-weight: 600; }
+
+@media (max-width: 700px) {
+  .sh { flex-direction: column; }
+  .sh-left { width: 100%; border-right: none; border-bottom: 1px solid #eef2f7; }
+}
 
 /* highlight ring used by the guide to emphasise a widget part */
-.rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring { position: relative; }
-.rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after {
+.rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring { position: relative; }
+.rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: 6px;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18), 0 0 14px rgba(212, 160, 23, 0.5);

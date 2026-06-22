@@ -41,6 +41,17 @@ const compliance: SimpleTableData = {
   ],
 };
 
+// A table that can switch into a graph (menu open).
+const utilityBlock: SimpleTableData = {
+  title: 'Utility Block Flowmeters (KL)',
+  menuItems: ['Bar Graph', 'Line Graph'],
+  highlight: 'menu',
+  rows: [
+    { label: 'Utility Domestic Inlet', value: '3.47' },
+    { label: 'Cooling Tower Inlet', value: '48.75' },
+  ],
+};
+
 const lesson: Lesson = {
   id: 'lesson-05-table',
   moduleId: 'module-02-widgets',
@@ -57,6 +68,8 @@ const lesson: Lesson = {
       widgetState: { simpleTable: equipment({ values: true }) }, cursor: [{ at: 0.3, x: 85, y: 45 }] },
     { mode: 'widget', widget: 'simpleTable', caption: 'Respects the dashboard time',
       widgetState: { simpleTable: equipment() }, cursor: [{ at: 0.2, x: 50, y: 12 }] },
+    { mode: 'widget', widget: 'simpleTable', caption: 'Switch table ⇄ graph',
+      widgetState: { simpleTable: utilityBlock }, cursor: [{ at: 0.3, x: 88, y: 14, click: true }] },
     { mode: 'widget', widget: 'simpleTable', caption: 'Any sensors — even compliance',
       widgetState: { simpleTable: compliance }, cursor: [{ at: 0.3, x: 85, y: 16, click: true }] },
   ],
@@ -87,6 +100,12 @@ const lesson: Lesson = {
           body: "Unlike the Advanced Table, the Table widget <strong>respects the dashboard time range</strong>. Change the time window at the top of the page, and every value here recalculates to match.",
           voice: "And here's a key point, especially after the advanced table. The simple table does respect your dashboard's time range. So unlike the advanced table, which keeps its own clock, this one follows the time window at the top of your page. Change that window, and every value in the table updates to match. It stays in sync with everything else.",
           tip: { type: 'rememberLabel', text: 'The Advanced Table keeps its own time; the simple Table follows the dashboard — an easy way to tell them apart.' },
+        },
+        {
+          label: 'Switch View', title: 'Switch a table into a graph',
+          body: "A table isn't locked in. Using the <strong>menu</strong> in the top-right, switch it straight into a <strong>Bar Graph</strong> or <strong>Line Graph</strong> — and switch a graph back to a table. Same data, different view.",
+          voice: "One more handy thing. A table isn't locked into being a table. Using the menu in the top-right corner, you can switch it straight into a bar graph or a line graph — and switch a graph back into a table. It's the same data, shown a different way, in a single click.",
+          tip: { type: 'tipLabel', text: 'Graphs and tables are two views of the same data — flip between them from the chart menu.' },
         },
         {
           label: 'Any Sensors', title: 'Any sensors — even compliance',
@@ -124,6 +143,12 @@ const lesson: Lesson = {
           tip: { type: 'rememberLabel', text: 'एडवांस्ड टेबल अपना समय रखती है; सरल टेबल डैशबोर्ड का पालन करती है — दोनों में फ़र्क पहचानने का आसान तरीका।' },
         },
         {
+          label: 'दृश्य बदलें', title: 'टेबल को ग्राफ़ में बदलें',
+          body: 'टेबल बंधी हुई नहीं है। ऊपर-दाएँ <strong>मेन्यू</strong> से, इसे सीधे <strong>बार ग्राफ़</strong> या <strong>लाइन ग्राफ़</strong> में बदलें — और ग्राफ़ को वापस टेबल में। वही डेटा, अलग दृश्य।',
+          voice: 'एक और उपयोगी बात। टेबल केवल टेबल बने रहने तक सीमित नहीं है। ऊपर-दाएँ कोने के मेन्यू से, आप इसे सीधे बार ग्राफ़ या लाइन ग्राफ़ में बदल सकते हैं — और ग्राफ़ को वापस टेबल में। वही डेटा, एक अलग तरीके से दिखाया गया, एक ही क्लिक में।',
+          tip: { type: 'tipLabel', text: 'ग्राफ़ और टेबल एक ही डेटा के दो दृश्य हैं — चार्ट मेन्यू से इनके बीच स्विच करें।' },
+        },
+        {
           label: 'कोई भी सेंसर', title: 'कोई भी सेंसर — अनुपालन भी',
           body: 'चूँकि यह बस सेंसर और मान है, टेबल विजेट किसी भी चीज़ के लिए काम करती है — एक <strong>अनुपालन फ़्लैग</strong> के लिए भी। यहाँ <em>Compliance Status</em> अनुपालक के लिए 1 और गैर-अनुपालक के लिए 0 दिखाती है, <strong>All Plants</strong> में। यह टेबल विजेट्स को समाप्त करता है।',
           voice: 'और चूँकि यह सेंसर और उनके मानों से ज़्यादा कुछ नहीं है, आप टेबल विजेट को लगभग किसी भी चीज़ के लिए उपयोग कर सकते हैं। यहाँ एक अच्छा उदाहरण है — अनुपालन स्थिति, जहाँ एक का मतलब अनुपालक और शून्य का मतलब नहीं। इंडिया हैबिटेट सेंटर शून्य पढ़ रहा है, तो उस पर ध्यान चाहिए। कोने में All Plants लेबल देखें, जो दिखाता है कि यह टेबल हर प्लांट तक फैली है। और यह टेबल विजेट्स का हमारा दौरा पूरा करता है — सरल, इलास्टिक, और एडवांस्ड। अगले पाठ में, हम एक अलग तरह के विजेट पर जाएँगे।',
@@ -159,6 +184,12 @@ const lesson: Lesson = {
           tip: { type: 'rememberLabel', text: 'அட்வான்ஸ்டு அட்டவணை தனது நேரத்தை வைத்திருக்கிறது; எளிய அட்டவணை டாஷ்போர்டைப் பின்பற்றுகிறது — இரண்டையும் வேறுபடுத்த எளிய வழி.' },
         },
         {
+          label: 'காட்சியை மாற்று', title: 'அட்டவணையை வரைபடமாக மாற்று',
+          body: "அட்டவணை பூட்டப்படவில்லை. மேல்-வலதுபுற <strong>மெனுவைப்</strong> பயன்படுத்தி, அதை நேரடியாக <strong>பட்டை வரைபடமாக</strong> அல்லது <strong>கோடு வரைபடமாக</strong> மாற்றவும் — வரைபடத்தை மீண்டும் அட்டவணையாகவும். அதே தரவு, வேறு காட்சி.",
+          voice: 'மேலும் ஒரு பயனுள்ள விஷயம். அட்டவணை அட்டவணையாகவே இருக்க வேண்டிய கட்டாயமில்லை. மேல்-வலது மூலையில் உள்ள மெனுவைப் பயன்படுத்தி, அதை நேரடியாக பட்டை வரைபடமாக அல்லது கோடு வரைபடமாக மாற்றலாம் — வரைபடத்தை மீண்டும் அட்டவணையாகவும். அதே தரவு, வேறு வழியில் காட்டப்படுகிறது, ஒரே கிளிக்கில்.',
+          tip: { type: 'tipLabel', text: 'வரைபடங்களும் அட்டவணைகளும் ஒரே தரவின் இரண்டு காட்சிகள் — சார்ட் மெனுவிலிருந்து அவற்றுக்கு இடையே மாறவும்.' },
+        },
+        {
           label: 'எந்த சென்சாரும்', title: 'எந்த சென்சாரும் — இணக்கமும் கூட',
           body: 'இது வெறும் சென்சார்களும் மதிப்புகளும் என்பதால், டேபிள் விட்ஜெட் எதற்கும் வேலை செய்கிறது — ஒரு <strong>இணக்க கொடி</strong>க்கும் கூட. இங்கே <em>Compliance Status</em> இணக்கத்திற்கு 1, இணக்கமின்மைக்கு 0 காட்டுகிறது, <strong>All Plants</strong> முழுவதும். இது அட்டவணை விட்ஜெட்களை முடிக்கிறது.',
           voice: 'இது சென்சார்கள் மற்றும் அவற்றின் மதிப்புகளைத் தவிர வேறொன்றுமில்லை என்பதால், டேபிள் விட்ஜெட்டை கிட்டத்தட்ட எதற்கும் பயன்படுத்தலாம். இதோ ஒரு நல்ல உதாரணம் — இணக்க நிலை, ஒன்று என்றால் இணக்கம், பூஜ்ஜியம் என்றால் இல்லை. இந்தியா ஹேபிடாட் சென்டர் பூஜ்ஜியம் காட்டுகிறது, எனவே அதற்குக் கவனம் தேவை. மூலையில் All Plants லேபிளைக் கவனியுங்கள், இந்த அட்டவணை ஒவ்வொரு ஆலையையும் உள்ளடக்குகிறது என்பதைக் காட்டுகிறது. இது அட்டவணை விட்ஜெட்களின் நமது சுற்றுப்பயணத்தை முடிக்கிறது — எளிய, இலாஸ்டிக், மற்றும் அட்வான்ஸ்டு. அடுத்த பாடத்தில், வேறு வகை விட்ஜெட்டுக்கு செல்வோம்.',
@@ -192,6 +223,12 @@ const lesson: Lesson = {
           body: 'अॅडव्हान्स्ड टेबलच्या विपरीत, टेबल विजेट <strong>डॅशबोर्डच्या वेळ अवधीचे पालन करते</strong>. पानाच्या वरची वेळ खिडकी बदला, आणि इथले प्रत्येक मूल्य त्यानुसार पुन्हा मोजले जाते.',
           voice: 'आणि इथे एक महत्त्वाचा मुद्दा, विशेषतः अॅडव्हान्स्ड टेबलनंतर. सोपी टेबल तुमच्या डॅशबोर्डच्या वेळ अवधीचे पालन करते. म्हणून स्वतःचे घड्याळ ठेवणाऱ्या अॅडव्हान्स्ड टेबलच्या विपरीत, ही पानाच्या वरच्या वेळ खिडकीचे पालन करते. ती खिडकी बदला, आणि टेबलमधील प्रत्येक मूल्य त्यानुसार अपडेट होते. ती इतर सर्वांशी समकालिक राहते.',
           tip: { type: 'rememberLabel', text: 'अॅडव्हान्स्ड टेबल स्वतःचा वेळ ठेवते; सोपी टेबल डॅशबोर्डचे पालन करते — दोघांत फरक ओळखण्याचा सोपा मार्ग.' },
+        },
+        {
+          label: 'दृश्य बदला', title: 'टेबल आलेखात बदला',
+          body: 'टेबल बांधलेली नाही. वर-उजव्या <strong>मेनू</strong>ने, ती थेट <strong>बार आलेख</strong> किंवा <strong>लाइन आलेख</strong> मध्ये बदला — आणि आलेख पुन्हा टेबलमध्ये. तोच डेटा, वेगळे दृश्य.',
+          voice: 'आणखी एक उपयुक्त गोष्ट. टेबल फक्त टेबल राहण्यापुरती मर्यादित नाही. वर-उजव्या कोपऱ्यातील मेनूने, तुम्ही ती थेट बार आलेख किंवा लाइन आलेखात बदलू शकता — आणि आलेख पुन्हा टेबलमध्ये. तोच डेटा, वेगळ्या प्रकारे दाखवलेला, एका क्लिकमध्ये.',
+          tip: { type: 'tipLabel', text: 'आलेख आणि टेबल हे एकाच डेटाची दोन दृश्ये आहेत — चार्ट मेनूने त्यांच्यात स्विच करा.' },
         },
         {
           label: 'कोणतेही सेन्सर', title: 'कोणतेही सेन्सर — अनुपालनही',
