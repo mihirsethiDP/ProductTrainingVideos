@@ -188,6 +188,7 @@ export interface VizData {
   live: boolean; // true = LIVE, false = back-dated history
   page: string;
   pageMenu?: string[]; // open the Select Page dropdown
+  section?: 'full' | 'primary'; // which schematic to render
   collectionLevel: number; // 0..100
   aerationLevel: number;
   pump1On: boolean;

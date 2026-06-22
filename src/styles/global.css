@@ -1024,6 +1024,9 @@ button { font-family: var(--sans); }
 .viz-label { font-size: 12px; font-weight: 600; fill: var(--ink); }
 .viz-gtext { font-size: 9px; fill: var(--ink-soft); font-family: var(--mono); }
 .viz-water { fill: #4a90c2; transition: height 1s ease, y 1s ease; }
+.viz-sludge { fill: #9c6326; transition: height 1s ease, y 1s ease; }
+.viz-onoff { font-size: 9px; font-weight: 700; fill: var(--ink); }
+.viz-val { font-size: 12px; font-weight: 700; fill: var(--ink); }
 .viz-hl { fill: none; stroke: var(--accent); stroke-width: 3; stroke-dasharray: 8 5; rx: 8; animation: rnw-ring 1.6s infinite; }
 .viz-flow { animation: viz-march 0.7s linear infinite; }
 @keyframes viz-march { to { stroke-dashoffset: -32; } }
