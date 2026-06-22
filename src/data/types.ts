@@ -71,6 +71,19 @@ export interface ElasticTableData {
   layout?: 'rows' | 'columns'; // sensors as rows (default) or transposed
 }
 
+// ----- Simple Table (sensor × aggregation) -----
+export interface SimpleTableRow {
+  label: string;
+  value: string;
+  ring?: boolean;
+}
+export interface SimpleTableData {
+  title?: string;
+  plantTag?: string;
+  rows: SimpleTableRow[];
+  highlight?: 'values' | 'plant' | null;
+}
+
 // ----- Advanced Table (3-axis: Time × Sensor × Aggregation) -----
 export interface AdvTableRow {
   label: string;
@@ -107,6 +120,8 @@ export interface WidgetState {
   table?: ElasticTableData;
   // advanced table
   advTable?: AdvTableData;
+  // simple table
+  simpleTable?: SimpleTableData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

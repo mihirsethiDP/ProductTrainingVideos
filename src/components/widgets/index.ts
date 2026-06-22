@@ -4,6 +4,7 @@ import RangeNumberWidget from './RangeNumberWidget';
 import GaugeWidget from './GaugeWidget';
 import ElasticTableWidget from './ElasticTableWidget';
 import AdvancedTableWidget from './AdvancedTableWidget';
+import SimpleTableWidget from './SimpleTableWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -14,4 +15,5 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   gauge: GaugeWidget,
   elasticTable: ElasticTableWidget,
   advancedTable: AdvancedTableWidget,
+  simpleTable: SimpleTableWidget,
 };
