@@ -42,6 +42,35 @@ export interface ThresholdBand {
   level: 'good' | 'warning' | 'critical';
 }
 
+// ----- Elastic Table -----
+export interface ElasticCell {
+  value: string;
+  level?: 'caution' | 'error'; // threshold highlight
+  ring?: boolean; // guide emphasis
+}
+export interface ElasticAggRow {
+  aggregation: string; // e.g. "Current", "Average", "Maximum"
+  cells: ElasticCell[]; // one per time column
+  ring?: boolean;
+}
+export interface ElasticSensor {
+  name: string;
+  rows: ElasticAggRow[]; // one or more aggregations
+  ring?: boolean;
+}
+export interface ElasticGroup {
+  name: string;
+  collapsed?: boolean;
+  summary?: string; // shown when collapsed, e.g. "5 sensors"
+  sensors?: ElasticSensor[];
+  ring?: boolean;
+}
+export interface ElasticTableData {
+  timeColumns: { label: string; sub?: string; ring?: boolean }[];
+  groups: ElasticGroup[];
+  layout?: 'rows' | 'columns'; // sensors as rows (default) or transposed
+}
+
 export interface WidgetState {
   title?: string;
   value?: string;
@@ -58,6 +87,8 @@ export interface WidgetState {
   min?: number;
   max?: number;
   thresholds?: ThresholdBand[]; // good / warning / critical bands
+  // elastic table
+  table?: ElasticTableData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

@@ -2,6 +2,7 @@ import type { Lesson, ModuleDef, RoleId } from './types';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
 import lessonRangeNumber from './lessons/module-02-widgets/lesson-01-range-number';
 import lessonGauge from './lessons/module-02-widgets/lesson-02-gauge';
+import lessonElastic from './lessons/module-02-widgets/lesson-03-elastic-table';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -10,6 +11,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lesson01.id]: lesson01,
   [lessonRangeNumber.id]: lessonRangeNumber,
   [lessonGauge.id]: lessonGauge,
+  [lessonElastic.id]: lessonElastic,
 };
 
 /**
@@ -62,7 +64,8 @@ export const MODULES: ModuleDef[] = [
     lessons: [
       { id: 'lesson-01-range-number' },
       { id: 'lesson-02-gauge' },
-      { id: 'lesson-03-map-tickets', comingSoon: true },
+      { id: 'lesson-03-elastic-table' },
+      { id: 'lesson-04-map-tickets', comingSoon: true },
     ],
   },
   {
