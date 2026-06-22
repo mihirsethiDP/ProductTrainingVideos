@@ -547,6 +547,7 @@ button { font-family: var(--sans); }
 /* ===== INTERACTIVE WIDGETS ===== */
 .widget-stage-wrap { width: 100%; display: flex; justify-content: center; padding: 24px 0 8px; }
 .widget-stage { position: relative; display: inline-block; }
+.widget-stage.widget-stage-wide { display: block; width: 100%; }
 
 .rnw {
   --rnw-accent: #7d1f6e;
@@ -723,9 +724,53 @@ button { font-family: var(--sans); }
 .et-cell.caution { background: #fdf0cf; color: #9c6a00; font-weight: 600; }
 .et-cell.error { background: #f8d2d2; color: #c0392b; font-weight: 700; }
 
+/* ===== ADVANCED TABLE WIDGET ===== */
+.adv {
+  --adv-accent: #8e24aa; --adv-tint: #f7eefb;
+  width: 100%;
+  background: #fff; border-radius: 12px; overflow: hidden;
+  border: 1px solid #e7d8ee;
+  box-shadow: 0 16px 40px rgba(10, 31, 58, 0.16);
+  font-size: 13px;
+}
+.adv.adv-teal { --adv-accent: #2e9e83; --adv-tint: #e9f5f1; border-color: #cfe9e1; }
+.adv-top { display: flex; align-items: center; gap: 8px; padding: 12px 16px; }
+.adv-top svg { width: 16px; height: 16px; color: var(--adv-accent); }
+.adv-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+.adv-info { color: #9aa7b8; font-size: 12px; }
+.adv-grid { overflow-x: auto; padding: 0 10px 12px; }
+.adv-table { border-collapse: separate; border-spacing: 0 8px; width: max-content; min-width: 100%; }
+.adv-corner { background: #fff; vertical-align: middle; padding: 4px 10px; min-width: 120px; }
+.adv-ref {
+  display: inline-flex; flex-direction: column; gap: 1px;
+  border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; background: #fff;
+}
+.adv-ref-label { font-size: 9px; color: var(--ink-soft); }
+.adv-ref-value { font-size: 13px; color: var(--ink); font-weight: 500; }
+.adv-colhead {
+  font-weight: 700; color: var(--ink); text-align: center; font-size: 12px;
+  padding: 6px 14px; white-space: nowrap; vertical-align: bottom;
+}
+.adv-rowlabel {
+  background: var(--adv-accent); color: #fff; font-weight: 700;
+  padding: 14px 16px; border-radius: 8px; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+}
+.adv-rowlabel.wide { min-width: 320px; }
+.adv-badge {
+  background: #fff; color: var(--ink); font-size: 10px; font-weight: 600;
+  padding: 2px 9px; border-radius: 20px;
+}
+.adv-cell {
+  background: var(--adv-tint); color: var(--ink); font-weight: 700;
+  text-align: center; padding: 14px 16px; min-width: 100px; white-space: nowrap;
+}
+.adv-cell.caution { background: #fdf0cf; color: #9c6a00; }
+.adv-cell.error { background: #f8d2d2; color: #c0392b; }
+
 /* highlight ring used by the guide to emphasise a widget part */
-.rnw .ring, .gw .ring, .et .ring { position: relative; }
-.rnw .ring::after, .gw .ring::after, .et .ring::after {
+.rnw .ring, .gw .ring, .et .ring, .adv .ring { position: relative; }
+.rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: 6px;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18), 0 0 14px rgba(212, 160, 23, 0.5);

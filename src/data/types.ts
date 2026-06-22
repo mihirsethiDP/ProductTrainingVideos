@@ -71,6 +71,22 @@ export interface ElasticTableData {
   layout?: 'rows' | 'columns'; // sensors as rows (default) or transposed
 }
 
+// ----- Advanced Table (3-axis: Time × Sensor × Aggregation) -----
+export interface AdvTableRow {
+  label: string;
+  badge?: string; // the "middle" axis value shown as a pill (e.g. "Current", "Today")
+  cells: { value: string; level?: 'caution' | 'error' }[];
+}
+export interface AdvTableData {
+  accent?: 'purple' | 'teal';
+  title?: string;
+  referenceLabel: string; // value in the Reference selector — "Today", "Current", "None"
+  colHeaders: string[];
+  rows: AdvTableRow[];
+  wideRowHeader?: boolean; // sensor-name rows are wider (screenshots 3 & 4)
+  ring?: 'reference' | 'columns' | 'rows' | null;
+}
+
 export interface WidgetState {
   title?: string;
   value?: string;
@@ -89,6 +105,8 @@ export interface WidgetState {
   thresholds?: ThresholdBand[]; // good / warning / critical bands
   // elastic table
   table?: ElasticTableData;
+  // advanced table
+  advTable?: AdvTableData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
