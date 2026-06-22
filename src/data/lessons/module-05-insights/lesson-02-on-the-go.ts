@@ -10,7 +10,12 @@ const CHLORINE: InsightRow = {
   name: 'Chlorine Contact Tank Level has reached 90%',
   desc: 'Level Transmitter reports 90% — risk of overflow.',
   ago: 'just now', status: 'Open', priority: 'high', asset: 'Vatika Atrium (75 KLD)', type: 'Warning',
-  action: "Stop the reactor feed pump and report to 'Supervisor' and 'Client'.",
+  equipment: 'Chlorine Contact Tank', timestamp: 'just now', avgRecurrence: '6.2 Hours', timesOpened: '54',
+  aiDescription:
+    'The Chlorine Contact Tank level has reached 90% of capacity, as reported by the Level Transmitter — a high risk of overflow if feed continues. Immediate action is advised to protect the tank and downstream process.',
+  details: 'The Level Transmitter reports the contact tank at 90% of its full capacity.',
+  rca: ['Reactor feed pump left running beyond tank capacity.', 'Outlet valve partially closed, slowing drawdown.'],
+  comments: [],
 };
 
 const LATEST: InsightRow = {

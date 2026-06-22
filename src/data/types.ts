@@ -195,6 +195,14 @@ export interface InsightRow {
   type: InsightType;
   action?: string;
   ring?: boolean;
+  // rich detail
+  timestamp?: string;
+  avgRecurrence?: string;
+  timesOpened?: string;
+  aiDescription?: string;
+  details?: string;
+  rca?: string[];
+  comments?: { user: string; text: string }[];
 }
 export interface InsightsData {
   mode: 'page' | 'detail' | 'whatsapp' | 'digest';
@@ -215,7 +223,8 @@ export interface InsightsData {
   };
   highlight?:
     | 'stats' | 'filters' | 'types' | 'priority' | 'create' | 'row'
-    | 'action' | 'zeroauth' | 'link' | 'counts' | 'latest' | 'plants' | null;
+    | 'action' | 'zeroauth' | 'link' | 'counts' | 'latest' | 'plants'
+    | 'ai' | 'recurrence' | 'equipment' | 'comments' | null;
 }
 
 // ----- Inventory Management -----

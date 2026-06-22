@@ -11,26 +11,91 @@ function TypeBadge({ type }: { type: InsightRow['type'] }) {
   return <span className={`ins-badge ${type.toLowerCase()}`}>{TYPE_ICON[type]} {type}</span>;
 }
 
-function DetailCard({ ins, zeroAuth, highlight }: { ins: InsightRow; zeroAuth?: boolean; highlight?: InsightsData['highlight'] }) {
+function DetailCard({ ins, zeroAuth, highlight, compact }: { ins: InsightRow; zeroAuth?: boolean; highlight?: InsightsData['highlight']; compact?: boolean }) {
+  const badges = (
+    <div className="ins-d-badges">
+      <TypeBadge type={ins.type} />
+      <span className={`ins-pri ${PRIORITY[ins.priority].cls}`}>{PRIORITY[ins.priority].sym}</span>
+      <span className={`ins-d-statuslabel ${ins.status.toLowerCase()}`}>{ins.status === 'Open' ? 'Open Insight' : 'Closed'}</span>
+      {ins.timestamp && <span className="ins-d-ts">🕐 {ins.timestamp}</span>}
+    </div>
+  );
+
+  if (compact) {
+    return (
+      <div className="ins-detail compact">
+        <div className="ins-detail-name">{ins.name}</div>
+        {badges}
+        <div className="ins-detail-meta">{ins.asset}{ins.equipment ? ` · ${ins.equipment}` : ''}</div>
+        <div className="ins-detail-desc">{ins.aiDescription ?? ins.desc}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="ins-detail">
       {zeroAuth && (
         <div className={`ins-zerobanner${highlight === 'zeroauth' ? ' ring' : ''}`}>🔓 Opened via secure link — no login required</div>
       )}
-      <div className="ins-detail-top">
-        <TypeBadge type={ins.type} />
-        <span className={`ins-pri ${PRIORITY[ins.priority].cls}`}>{PRIORITY[ins.priority].sym} {ins.priority}</span>
-        <span className={`ins-status ${ins.status.toLowerCase()}`}>{ins.status}</span>
+      <div className="ins-d-header">
+        <div className="ins-d-titlewrap">
+          <div className="ins-detail-name">{ins.name}</div>
+          {badges}
+        </div>
+        {(ins.avgRecurrence || ins.timesOpened) && (
+          <div className={`ins-d-stats${highlight === 'recurrence' ? ' ring' : ''}`}>
+            {ins.asset && <span className="ins-d-asset">{ins.asset}</span>}
+            {ins.avgRecurrence && <span className="ins-d-stat green"><b>{ins.avgRecurrence}</b><span>Average Recurrence Time</span></span>}
+            {ins.timesOpened && <span className="ins-d-stat navy"><b>{ins.timesOpened}</b><span>Times this Alarm was Opened</span></span>}
+          </div>
+        )}
       </div>
-      <div className="ins-detail-name">{ins.name}</div>
-      <div className="ins-detail-meta">{ins.asset}{ins.equipment ? ` · ${ins.equipment}` : ''} · {ins.ago}</div>
-      <div className="ins-detail-desc">{ins.desc}</div>
-      {ins.action && (
-        <div className={`ins-action${highlight === 'action' ? ' ring' : ''}`}>
-          <span className="ins-action-label">Recommended action</span>
-          {ins.action}
+
+      {ins.equipment && (
+        <div className={`ins-d-equip${highlight === 'equipment' ? ' ring' : ''}`}>
+          <span className="ins-d-sub">Equipments</span>
+          <span className="ins-equip">{ins.equipment}</span>
         </div>
       )}
+
+      {ins.aiDescription && (
+        <div className={`ins-d-ai${highlight === 'ai' ? ' ring' : ''}`}>
+          <span className="ins-d-ai-label">✦ Description</span>
+          <p>{ins.aiDescription}</p>
+        </div>
+      )}
+
+      <div className="ins-d-cols">
+        <div className="ins-d-col">
+          {ins.details && (
+            <>
+              <div className="ins-d-h">Details</div>
+              <div className="ins-d-box">{ins.details}</div>
+            </>
+          )}
+          {ins.rca && (
+            <>
+              <div className={`ins-d-h ai${highlight === 'ai' ? ' ring' : ''}`}>✦ RCA</div>
+              <div className="ins-d-ai-box">
+                {ins.rca.map((r, i) => <div key={i}>• {r}</div>)}
+              </div>
+            </>
+          )}
+        </div>
+        <div className={`ins-d-col${highlight === 'comments' ? ' ring' : ''}`}>
+          <div className="ins-d-h">Comments</div>
+          <div className="ins-d-comments">
+            {ins.comments && ins.comments.length
+              ? ins.comments.map((c, i) => <div key={i} className="ins-d-comment"><b>{c.user}</b> {c.text}</div>)
+              : <span className="ins-d-nocomment">No comments yet.</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="ins-d-foot">
+        <span className="ins-d-btn light">MARK INSIGHT CLOSED</span>
+        <span className="ins-d-btn dark">CLOSE</span>
+      </div>
     </div>
   );
 }
@@ -71,7 +136,7 @@ export default function InsightsWidget({ insights: data }: WidgetState) {
         </div>
         <div className={`ins-digest-latest${d.highlight === 'latest' ? ' ring' : ''}`}>
           <div className="ins-digest-sub">Latest open insight</div>
-          <DetailCard ins={g.latest} />
+          <DetailCard ins={g.latest} compact />
         </div>
         <div className={`ins-digest-link${d.highlight === 'link' ? ' ring' : ''}`}>Open Insights Page →</div>
         {g.plants && (

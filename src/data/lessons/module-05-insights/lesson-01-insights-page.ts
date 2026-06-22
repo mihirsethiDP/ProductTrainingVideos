@@ -16,7 +16,24 @@ const ROWS: InsightRow[] = [
 ];
 
 const STATS = { all: '189,145', openAlarms: '237', closedAlarms: '174,334', achievements: '14,574' };
-const CHLORINE = ROWS[2];
+
+// The full rich detail view (from the real screenshot).
+const DETAIL: InsightRow = {
+  name: 'Customer Jigar Industries — Flow meter data is touching the minimum of range of measurement',
+  desc: 'Flow meter reading is at the lower limit of the measurement range.',
+  ago: '2 months ago', status: 'Open', priority: 'high', type: 'Warning',
+  asset: 'SteamHouse India', equipment: 'Jigar Industries',
+  timestamp: 'Apr 23, 2026, 4:22 PM', avgRecurrence: '2.69 Hours', timesOpened: '1835',
+  aiDescription:
+    "On April 23, 2026, a high-priority warning was issued for Jigar Industries regarding the flow meter data at SteamHouse India, indicating that readings are nearing the minimum threshold of the device's measurement range. This is critical as it raises concerns about the accuracy of flow rate measurements and could impact operations if not addressed promptly. The issue has occurred 1,835 times, highlighting its urgency.",
+  details:
+    "The current data from the flow meter indicates that the readings are approaching or touching the minimum threshold of the device's measurement range. This suggests the flow rate is at or near the lowest level the meter can accurately detect and report.",
+  rca: [
+    'Clogging of sensing lines reducing effective flow detection.',
+    'Inadequate periodic maintenance and calibration leading to drift.',
+  ],
+  comments: [],
+};
 
 const page = (highlight: InsightsData['highlight']): InsightsData => ({ mode: 'page', stats: STATS, insights: ROWS, highlight });
 
@@ -35,8 +52,10 @@ const lesson: Lesson = {
       widgetState: { insights: page('types') }, cursor: [{ at: 0.3, x: 88, y: 55 }, { at: 0.7, x: 68, y: 55 }] },
     { mode: 'widget', widget: 'insights', caption: 'Filter, search & create',
       widgetState: { insights: page('filters') }, cursor: [{ at: 0.2, x: 30, y: 20 }, { at: 0.7, x: 90, y: 10 }] },
-    { mode: 'widget', widget: 'insights', caption: 'An insight up close',
-      widgetState: { insights: { mode: 'detail', insight: CHLORINE, highlight: 'action' } }, cursor: [{ at: 0.4, x: 50, y: 75 }] },
+    { mode: 'widget', widget: 'insights', caption: 'AI Description & RCA',
+      widgetState: { insights: { mode: 'detail', insight: DETAIL, highlight: 'ai' } }, cursor: [{ at: 0.3, x: 40, y: 35 }, { at: 0.7, x: 25, y: 78 }] },
+    { mode: 'widget', widget: 'insights', caption: 'Recurrence, equipment & comments',
+      widgetState: { insights: { mode: 'detail', insight: DETAIL, highlight: 'recurrence' } }, cursor: [{ at: 0.3, x: 80, y: 12 }, { at: 0.7, x: 80, y: 60 }] },
   ],
   content: {
     en: {
@@ -67,9 +86,15 @@ const lesson: Lesson = {
           voice: "With nearly two hundred thousand insights in the system, filtering is everything. You can narrow the list by type, by priority, by a relative time range, or by workspace and asset. You can search by keyword to find a specific one. And from the top right, you can also create a new insight — which means defining a new observation condition for the system to watch for. So this page isn't just for reading insights, it's where you set them up too.",
         },
         {
-          label: 'Up Close', title: 'An insight up close',
-          body: "Open any insight for the full picture: its <strong>type</strong>, <strong>priority</strong>, the <strong>asset</strong> it relates to, when it fired, a clear <strong>description</strong>, and — crucially — the <strong>recommended action</strong> telling the operator exactly what to do.",
-          voice: "And when you open a single insight, you get the full picture. The type and priority, the asset and equipment it relates to, exactly when it fired, and a plain description of what's happening. But the most valuable part is the recommended action — it tells the operator exactly what to do about it. Like here: stop the reactor feed pump and report to the supervisor and client. An insight doesn't just raise a flag, it tells you how to respond. In the next lesson, we'll see how these reach you the moment they fire.",
+          label: 'AI Insight', title: 'AI-written Description & RCA',
+          body: "Open any insight and the platform gives you an <strong>AI-generated Description</strong> — a plain-English summary of what's happening and why it matters — plus an <strong>AI-generated RCA</strong> (root-cause analysis) suggesting the likely causes. Below sits the factual <strong>Details</strong>.",
+          voice: "Now open a single insight, and this is where it gets really powerful. The platform writes an A I generated description for you — a clear, plain-English summary of what's happening and why it matters. And below, an A I generated R C A, or root cause analysis, suggesting the likely reasons behind it. Like here: clogged sensing lines, or missed calibration. Alongside that, you still get the plain factual details. So instead of just a raw alarm, you get the system's best explanation of what went wrong and why.",
+          tip: { type: 'tipLabel', text: 'The purple Description and RCA are AI-generated — a starting point to confirm, not gospel.' },
+        },
+        {
+          label: 'Context', title: 'Recurrence, equipment & comments',
+          body: "The detail also shows how often this fires — the <strong>Average Recurrence Time</strong> and the <strong>Times this Alarm was Opened</strong> — and the <strong>Equipment</strong> it's tied to (set at configuration). A <strong>Comments</strong> section lets everyone at the plant discuss it together.",
+          voice: "There's helpful context too. You can see how often this insight tends to fire — its average recurrence time, and the total number of times this alarm has ever been opened. So you instantly know if this is a one-off or a chronic problem. You also see the equipment it's tied to, which was set up during configuration. And there's a comments section, where everyone at the plant can discuss the insight together — ask a question, note what they did, hand it over to the next shift. In the next lesson, we'll see how these insights reach you the moment they fire.",
           tip: { type: 'upNextLabel', text: 'Next: insights delivered to you instantly, wherever you are.' },
         },
       ],
@@ -102,9 +127,15 @@ const lesson: Lesson = {
           voice: 'सिस्टम में लगभग दो लाख इनसाइट्स के साथ, फ़िल्टरिंग ही सब कुछ है। आप सूची को प्रकार, प्राथमिकता, सापेक्ष समय सीमा, या वर्कस्पेस और एसेट से संकीर्ण कर सकते हैं। किसी विशिष्ट को ढूँढने के लिए कीवर्ड से खोज सकते हैं। और ऊपर दाईं ओर से, आप एक नई इनसाइट भी बना सकते हैं — जिसका मतलब है सिस्टम के देखने के लिए एक नई ऑब्ज़र्वेशन कंडीशन परिभाषित करना। तो यह पेज सिर्फ़ इनसाइट्स पढ़ने के लिए नहीं, यहाँ आप उन्हें सेट भी करते हैं।',
         },
         {
-          label: 'करीब से', title: 'एक इनसाइट करीब से',
-          body: 'पूरी तस्वीर के लिए कोई भी इनसाइट खोलें: उसका <strong>प्रकार</strong>, <strong>प्राथमिकता</strong>, संबंधित <strong>एसेट</strong>, यह कब ट्रिगर हुई, एक स्पष्ट <strong>विवरण</strong>, और — सबसे महत्वपूर्ण — <strong>अनुशंसित कार्रवाई</strong> जो ऑपरेटर को बताती है कि वास्तव में क्या करना है।',
-          voice: 'और जब आप एक इनसाइट खोलते हैं, आपको पूरी तस्वीर मिलती है। प्रकार और प्राथमिकता, संबंधित एसेट और उपकरण, यह ठीक कब ट्रिगर हुई, और क्या हो रहा है उसका सरल विवरण। पर सबसे मूल्यवान हिस्सा है अनुशंसित कार्रवाई — यह ऑपरेटर को ठीक-ठीक बताती है कि इसके बारे में क्या करना है। जैसे यहाँ: रिएक्टर फ़ीड पंप रोकें और सुपरवाइज़र व क्लाइंट को रिपोर्ट करें। एक इनसाइट सिर्फ़ झंडा नहीं उठाती, यह बताती है कि कैसे प्रतिक्रिया देनी है। अगले पाठ में, हम देखेंगे कि ये ट्रिगर होते ही आप तक कैसे पहुँचती हैं।',
+          label: 'AI इनसाइट', title: 'AI-लिखित विवरण और RCA',
+          body: 'कोई भी इनसाइट खोलें और प्लेटफ़ॉर्म आपको एक <strong>AI-जनित विवरण</strong> देता है — क्या हो रहा है और क्यों मायने रखता है इसका सरल सारांश — साथ ही एक <strong>AI-जनित RCA</strong> (मूल-कारण विश्लेषण) जो संभावित कारण सुझाता है। नीचे तथ्यात्मक <strong>Details</strong> होते हैं।',
+          voice: 'अब एक इनसाइट खोलें, और यहीं यह वास्तव में शक्तिशाली होती है। प्लेटफ़ॉर्म आपके लिए एक ए आई जनित विवरण लिखता है — क्या हो रहा है और क्यों मायने रखता है इसका स्पष्ट, सरल सारांश। और नीचे, एक ए आई जनित आर सी ए, यानी मूल कारण विश्लेषण, जो इसके पीछे के संभावित कारण सुझाता है। जैसे यहाँ: सेंसिंग लाइनों का जाम होना, या कैलिब्रेशन छूटना। इसके साथ, आपको तथ्यात्मक विवरण भी मिलते हैं। तो सिर्फ़ एक कच्चे अलार्म के बजाय, आपको सिस्टम का सबसे अच्छा स्पष्टीकरण मिलता है कि क्या गलत हुआ और क्यों।',
+          tip: { type: 'tipLabel', text: 'बैंगनी विवरण और RCA ए आई-जनित हैं — पुष्टि करने का शुरुआती बिंदु, अंतिम सत्य नहीं।' },
+        },
+        {
+          label: 'संदर्भ', title: 'पुनरावृत्ति, उपकरण और टिप्पणियाँ',
+          body: 'विवरण यह भी दिखाता है कि यह कितनी बार ट्रिगर होती है — <strong>औसत पुनरावृत्ति समय</strong> और <strong>यह अलार्म कितनी बार खुला</strong> — और जुड़ा <strong>उपकरण</strong> (कॉन्फ़िगरेशन में सेट)। एक <strong>Comments</strong> सेक्शन प्लांट पर सबको साथ चर्चा करने देता है।',
+          voice: 'मददगार संदर्भ भी है। आप देख सकते हैं कि यह इनसाइट कितनी बार ट्रिगर होती है — इसका औसत पुनरावृत्ति समय, और यह अलार्म अब तक कुल कितनी बार खुला। तो आप तुरंत जानते हैं कि यह एक बार की बात है या लगातार की समस्या। आप जुड़ा उपकरण भी देखते हैं, जो कॉन्फ़िगरेशन के दौरान सेट किया गया। और एक टिप्पणी सेक्शन है, जहाँ प्लांट पर सब इनसाइट पर साथ चर्चा कर सकते हैं — सवाल पूछें, जो किया वह नोट करें, अगली शिफ्ट को सौंपें। अगले पाठ में, हम देखेंगे कि ये इनसाइट्स ट्रिगर होते ही आप तक कैसे पहुँचती हैं।',
           tip: { type: 'upNextLabel', text: 'आगे: इनसाइट्स जो आप तक तुरंत पहुँचती हैं, जहाँ भी आप हों।' },
         },
       ],
@@ -137,9 +168,15 @@ const lesson: Lesson = {
           voice: 'சிஸ்டத்தில் கிட்டத்தட்ட இரண்டு லட்சம் இன்சைட்ஸுடன், வடிகட்டுதலே எல்லாம். பட்டியலை வகை, முன்னுரிமை, ஒப்பீட்டு நேர வரம்பு, அல்லது பணியிடம் மற்றும் சொத்து மூலம் சுருக்கலாம். ஒரு குறிப்பிட்டதைக் கண்டறிய முக்கிய வார்த்தையால் தேடலாம். மேல் வலதுபுறத்திலிருந்து, ஒரு புதிய இன்சைட்டையும் உருவாக்கலாம் — அதாவது சிஸ்டம் கவனிக்க ஒரு புதிய கண்காணிப்பு நிபந்தனையை வரையறுப்பது. எனவே இந்தப் பக்கம் இன்சைட்ஸைப் படிக்க மட்டுமல்ல, அவற்றை அமைக்கவும்.',
         },
         {
-          label: 'நெருக்கமாக', title: 'ஒரு இன்சைட் நெருக்கமாக',
-          body: 'முழுப் படத்திற்கு எந்த இன்சைட்டையும் திறங்கள்: அதன் <strong>வகை</strong>, <strong>முன்னுரிமை</strong>, தொடர்புடைய <strong>சொத்து</strong>, எப்போது தூண்டப்பட்டது, ஒரு தெளிவான <strong>விளக்கம்</strong>, மற்றும் — முக்கியமாக — இயக்குனர் என்ன செய்ய வேண்டும் என்பதைச் சொல்லும் <strong>பரிந்துரைக்கப்பட்ட நடவடிக்கை</strong>.',
-          voice: 'ஒரு இன்சைட்டைத் திறக்கும்போது, முழுப் படத்தைப் பெறுகிறீர்கள். வகை, முன்னுரிமை, தொடர்புடைய சொத்து மற்றும் உபகரணம், எப்போது தூண்டப்பட்டது, என்ன நடக்கிறது என்பதன் எளிய விளக்கம். ஆனால் மிக மதிப்புமிக்க பகுதி பரிந்துரைக்கப்பட்ட நடவடிக்கை — இயக்குனர் இதைப் பற்றி என்ன செய்ய வேண்டும் என்பதைச் சரியாகச் சொல்கிறது. இங்கே போல: ரியாக்டர் ஃபீட் பம்பை நிறுத்தி மேற்பார்வையாளர் மற்றும் வாடிக்கையாளருக்குப் புகாரளிக்கவும். ஒரு இன்சைட் வெறும் கொடியை உயர்த்தவில்லை, எப்படிப் பதிலளிப்பது என்பதையும் சொல்கிறது. அடுத்த பாடத்தில், இவை தூண்டப்படும் தருணத்தில் உங்களை எப்படி அடைகின்றன என்று பார்ப்போம்.',
+          label: 'AI இன்சைட்', title: 'AI எழுதிய விளக்கம் & RCA',
+          body: 'எந்த இன்சைட்டையும் திறந்தால் தளம் உங்களுக்கு ஒரு <strong>AI-உருவாக்கிய விளக்கத்தை</strong> தருகிறது — என்ன நடக்கிறது, ஏன் முக்கியம் என்பதன் எளிய சுருக்கம் — மேலும் சாத்தியமான காரணங்களைப் பரிந்துரைக்கும் ஒரு <strong>AI-உருவாக்கிய RCA</strong> (மூல-காரண பகுப்பாய்வு). கீழே உண்மையான <strong>Details</strong>.',
+          voice: 'இப்போது ஒரு இன்சைட்டைத் திறங்கள், இங்கேதான் இது உண்மையில் சக்திவாய்ந்ததாகிறது. தளம் உங்களுக்காக ஒரு ஏ ஐ உருவாக்கிய விளக்கத்தை எழுதுகிறது — என்ன நடக்கிறது, ஏன் முக்கியம் என்பதன் தெளிவான, எளிய சுருக்கம். கீழே, ஒரு ஏ ஐ உருவாக்கிய ஆர் சி ஏ, அதாவது மூல காரண பகுப்பாய்வு, இதன் பின்னணியில் இருக்கக்கூடிய காரணங்களைப் பரிந்துரைக்கிறது. இங்கே போல: சென்சிங் லைன்கள் அடைப்பு, அல்லது தவறவிட்ட அளவீடு. அதனுடன், உண்மையான விவரங்களும் கிடைக்கின்றன. எனவே வெறும் கச்சா அலாரத்துக்குப் பதிலாக, என்ன தவறு நடந்தது, ஏன் என்பதன் சிஸ்டத்தின் சிறந்த விளக்கத்தைப் பெறுகிறீர்கள்.',
+          tip: { type: 'tipLabel', text: 'ஊதா விளக்கமும் RCA-வும் ஏ ஐ-உருவாக்கியவை — உறுதிப்படுத்த ஒரு தொடக்கப் புள்ளி, இறுதி உண்மை அல்ல.' },
+        },
+        {
+          label: 'சூழல்', title: 'மீண்டெழும் காலம், உபகரணம் & கருத்துகள்',
+          body: 'விவரம் இது எவ்வளவு அடிக்கடி தூண்டுகிறது என்பதையும் காட்டுகிறது — <strong>சராசரி மீண்டெழும் காலம்</strong> மற்றும் <strong>இந்த அலாரம் எத்தனை முறை திறக்கப்பட்டது</strong> — மற்றும் தொடர்புடைய <strong>உபகரணம்</strong> (அமைப்பின்போது அமைக்கப்பட்டது). ஒரு <strong>Comments</strong> பிரிவு ஆலையில் உள்ள அனைவரும் சேர்ந்து விவாதிக்க அனுமதிக்கிறது.',
+          voice: 'பயனுள்ள சூழலும் உள்ளது. இந்த இன்சைட் எவ்வளவு அடிக்கடி தூண்டுகிறது என்பதைக் காணலாம் — அதன் சராசரி மீண்டெழும் காலம், மற்றும் இந்த அலாரம் இதுவரை எத்தனை முறை திறக்கப்பட்டது. எனவே இது ஒருமுறை மட்டுமா அல்லது நாள்பட்ட சிக்கலா என்பதை உடனே அறிவீர்கள். தொடர்புடைய உபகரணத்தையும் காண்கிறீர்கள், அது அமைப்பின்போது அமைக்கப்பட்டது. ஒரு கருத்துப் பிரிவும் உள்ளது, அங்கே ஆலையில் உள்ள அனைவரும் இன்சைட்டைச் சேர்ந்து விவாதிக்கலாம் — ஒரு கேள்வி கேட்கலாம், செய்ததைக் குறிக்கலாம், அடுத்த ஷிஃப்டுக்கு ஒப்படைக்கலாம். அடுத்த பாடத்தில், இந்த இன்சைட்ஸ் தூண்டப்படும் தருணத்தில் உங்களை எப்படி அடைகின்றன என்று பார்ப்போம்.',
           tip: { type: 'upNextLabel', text: 'அடுத்து: நீங்கள் எங்கிருந்தாலும் உடனே உங்களை அடையும் இன்சைட்ஸ்.' },
         },
       ],
@@ -172,9 +209,15 @@ const lesson: Lesson = {
           voice: 'सिस्टममध्ये जवळपास दोन लाख इनसाइट्ससह, फिल्टरिंग हेच सर्व काही. तुम्ही यादी प्रकार, प्राधान्य, सापेक्ष वेळ श्रेणी, किंवा वर्कस्पेस आणि असेटने संकुचित करू शकता. विशिष्ट शोधण्यासाठी कीवर्डने शोधू शकता. आणि वर उजवीकडून, तुम्ही एक नवीन इनसाइटही तयार करू शकता — म्हणजे सिस्टमने पाहण्यासाठी एक नवीन ऑब्झर्वेशन कंडिशन परिभाषित करणे. म्हणून हे पेज फक्त इनसाइट्स वाचण्यासाठी नाही, इथे तुम्ही त्या सेटही करता.',
         },
         {
-          label: 'जवळून', title: 'एक इनसाइट जवळून',
-          body: 'संपूर्ण चित्रासाठी कोणतीही इनसाइट उघडा: तिचा <strong>प्रकार</strong>, <strong>प्राधान्य</strong>, संबंधित <strong>असेट</strong>, ती कधी ट्रिगर झाली, एक स्पष्ट <strong>वर्णन</strong>, आणि — महत्त्वाचे — ऑपरेटरला नेमके काय करायचे ते सांगणारी <strong>शिफारस केलेली कृती</strong>.',
-          voice: 'आणि तुम्ही एक इनसाइट उघडता तेव्हा, तुम्हाला संपूर्ण चित्र मिळते. प्रकार आणि प्राधान्य, संबंधित असेट आणि उपकरण, ती नेमकी कधी ट्रिगर झाली, आणि काय घडत आहे याचे साधे वर्णन. पण सर्वात मौल्यवान भाग म्हणजे शिफारस केलेली कृती — ती ऑपरेटरला याबद्दल नेमके काय करायचे ते सांगते. जसे इथे: रिअॅक्टर फीड पंप थांबवा आणि पर्यवेक्षक व क्लायंटला कळवा. एक इनसाइट फक्त झेंडा उभारत नाही, ती कसा प्रतिसाद द्यायचा तेही सांगते. पुढच्या पाठात, या ट्रिगर होताच तुमच्यापर्यंत कशा पोहोचतात ते पाहू.',
+          label: 'AI इनसाइट', title: 'AI-लिखित वर्णन आणि RCA',
+          body: 'कोणतीही इनसाइट उघडा आणि प्लॅटफॉर्म तुम्हाला एक <strong>AI-निर्मित वर्णन</strong> देतो — काय घडत आहे आणि का महत्त्वाचे आहे याचा साधा सारांश — तसेच संभाव्य कारणे सुचवणारे एक <strong>AI-निर्मित RCA</strong> (मूळ-कारण विश्लेषण). खाली तथ्यात्मक <strong>Details</strong>.',
+          voice: 'आता एक इनसाइट उघडा, आणि इथेच ती खऱ्या अर्थाने शक्तिशाली होते. प्लॅटफॉर्म तुमच्यासाठी एक ए आय निर्मित वर्णन लिहितो — काय घडत आहे आणि का महत्त्वाचे आहे याचा स्पष्ट, साधा सारांश. आणि खाली, एक ए आय निर्मित आर सी ए, म्हणजे मूळ कारण विश्लेषण, त्यामागची संभाव्य कारणे सुचवते. जसे इथे: सेन्सिंग लाइन्स जाम होणे, किंवा कॅलिब्रेशन चुकणे. त्यासोबत, तुम्हाला तथ्यात्मक तपशीलही मिळतात. म्हणून फक्त एका कच्च्या अलार्मऐवजी, काय चुकले आणि का याचे सिस्टमचे सर्वोत्तम स्पष्टीकरण तुम्हाला मिळते.',
+          tip: { type: 'tipLabel', text: 'जांभळे वर्णन आणि RCA ए आय-निर्मित आहेत — पुष्टी करण्याचा सुरुवातीचा बिंदू, अंतिम सत्य नाही.' },
+        },
+        {
+          label: 'संदर्भ', title: 'पुनरावृत्ती, उपकरण आणि टिप्पण्या',
+          body: 'तपशील हेही दाखवतो की ही किती वेळा ट्रिगर होते — <strong>सरासरी पुनरावृत्ती वेळ</strong> आणि <strong>हा अलार्म किती वेळा उघडला</strong> — आणि संबंधित <strong>उपकरण</strong> (कॉन्फिगरेशनला सेट केलेले). एक <strong>Comments</strong> विभाग प्लांटवरील सर्वांना एकत्र चर्चा करू देतो.',
+          voice: 'उपयुक्त संदर्भही आहे. ही इनसाइट किती वेळा ट्रिगर होते ते तुम्ही पाहू शकता — तिचा सरासरी पुनरावृत्ती वेळ, आणि हा अलार्म आतापर्यंत एकूण किती वेळा उघडला. म्हणून ही एकदाची गोष्ट आहे की सततची समस्या हे तुम्हाला लगेच कळते. तुम्ही संबंधित उपकरणही पाहता, जे कॉन्फिगरेशनदरम्यान सेट केले गेले. आणि एक टिप्पणी विभाग आहे, जिथे प्लांटवरील सर्वजण इनसाइटवर एकत्र चर्चा करू शकतात — प्रश्न विचारा, काय केले ते नोंदवा, पुढच्या शिफ्टला सोपवा. पुढच्या पाठात, या इनसाइट्स ट्रिगर होताच तुमच्यापर्यंत कशा पोहोचतात ते पाहू.',
           tip: { type: 'upNextLabel', text: 'पुढे: तुम्ही कुठेही असाल, तुमच्यापर्यंत लगेच पोहोचणाऱ्या इनसाइट्स.' },
         },
       ],
