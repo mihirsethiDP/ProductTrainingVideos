@@ -1,6 +1,7 @@
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Thumb, { lessonGlyph, moduleAccent, moduleGlyph } from '../components/Thumb';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
@@ -42,6 +43,9 @@ export default function RoleHome() {
         {modules.map((mod) => (
           <div className="module-card" key={mod.id}>
             <div className="module-head">
+              <div className="module-thumb">
+                <Thumb glyph={moduleGlyph(mod.number)} accent={moduleAccent(mod.number)} />
+              </div>
               <div className="module-number">{String(mod.number).padStart(2, '0')}</div>
               <div className="module-name">{mod.name[lang]}</div>
               <span className="tag-chip">{mod.tag}</span>
@@ -53,7 +57,9 @@ export default function RoleHome() {
                 if (!lesson || ref.comingSoon) {
                   return (
                     <div className="lesson-row soon" key={ref.id}>
-                      <div className="lesson-thumb" />
+                      <div className="lesson-thumb">
+                        <Thumb glyph={moduleGlyph(mod.number)} accent={moduleAccent(mod.number)} />
+                      </div>
                       <div className="lesson-row-info">
                         <div className="lesson-row-title">{t('comingSoon')}</div>
                         <div className="lesson-row-meta">
@@ -70,7 +76,6 @@ export default function RoleHome() {
                 const titleText = content.steps[0]
                   ? content.title.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
                   : lesson.id;
-                const thumb = lesson.screenshots.fullDashboard ?? Object.values(lesson.screenshots)[0];
                 const lessonTag = lessonTagFor(mod, lesson.lessonNumber);
                 const cta = progress?.completed
                   ? t('reviewLesson')
@@ -81,11 +86,7 @@ export default function RoleHome() {
                 return (
                   <div className="lesson-row playable" key={ref.id} onClick={open}>
                     <div className="lesson-thumb">
-                      {thumb ? (
-                        <img src={thumb} alt="" loading="lazy" />
-                      ) : (
-                        <div className="thumb-fallback">{lessonTag}</div>
-                      )}
+                      <Thumb glyph={lessonGlyph(lesson.id, mod.number)} accent={moduleAccent(mod.number)} />
                       <div className="play-badge">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                           <polygon points="6,4 20,12 6,20" />
