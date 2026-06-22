@@ -909,6 +909,30 @@ button { font-family: var(--sans); }
 .scg-axis { font-family: var(--mono); font-size: 10px; fill: #9aa7b8; }
 .scg-axis-title { font-size: 12px; font-weight: 700; fill: var(--ink-soft); }
 
+/* ===== SANKEY WIDGET ===== */
+.snk {
+  width: 1180px; max-width: 100%;
+  background: #fff; border-radius: 10px; overflow: hidden;
+  border: 1px solid #cfddee;
+  box-shadow: 0 16px 40px rgba(10, 31, 58, 0.16);
+}
+.snk-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: #eef4fb; border-bottom: 1px solid #e1e9f3;
+}
+.snk-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+.snk-burger { color: #5b6b7f; font-size: 18px; }
+.snk-svg { width: 100%; height: auto; display: block; }
+.snk-name { font-size: 11px; font-weight: 600; fill: var(--ink); }
+.snk-val { font-size: 11px; font-weight: 700; fill: var(--ink); }
+.snk-foot {
+  display: flex; align-items: stretch; justify-content: space-between;
+  background: #eef4fb; border-top: 1px solid #e1e9f3;
+  font-size: 12px; color: var(--ink-soft);
+}
+.snk-foot > span:first-child { padding: 10px 16px; }
+.snk-foot-box { background: #2b7bd6; color: #fff; padding: 10px 28px; font-weight: 700; }
+
 /* highlight ring used by the guide to emphasise a widget part */
 .rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring, .scg .ring { position: relative; }
 .rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after, .scg .ring::after {

@@ -8,6 +8,7 @@ import lessonAdvanced from './lessons/module-02-widgets/lesson-04-advanced-table
 import lessonTable from './lessons/module-02-widgets/lesson-05-table';
 import lessonGraphs from './lessons/module-02-widgets/lesson-06-graphs';
 import lessonScatter from './lessons/module-02-widgets/lesson-07-scatter';
+import lessonSankey from './lessons/module-02-widgets/lesson-08-sankey';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -22,6 +23,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonTable.id]: lessonTable,
   [lessonGraphs.id]: lessonGraphs,
   [lessonScatter.id]: lessonScatter,
+  [lessonSankey.id]: lessonSankey,
 };
 
 /**
@@ -79,7 +81,8 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-05-table' },
       { id: 'lesson-06-graphs' },
       { id: 'lesson-07-scatter' },
-      { id: 'lesson-08-map-tickets', comingSoon: true },
+      { id: 'lesson-08-sankey' },
+      { id: 'lesson-09-map-tickets', comingSoon: true },
     ],
   },
   {

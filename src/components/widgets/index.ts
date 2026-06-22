@@ -8,6 +8,7 @@ import SimpleTableWidget from './SimpleTableWidget';
 import GraphWidget from './GraphWidget';
 import SmartHoursWidget from './SmartHoursWidget';
 import ScatterGraphWidget from './ScatterGraphWidget';
+import SankeyWidget from './SankeyWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -22,4 +23,5 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   graph: GraphWidget,
   smartHours: SmartHoursWidget,
   scatter: ScatterGraphWidget,
+  sankey: SankeyWidget,
 };

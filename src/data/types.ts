@@ -132,6 +132,28 @@ export interface ScatterData {
   highlight?: 'xaxis' | 'yaxis' | 'points' | 'legend' | null;
 }
 
+// ----- Sankey (flow distribution) -----
+export interface SankeyNode {
+  id: string;
+  label: string;
+  value: number;
+  level: number;
+  color: string;
+}
+export interface SankeyLink {
+  source: string;
+  target: string;
+  value: number;
+  color: string;
+}
+export interface SankeyData {
+  title?: string;
+  periodLabel?: string;
+  nodes: SankeyNode[];
+  links: SankeyLink[];
+  highlight?: string; // node id to ring
+}
+
 // ----- Smart Hours (dashboard time-range feature) -----
 export interface SmartHoursData {
   periodLabel: string; // "Jun 21 - Jun 22, 2026"
@@ -188,6 +210,8 @@ export interface WidgetState {
   smartHours?: SmartHoursData;
   // scatter graph
   scatter?: ScatterData;
+  // sankey
+  sankey?: SankeyData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
