@@ -13,6 +13,8 @@ import lessonDataInput1 from './lessons/module-03-data-input/lesson-01-entering-
 import lessonDataInput2 from './lessons/module-03-data-input/lesson-02-types-and-bulk';
 import lessonDataInput3 from './lessons/module-03-data-input/lesson-03-ocr';
 import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-upload';
+import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor';
+import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -32,6 +34,8 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonDataInput2.id]: lessonDataInput2,
   [lessonDataInput3.id]: lessonDataInput3,
   [lessonDataInput4.id]: lessonDataInput4,
+  [lessonInventory1.id]: lessonInventory1,
+  [lessonInventory2.id]: lessonInventory2,
 };
 
 /**
@@ -118,9 +122,31 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-04-daily-operations',
+    id: 'module-04-inventory',
     number: 4,
     tag: 'M4',
+    roles: ['operator', 'supervisor'],
+    name: {
+      en: 'Inventory Management',
+      hi: 'इन्वेंटरी प्रबंधन',
+      ta: 'சரக்கு மேலாண்மை',
+      mr: 'इन्व्हेंटरी व्यवस्थापन',
+    },
+    description: {
+      en: 'The store room — supervisors track stock and consumption logs; operators add and remove stock, and it all stays in sync.',
+      hi: 'स्टोर रूम — सुपरवाइज़र स्टॉक और खपत लॉग ट्रैक करते हैं; ऑपरेटर स्टॉक जोड़ते-हटाते हैं, और सब समकालिक रहता है।',
+      ta: 'சேமிப்பு அறை — மேற்பார்வையாளர்கள் இருப்பு மற்றும் நுகர்வுப் பதிவுகளைக் கண்காணிக்கிறார்கள்; இயக்குனர்கள் இருப்பைச் சேர்த்து நீக்குகிறார்கள், அனைத்தும் ஒத்திசைந்திருக்கும்.',
+      mr: 'स्टोअर रूम — पर्यवेक्षक स्टॉक आणि वापर लॉग ट्रॅक करतात; ऑपरेटर स्टॉक जोडतात-काढतात, आणि सर्व समकालिक राहते.',
+    },
+    lessons: [
+      { id: 'lesson-01-supervisor' },
+      { id: 'lesson-02-operator' },
+    ],
+  },
+  {
+    id: 'module-05-daily-operations',
+    number: 5,
+    tag: 'M5',
     roles: ['operator'],
     name: {
       en: 'Daily Operations',
@@ -140,9 +166,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-05-reports-insights',
-    number: 5,
-    tag: 'M5',
+    id: 'module-06-reports-insights',
+    number: 6,
+    tag: 'M6',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -162,9 +188,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-06-internal-tools',
-    number: 6,
-    tag: 'M6',
+    id: 'module-07-internal-tools',
+    number: 7,
+    tag: 'M7',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

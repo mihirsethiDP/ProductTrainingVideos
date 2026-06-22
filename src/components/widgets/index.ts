@@ -11,6 +11,7 @@ import ScatterGraphWidget from './ScatterGraphWidget';
 import SankeyWidget from './SankeyWidget';
 import DataInputWidget from './DataInputWidget';
 import OcrWidget from './OcrWidget';
+import InventoryWidget from './InventoryWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -28,4 +29,5 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   sankey: SankeyWidget,
   dataInput: DataInputWidget,
   ocr: OcrWidget,
+  inventory: InventoryWidget,
 };

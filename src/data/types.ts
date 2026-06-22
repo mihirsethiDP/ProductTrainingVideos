@@ -181,6 +181,61 @@ export interface DataInputData {
     | 'upload' | 'detect' | 'stats' | 'editcol' | 'revalidate' | 'legend' | null;
 }
 
+// ----- Inventory Management -----
+export interface InventoryItem {
+  name: string;
+  category: string;
+  stock: string;
+  lastConsumption: string;
+  lastUpdated: string;
+  actual: string;
+  actualPeriod: string;
+  expected: string;
+  ring?: boolean;
+}
+export interface InventoryLog {
+  remark?: string;
+  amount: string;
+  positive: boolean;
+  unit: string;
+  datetime: string;
+}
+export interface InventoryCategory {
+  name: string;
+  color?: 'chem' | 'solution' | 'consumable';
+  disabled?: boolean;
+}
+export interface InventoryData {
+  mode: 'supTable' | 'supLog' | 'opCategories' | 'opItem' | 'opForm';
+  stores?: string[];
+  activeStore?: string;
+  // supTable
+  items?: InventoryItem[];
+  // supLog
+  chemical?: string;
+  balance?: string;
+  monthUsage?: string;
+  lastMonthUsage?: string;
+  dateRange?: string;
+  logs?: InventoryLog[];
+  // opCategories
+  categories?: InventoryCategory[];
+  // opItem
+  selectedItem?: string;
+  // opForm
+  formType?: 'add' | 'remove';
+  itemName?: string;
+  available?: string;
+  remark?: string;
+  remarkOptions?: string[]; // when the remark dropdown is open
+  unit?: string;
+  quantity?: string;
+  asset?: string;
+  highlight?:
+    | 'store' | 'table' | 'consumption' | 'category' | 'log' | 'amounts' | 'balance'
+    | 'addremove' | 'remark' | 'qty' | 'asset' | 'submit' | null;
+}
+
 // ----- OCR Data Input -----
 export interface OcrLogbookRow {
   label: string;
@@ -286,6 +341,8 @@ export interface WidgetState {
   dataInput?: DataInputData;
   // ocr data input
   ocr?: OcrData;
+  // inventory
+  inventory?: InventoryData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
