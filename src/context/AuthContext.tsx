@@ -58,16 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, [loadProfile]);
 
+  // where Supabase should send the user back to after confirming / resetting —
+  // the actual app origin + base path, so it works on localhost and Pages alike.
+  const appUrl = `${window.location.origin}${import.meta.env.BASE_URL}`;
+
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName }, emailRedirectTo: appUrl },
     });
     if (error) return { error: error.message, needsConfirm: false };
     // when email confirmation is on, there's no session yet
     return { error: null, needsConfirm: !data.session };
-  }, []);
+  }, [appUrl]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -81,9 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: appUrl });
     return { error: error?.message ?? null };
-  }, []);
+  }, [appUrl]);
 
   const refreshProfile = useCallback(async () => {
     if (session) await loadProfile(session.user.id);
