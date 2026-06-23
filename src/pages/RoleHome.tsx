@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,6 +9,7 @@ import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog'
 import type { RoleId } from '../data/types';
 import { getLessonProgress } from '../lib/progress';
 import { lessonPercent, moduleCompletion, roleCompletion } from '../lib/completion';
+import { useTour } from '../context/TourContext';
 
 const ROLE_LABEL_KEY: Record<RoleId, string> = {
   operator: 'roleOperator',
@@ -19,8 +21,14 @@ export default function RoleHome() {
   const { role } = useParams();
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
+  const { maybeStartFirstVisit } = useTour();
 
-  if (!role || !ROLES.includes(role as RoleId)) return <Navigate to="/" replace />;
+  const validRole = !!role && ROLES.includes(role as RoleId);
+  useEffect(() => {
+    if (validRole) maybeStartFirstVisit();
+  }, [validRole, maybeStartFirstVisit]);
+
+  if (!validRole) return <Navigate to="/" replace />;
   const roleId = role as RoleId;
   const modules = modulesForRole(roleId);
   const overall = roleCompletion(roleId);
