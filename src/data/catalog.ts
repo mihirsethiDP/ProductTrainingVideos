@@ -21,6 +21,8 @@ import lessonViz from './lessons/module-06-visualization/lesson-01-digital-twin'
 import lessonTask1 from './lessons/module-07-tasks/lesson-01-task-list';
 import lessonTask2 from './lessons/module-07-tasks/lesson-02-doing-a-task';
 import lessonTask3 from './lessons/module-07-tasks/lesson-03-workflows';
+import lessonComm1 from './lessons/module-08-communications/lesson-01-communications-page';
+import lessonComm2 from './lessons/module-08-communications/lesson-02-emails-and-whatsapp';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -48,6 +50,8 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonTask1.id]: lessonTask1,
   [lessonTask2.id]: lessonTask2,
   [lessonTask3.id]: lessonTask3,
+  [lessonComm1.id]: lessonComm1,
+  [lessonComm2.id]: lessonComm2,
 };
 
 /**
@@ -220,9 +224,31 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-08-reports-insights',
+    id: 'module-08-communications',
     number: 8,
     tag: 'M8',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Communications',
+      hi: 'कम्युनिकेशन',
+      ta: 'தொடர்பு',
+      mr: 'कम्युनिकेशन',
+    },
+    description: {
+      en: 'Every message sent to the client — email, SMS, call, WhatsApp — stored and searchable, with a Report filter and WhatsApp delivery status.',
+      hi: 'क्लाइंट को भेजा हर संदेश — ईमेल, SMS, कॉल, WhatsApp — संग्रहीत और खोजने योग्य, एक Report फ़िल्टर और WhatsApp डिलीवरी स्टेटस के साथ।',
+      ta: 'வாடிக்கையாளருக்கு அனுப்பப்பட்ட ஒவ்வொரு செய்தியும் — மின்னஞ்சல், SMS, அழைப்பு, WhatsApp — சேமிக்கப்பட்டு தேடக்கூடியது, Report வடிப்பான் மற்றும் WhatsApp டெலிவரி நிலையுடன்.',
+      mr: 'क्लायंटला पाठवलेला प्रत्येक संदेश — ईमेल, SMS, कॉल, WhatsApp — साठवलेला आणि शोधण्याजोगा, Report फिल्टर आणि WhatsApp डिलिव्हरी स्टेटससह.',
+    },
+    lessons: [
+      { id: 'lesson-01-communications-page' },
+      { id: 'lesson-02-emails-and-whatsapp' },
+    ],
+  },
+  {
+    id: 'module-09-reports-insights',
+    number: 9,
+    tag: 'M9',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -242,9 +268,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-09-internal-tools',
-    number: 9,
-    tag: 'M9',
+    id: 'module-10-internal-tools',
+    number: 10,
+    tag: 'M10',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

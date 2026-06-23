@@ -420,6 +420,30 @@ export interface WorkflowData {
   highlight?: 'header' | 'scope' | 'legend' | 'nodes' | 'todo' | 'inProgress' | 'done' | 'action' | null;
 }
 
+// ----- Communications -----
+export type CommMedium = 'email' | 'sms' | 'call' | 'whatsapp';
+export type WaStatus = 'delivered' | 'sent' | 'undelivered' | 'read' | 'failed';
+export interface CommRow {
+  medium: CommMedium;
+  sender: string; // "Doctor Paani"
+  title: string; // subject / first line
+  text: string; // body preview
+  time: string; // "about 1 hour ago"
+  status?: WaStatus; // whatsapp delivery status chip
+  isReport?: boolean; // surfaced under the Report filter
+  attachment?: string; // attached file name (PDF)
+  ring?: boolean;
+}
+export interface CommData {
+  mode: 'list' | 'email' | 'whatsapp';
+  rows?: CommRow[];
+  filters?: string[]; // active filter chips: 'Email' | 'SMS' | 'Call' | 'WhatsApp' | 'Report'
+  // detail modals
+  email?: { subject: string; body: string[]; attachment?: string };
+  whatsapp?: { sender: string; time: string; text: string; status?: WaStatus };
+  highlight?: 'search' | 'filters' | 'report' | 'mediums' | 'status' | 'row' | 'attachment' | 'content' | null;
+}
+
 export interface WidgetState {
   title?: string;
   value?: string;
@@ -464,6 +488,8 @@ export interface WidgetState {
   task?: TaskData;
   // workflow builder
   workflow?: WorkflowData;
+  // communications
+  comm?: CommData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

@@ -11,9 +11,10 @@ const MODULE_ACCENT: Record<number, string> = {
   4: '#c74e3f', // inventory — coral
   5: '#7b5ea7', // insights — violet
   6: '#4a90c2', // visualization — light water
-  7: '#c98a2b', // daily ops — amber
-  8: '#3a7ca5', // reports — steel
-  9: '#5a6b8c', // internal — slate
+  7: '#c98a2b', // tasks — amber
+  8: '#2a9d8f', // communications — teal
+  9: '#3a7ca5', // reports — steel
+  10: '#5a6b8c', // internal — slate
 };
 
 export function moduleAccent(n: number): string {
@@ -29,8 +30,9 @@ const MODULE_GLYPH: Record<number, string> = {
   5: 'bulb',
   6: 'tank',
   7: 'list',
-  8: 'report',
-  9: 'gear',
+  8: 'mail',
+  9: 'report',
+  10: 'gear',
 };
 
 export function moduleGlyph(n: number): string {
@@ -61,6 +63,8 @@ const LESSON_GLYPH: Record<string, string> = {
   'lesson-01-task-list': 'list',
   'lesson-02-doing-a-task': 'clipboard',
   'lesson-03-workflows': 'cube',
+  'lesson-01-communications-page': 'chat',
+  'lesson-02-emails-and-whatsapp': 'mail',
 };
 
 export function lessonGlyph(id: string, moduleNumber: number): string {
@@ -227,6 +231,12 @@ const GLYPHS: Record<string, ReactNode> = {
       <rect x="-16" y="-16" width="32" height="32" rx="2" />
       <path d="M-9 10 V2 M-1 10 V-6 M7 10 V-1" strokeWidth="3" />
       <path d="M-11 13 H11" opacity="0.6" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="-24" y="-15" width="48" height="30" rx="3" />
+      <path d="M-24 -12 L0 5 L24 -12" />
     </>
   ),
   gear: (
