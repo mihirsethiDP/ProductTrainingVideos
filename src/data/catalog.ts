@@ -18,6 +18,9 @@ import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
 import lessonInsights1 from './lessons/module-05-insights/lesson-01-insights-page';
 import lessonInsights2 from './lessons/module-05-insights/lesson-02-on-the-go';
 import lessonViz from './lessons/module-06-visualization/lesson-01-digital-twin';
+import lessonTask1 from './lessons/module-07-tasks/lesson-01-task-list';
+import lessonTask2 from './lessons/module-07-tasks/lesson-02-doing-a-task';
+import lessonTask3 from './lessons/module-07-tasks/lesson-03-workflows';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -42,6 +45,9 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonInsights1.id]: lessonInsights1,
   [lessonInsights2.id]: lessonInsights2,
   [lessonViz.id]: lessonViz,
+  [lessonTask1.id]: lessonTask1,
+  [lessonTask2.id]: lessonTask2,
+  [lessonTask3.id]: lessonTask3,
 };
 
 /**
@@ -191,25 +197,26 @@ export const MODULES: ModuleDef[] = [
     lessons: [{ id: 'lesson-01-digital-twin' }],
   },
   {
-    id: 'module-07-daily-operations',
+    id: 'module-07-tasks',
     number: 7,
     tag: 'M7',
-    roles: ['operator'],
+    roles: ['operator', 'supervisor', 'internal'],
     name: {
-      en: 'Daily Operations',
-      hi: 'दैनिक संचालन',
-      ta: 'தினசரி செயல்பாடுகள்',
-      mr: 'दैनंदिन कामकाज',
+      en: 'Tasks',
+      hi: 'टास्क',
+      ta: 'பணிகள்',
+      mr: 'टास्क',
     },
     description: {
-      en: 'Tickets, manual inputs, and the readings you check every shift.',
-      hi: 'टिकट, मैनुअल इनपुट, और हर शिफ्ट में जाँची जाने वाली रीडिंग्स।',
-      ta: 'டிக்கெட்டுகள், கைமுறை உள்ளீடுகள், ஒவ்வொரு ஷிஃப்டிலும் சரிபார்க்கும் அளவீடுகள்.',
-      mr: 'तिकिटे, मॅन्युअल इनपुट, आणि प्रत्येक शिफ्टमध्ये तपासायची वाचने.',
+      en: "The operator's day — recurring and condition-triggered jobs, each backed by a configured workflow that the operator walks from start to done.",
+      hi: 'ऑपरेटर का दिन — आवर्ती और शर्त-आधारित काम, हर एक कॉन्फ़िगर किए वर्कफ़्लो से समर्थित जिसे ऑपरेटर शुरू से पूरा तक चलाता है।',
+      ta: 'இயக்குநரின் நாள் — மீண்டும் வரும் மற்றும் நிபந்தனை அடிப்படையிலான வேலைகள், ஒவ்வொன்றும் இயக்குநர் தொடக்கம் முதல் முடிவு வரை நகர்த்தும் ஒரு பணிப்பாய்வால் ஆதரிக்கப்படுகிறது.',
+      mr: 'ऑपरेटरचा दिवस — आवर्ती आणि अटीवर ट्रिगर होणारी कामे, प्रत्येक एका कॉन्फिगर केलेल्या वर्कफ्लोने आधारलेले जे ऑपरेटर सुरुवातीपासून पूर्णापर्यंत चालवतो.',
     },
     lessons: [
-      { id: 'lesson-tickets', comingSoon: true },
-      { id: 'lesson-shift-log', comingSoon: true },
+      { id: 'lesson-01-task-list' },
+      { id: 'lesson-02-doing-a-task' },
+      { id: 'lesson-03-workflows' },
     ],
   },
   {

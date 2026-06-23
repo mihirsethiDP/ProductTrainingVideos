@@ -368,6 +368,58 @@ export interface AdvTableData {
   ring?: 'reference' | 'columns' | 'rows' | null;
 }
 
+// ----- Tasks -----
+export type TaskPriority = 'High' | 'Medium' | 'Low';
+export type WfStepType = 'todo' | 'inProgress' | 'done' | 'action';
+
+export interface TaskRow {
+  name: string;
+  desc: string;
+  plant: string;
+  priority: TaskPriority;
+  assignee?: string;
+  skills: string[];
+  status: 'Pending' | 'Completed';
+  ring?: boolean;
+}
+export interface WfStep {
+  label: string;
+  type: WfStepType;
+}
+export interface TaskDetail {
+  name: string;
+  desc: string;
+  steps: string[]; // SOP "Details" — the numbered method
+  skills: string[];
+  meta: { label: string; value: string }[]; // "Additional Details" key/values
+  workflow: WfStep[]; // ordered workflow steps backing this task
+  currentStep: number; // index of the active step (the button the operator taps)
+  expanded?: boolean; // current step expanded to show its instruction
+  toast?: boolean; // show the "Transition updated successfully" toast
+  showMedia?: boolean; // the media-upload affordance (Action step)
+}
+export interface TaskData {
+  mode: 'list' | 'detail';
+  // list
+  rows?: TaskRow[];
+  completionFilter?: string;
+  // detail
+  detail?: TaskDetail;
+  highlight?:
+    | 'filters' | 'addtask' | 'columns' | 'priority' | 'skills' | 'status' | 'row'
+    | 'details' | 'skillsd' | 'meta' | 'step' | 'next' | 'action' | 'history' | null;
+}
+
+// ----- Workflow builder -----
+export interface WorkflowData {
+  name: string;
+  description: string;
+  scope: string; // "System"
+  userGroup?: string;
+  nodes: WfStep[];
+  highlight?: 'header' | 'scope' | 'legend' | 'nodes' | 'todo' | 'inProgress' | 'done' | 'action' | null;
+}
+
 export interface WidgetState {
   title?: string;
   value?: string;
@@ -408,6 +460,10 @@ export interface WidgetState {
   insights?: InsightsData;
   // visualization (digital twin)
   viz?: VizData;
+  // tasks
+  task?: TaskData;
+  // workflow builder
+  workflow?: WorkflowData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

@@ -14,6 +14,8 @@ import OcrWidget from './OcrWidget';
 import InventoryWidget from './InventoryWidget';
 import InsightsWidget from './InsightsWidget';
 import VisualizationWidget from './VisualizationWidget';
+import TaskWidget from './TaskWidget';
+import WorkflowWidget from './WorkflowWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -34,4 +36,6 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   inventory: InventoryWidget,
   insights: InsightsWidget,
   visualization: VisualizationWidget,
+  task: TaskWidget,
+  workflow: WorkflowWidget,
 };

@@ -58,6 +58,9 @@ const LESSON_GLYPH: Record<string, string> = {
   'lesson-01-insights-page': 'bulb',
   'lesson-02-on-the-go': 'chat',
   'lesson-01-digital-twin': 'tank',
+  'lesson-01-task-list': 'list',
+  'lesson-02-doing-a-task': 'clipboard',
+  'lesson-03-workflows': 'cube',
 };
 
 export function lessonGlyph(id: string, moduleNumber: number): string {
