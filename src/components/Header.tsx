@@ -1,14 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import LanguageSelector from './LanguageSelector';
 import { useLanguage } from '../context/LanguageContext';
 import { useTour } from '../context/TourContext';
+import { useAuth } from '../context/AuthContext';
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
 
 export default function Header({ meta }: { meta?: ReactNode }) {
   const { t } = useLanguage();
   const { startTour } = useTour();
+  const { session, profile, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
   return (
     <div className="header">
       <Link to="/" className="brand-mark" data-tour="brand">
@@ -27,6 +30,21 @@ export default function Header({ meta }: { meta?: ReactNode }) {
           </svg>
           <span>{t('tourButtonLabel')}</span>
         </button>
+        {isAdmin && (
+          <Link to="/admin" className="tour-button" title={t('adminTitle')}>
+            <span>{t('adminTitle')}</span>
+          </Link>
+        )}
+        {session ? (
+          <div className="auth-chip">
+            <span className="auth-chip-name">{profile?.full_name || profile?.email?.split('@')[0] || t('authAccount')}</span>
+            <button className="auth-chip-out" onClick={() => { void signOut(); navigate('/'); }}>{t('authSignOut')}</button>
+          </div>
+        ) : (
+          <Link to="/login" className="tour-button" data-tour="auth">
+            <span>{t('authSignIn')}</span>
+          </Link>
+        )}
         <span data-tour="language"><LanguageSelector /></span>
       </div>
     </div>
