@@ -2,10 +2,12 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Thumb, { lessonGlyph, moduleAccent, moduleGlyph } from '../components/Thumb';
+import ProgressRing from '../components/ProgressRing';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
 import { getLessonProgress } from '../lib/progress';
+import { lessonPercent, moduleCompletion, roleCompletion } from '../lib/completion';
 
 const ROLE_LABEL_KEY: Record<RoleId, string> = {
   operator: 'roleOperator',
@@ -21,6 +23,7 @@ export default function RoleHome() {
   if (!role || !ROLES.includes(role as RoleId)) return <Navigate to="/" replace />;
   const roleId = role as RoleId;
   const modules = modulesForRole(roleId);
+  const overall = roleCompletion(roleId);
 
   return (
     <div className="page">
@@ -40,7 +43,22 @@ export default function RoleHome() {
           <p className="lesson-subtitle">{t('homeSubtitle')}</p>
         </div>
 
-        {modules.map((mod) => (
+        <div className="progress-summary" data-tour="progress-summary">
+          <ProgressRing percent={overall.percent} size={62} stroke={6} />
+          <div className="ps-text">
+            <div className="ps-title">{t('yourProgress')}</div>
+            <div className="ps-meta">
+              {overall.percent}% {t('completeWord')} · {overall.done}/{overall.total} {t('lessonsWord')}
+            </div>
+          </div>
+          <div className="ps-rail">
+            <div className="ps-rail-fill" style={{ width: `${overall.percent}%` }} />
+          </div>
+        </div>
+
+        {modules.map((mod) => {
+          const modComp = moduleCompletion(mod);
+          return (
           <div className="module-card" key={mod.id}>
             <div className="module-head">
               <div className="module-thumb">
@@ -49,6 +67,11 @@ export default function RoleHome() {
               <div className="module-number">{String(mod.number).padStart(2, '0')}</div>
               <div className="module-name">{mod.name[lang]}</div>
               <span className="tag-chip">{mod.tag}</span>
+              {modComp.total > 0 && (
+                <div className="module-ring" title={`${modComp.done}/${modComp.total} ${t('lessonsWord')}`}>
+                  <ProgressRing percent={modComp.percent} size={40} stroke={4} />
+                </div>
+              )}
               <div className="module-desc">{mod.description[lang]}</div>
             </div>
             <div className="lesson-list">
@@ -104,7 +127,7 @@ export default function RoleHome() {
                     {progress?.completed ? (
                       <span className="badge done">✓ {t('completedBadge')}</span>
                     ) : progress ? (
-                      <span className="badge progress">{t('inProgressBadge')}</span>
+                      <span className="badge progress">{lessonPercent(lesson.id)}%</span>
                     ) : null}
                     <button
                       className="lesson-cta"
@@ -120,7 +143,8 @@ export default function RoleHome() {
               })}
             </div>
           </div>
-        ))}
+          );
+        })}
 
         <Footer />
       </div>
