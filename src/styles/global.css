@@ -41,12 +41,9 @@ button { font-family: var(--sans); }
   padding-bottom: 18px; border-bottom: 1px solid var(--line);
   margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
 }
-.brand-mark { display: flex; align-items: center; gap: 12px; }
-.brand-icon {
-  width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-  color: var(--brand);
-}
-.brand-logo { display: block; }
+.brand-mark { display: flex; align-items: center; gap: 14px; }
+.brand-logo-chip { display: inline-flex; }
+.brand-logo-img { display: block; height: 44px; width: auto; border-radius: 8px; }
 .brand-name { font-family: var(--serif); font-weight: 600; font-size: 18px; color: var(--ink); }
 .brand-text {
   font-family: var(--serif); font-size: 14px;
