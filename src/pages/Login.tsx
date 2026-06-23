@@ -97,7 +97,6 @@ export default function Login() {
             ) : (
               <button className="auth-link" onClick={() => setMode('signin')}>{t('authBackToSignIn')}</button>
             )}
-            <Link to="/" className="auth-link">{t('authBrowseGuest')}</Link>
           </div>
         </div>
       </div>
