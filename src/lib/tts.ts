@@ -5,12 +5,42 @@
  * ElevenLabs <audio> player later without touching component logic.
  */
 
+// Per-language wish-list, best first. The newer Microsoft "Online (Natural)"
+// neural voices and Google's network voices sound dramatically warmer than the
+// default local ones, so they're listed first and also boosted in scoreVoice().
 export const preferredVoiceNames: Record<string, string[]> = {
-  'en-US': ['Microsoft Aria', 'Microsoft Jenny', 'Google US English', 'Samantha', 'Karen'],
-  'hi-IN': ['Microsoft Swara', 'Microsoft Madhur', 'Google हिन्दी', 'Lekha'],
-  'ta-IN': ['Microsoft Pallavi', 'Microsoft Valluvar', 'Google தமிழ்'],
-  'mr-IN': ['Microsoft Aarohi', 'Microsoft Manohar'],
+  'en-US': [
+    'Microsoft Aria Online (Natural)', 'Microsoft Jenny Online (Natural)', 'Microsoft Ava',
+    'Microsoft Emma', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Samantha', 'Karen',
+  ],
+  'hi-IN': [
+    'Microsoft Swara Online (Natural)', 'Microsoft Ananya Online (Natural)', 'Microsoft Kavya',
+    'Google हिन्दी', 'Microsoft Swara', 'Microsoft Madhur', 'Lekha',
+  ],
+  'ta-IN': [
+    'Microsoft Pallavi Online (Natural)', 'Microsoft Pallavi', 'Google தமிழ்', 'Microsoft Valluvar',
+  ],
+  'mr-IN': [
+    'Microsoft Aarohi Online (Natural)', 'Microsoft Aarohi', 'Microsoft Manohar',
+  ],
 };
+
+// Higher score = better-sounding. Used to auto-pick the nicest available voice
+// and to sort the picker so the best options sit at the top.
+export function scoreVoice(v: SpeechSynthesisVoice, langCode: string): number {
+  let score = 0;
+  const name = v.name.toLowerCase();
+  const preferred = preferredVoiceNames[langCode] ?? [];
+  const idx = preferred.findIndex((p) => v.name.includes(p));
+  if (idx >= 0) score += 1000 - idx * 10; // exact wish-list match, best first
+  if (/natural|neural/.test(name)) score += 400; // neural voices — the delightful ones
+  if (name.includes('online')) score += 200;
+  if (name.includes('google')) score += 150;
+  if (v.lang.toLowerCase() === langCode.toLowerCase()) score += 60; // exact locale
+  if (/female|aria|jenny|ava|emma|swara|ananya|kavya|pallavi|aarohi|samantha|lekha|heera|kalpana/i.test(name)) score += 40;
+  if (v.localService) score += 5; // tiebreaker: local voices start instantly
+  return score;
+}
 
 export interface SpeakOptions {
   voice: SpeechSynthesisVoice | null;
@@ -61,19 +91,10 @@ export function pickVoiceForLanguage(langCode: string): VoicePick {
     langVoices = all.filter((v) => v.lang.startsWith('en'));
     fellBack = prefix !== 'en';
   }
-  const preferred = preferredVoiceNames[langCode] ?? [];
-  let best: SpeechSynthesisVoice | undefined;
-  for (const pref of preferred) {
-    best = langVoices.find((v) => v.name.includes(pref));
-    if (best) break;
-  }
-  if (!best) {
-    best = langVoices.find((v) =>
-      /female|zira|samantha|aria|jenny|swara|madhur|pallavi|aarohi|lekha|heera|kalpana/i.test(v.name),
-    );
-  }
-  if (!best) best = langVoices[0];
-  return { voices: langVoices, best: best ?? null, fellBack };
+  // sort the language's voices by quality so the picker shows the best first
+  const sorted = [...langVoices].sort((a, b) => scoreVoice(b, langCode) - scoreVoice(a, langCode));
+  const best = sorted[0] ?? null;
+  return { voices: sorted, best, fellBack };
 }
 
 let keepAliveTimer: number | null = null;
@@ -103,7 +124,7 @@ export function speak(text: string, opts: SpeakOptions): void {
   if (opts.voice) utterance.voice = opts.voice;
   utterance.lang = opts.lang;
   utterance.rate = opts.rate;
-  utterance.pitch = 1.05;
+  utterance.pitch = 1.0;
   utterance.volume = 1;
 
   const total = text.length;

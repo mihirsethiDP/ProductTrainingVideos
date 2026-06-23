@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import VoicePanel from '../components/VoicePanel';
+import StageControls from '../components/StageControls';
 import Stage from '../components/Stage';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
@@ -225,35 +225,6 @@ export default function LessonPage() {
           <p className="lesson-subtitle">{content.subtitle}</p>
         </div>
 
-        <VoicePanel
-          speaking={speaking && !paused}
-          statusText={statusText}
-          isPlaying={speaking && !paused}
-          onPlayPause={handlePlayPause}
-          onReplay={() => speakStep(step)}
-          voices={voicePick.voices}
-          selectedVoiceName={voiceName}
-          onVoiceChange={(name) => {
-            setVoiceName(name);
-            if (speaking) {
-              stopAll();
-              setTimeout(() => speakStep(stepRef.current), 200);
-            }
-          }}
-          rate={rate}
-          onRateChange={(r) => {
-            setRate(r);
-            if (speaking) {
-              stopAll();
-              setTimeout(() => speakStep(stepRef.current), 200);
-            }
-          }}
-          autoAdvance={autoAdvance}
-          onAutoAdvanceToggle={() => setAutoAdvance((a) => !a)}
-          subtitlesOn={subtitlesOn}
-          onSubtitlesToggle={() => setSubtitlesOn((s) => !s)}
-        />
-
         <div className="progress-meta">
           <span>
             {t('stepWord')} {step + 1} — {stepData.label}
@@ -276,6 +247,40 @@ export default function LessonPage() {
           charIndex={charIndex}
           subtitleText={stepData.voice}
           subtitlesOn={subtitlesOn}
+          controls={
+            <StageControls
+              speaking={speaking && !paused}
+              isPlaying={speaking && !paused}
+              statusText={statusText}
+              progress={progress}
+              onPlayPause={handlePlayPause}
+              onReplay={() => speakStep(step)}
+              onPrev={goPrev}
+              onNext={goNext}
+              canPrev={step > 0}
+              voices={voicePick.voices}
+              selectedVoiceName={voiceName}
+              onVoiceChange={(name) => {
+                setVoiceName(name);
+                if (speaking) {
+                  stopAll();
+                  setTimeout(() => speakStep(stepRef.current), 200);
+                }
+              }}
+              rate={rate}
+              onRateChange={(r) => {
+                setRate(r);
+                if (speaking) {
+                  stopAll();
+                  setTimeout(() => speakStep(stepRef.current), 200);
+                }
+              }}
+              subtitlesOn={subtitlesOn}
+              onSubtitlesToggle={() => setSubtitlesOn((s) => !s)}
+              autoAdvance={autoAdvance}
+              onAutoAdvanceToggle={() => setAutoAdvance((a) => !a)}
+            />
+          }
         />
 
         <div className="narration">

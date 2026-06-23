@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import type { Lesson, StepLayout } from '../data/types';
 import { useLanguage } from '../context/LanguageContext';
 import GuideCursor from './GuideCursor';
@@ -16,6 +17,8 @@ interface StageProps {
   charIndex: number;
   subtitleText: string;
   subtitlesOn: boolean;
+  /** on-video player control bar, docked to the bottom of the stage frame */
+  controls?: ReactNode;
 }
 
 const ANNOTATIONS = [
@@ -170,6 +173,7 @@ export default function Stage(props: StageProps) {
         )}
 
         <SubtitleBar text={subtitleText} charIndex={charIndex} visible={showSubs} />
+        {props.controls}
       </div>
     </div>
   );
