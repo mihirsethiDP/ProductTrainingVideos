@@ -89,9 +89,26 @@ export default function Admin() {
     setInviteMsg(null);
     const email = inviteEmail.trim().toLowerCase();
     if (!email) return;
-    const { error } = await supabase.from('invites').insert({ email, role: inviteRole, created_by: profile?.id });
-    setInviteMsg(error ? error.message : t('adminInviteSent').replace('{email}', email));
-    if (!error) setInviteEmail('');
+    const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}`;
+    try {
+      // preferred path: the invite-user Edge Function emails the invitee
+      const { data, error } = await supabase.functions.invoke('invite-user', {
+        body: { email, role: inviteRole, redirectTo },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setInviteMsg(t('adminInviteEmailed').replace('{email}', email));
+      setInviteEmail('');
+      load();
+      return;
+    } catch {
+      // fallback (function not deployed yet): just pre-authorize the role
+      const { error: insErr } = await supabase
+        .from('invites')
+        .insert({ email, role: inviteRole, created_by: profile?.id });
+      setInviteMsg(insErr ? insErr.message : t('adminInviteSaved').replace('{email}', email));
+      if (!insErr) setInviteEmail('');
+    }
   }
 
   if (loading) return null;
