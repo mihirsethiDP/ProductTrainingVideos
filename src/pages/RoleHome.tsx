@@ -84,8 +84,9 @@ export default function RoleHome() {
             </div>
             <div className="lesson-list">
               {mod.lessons.map((ref, idx) => {
-                // configuration tracks are internal-only
-                if (ref.internalOnly && roleId !== 'internal') return null;
+                // configuration tracks are reached via the Read ⇄ Configure toggle
+                // inside the widget's lesson, so they don't get their own row.
+                if (ref.internalOnly) return null;
                 const lesson = getLesson(ref.id);
                 if (!lesson || ref.comingSoon) {
                   return (

@@ -111,6 +111,18 @@ button { font-family: var(--sans); }
 }
 .lesson-title em { font-style: italic; color: var(--water-deep); font-weight: 400; }
 .lesson-subtitle { font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 620px; }
+.track-toggle {
+  display: inline-flex; gap: 4px; margin-top: 18px;
+  background: var(--paper-warm); border: 1px solid var(--line);
+  border-radius: 26px; padding: 4px;
+}
+.track-seg {
+  border: none; background: none; cursor: pointer;
+  font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  padding: 9px 18px; border-radius: 22px; transition: all 0.18s; white-space: nowrap;
+}
+.track-seg:hover { color: var(--ink); }
+.track-seg.active { background: var(--brand); color: #fff; box-shadow: 0 2px 8px var(--shadow); }
 
 /* ===== HOME / ROLE SELECT ===== */
 .role-grid {

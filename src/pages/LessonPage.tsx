@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StageControls from '../components/StageControls';
@@ -22,6 +22,7 @@ import { getLessonProgress, saveLessonStep } from '../lib/progress';
 export default function LessonPage() {
   const { role, moduleId, lessonId } = useParams();
   const { lang, meta, t } = useLanguage();
+  const navigate = useNavigate();
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
   const module = MODULES.find((m) => m.id === moduleId);
@@ -129,6 +130,18 @@ export default function LessonPage() {
     setCharIndex(0);
   }, [lang, stopAll]);
 
+  // reset when switching lessons (e.g. flipping the Read ⇄ Configure toggle)
+  useEffect(() => {
+    stopAll();
+    const l = lessonId ? getLesson(lessonId) : undefined;
+    const saved = l ? getLessonProgress(l.id) : undefined;
+    setStep(saved && !saved.completed ? Math.min(saved.lastStep, l!.layouts.length - 1) : 0);
+    setProgress(0);
+    setCharIndex(0);
+    setStatusOverride(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId]);
+
   // persist progress
   useEffect(() => {
     if (lesson) saveLessonStep(lesson.id, step, lesson.layouts.length);
@@ -154,11 +167,25 @@ export default function LessonPage() {
     return <Navigate to="/" replace />;
   }
 
-  const stepData = content.steps[step];
-  const layout = lesson.layouts[step];
-  const isLast = step === totalSteps - 1;
+  // clamp for the single render right after a lesson switch, before the reset effect runs
+  const safeStep = Math.max(0, Math.min(step, totalSteps - 1));
+  const stepData = content.steps[safeStep];
+  const layout = lesson.layouts[safeStep];
+  const isLast = safeStep === totalSteps - 1;
   const lessonTag = lessonTagFor(module, lesson.lessonNumber);
-  const stepTag = stepTagFor(lessonTag, step);
+  const stepTag = stepTagFor(lessonTag, safeStep);
+
+  // Read ⇄ Configure track toggle (internal only): widget lessons in M2 have a
+  // paired "<id>-config" configuration helper.
+  const isConfig = lessonId!.endsWith('-config');
+  const baseId = isConfig ? lessonId!.replace(/-config$/, '') : lessonId!;
+  const configId = `${baseId}-config`;
+  const hasConfig = !!getLesson(configId);
+  const showTrackToggle = role === 'internal' && hasConfig;
+  const goToTrack = (toConfig: boolean) => {
+    const target = toConfig ? configId : baseId;
+    if (target !== lessonId) navigate(`/${role}/${moduleId}/${target}`);
+  };
 
   function goTo(index: number, andSpeak: boolean) {
     stopAll();
@@ -223,6 +250,26 @@ export default function LessonPage() {
           <div className="eyebrow">{content.chapter}</div>
           <h1 className="lesson-title" dangerouslySetInnerHTML={{ __html: content.title }} />
           <p className="lesson-subtitle">{content.subtitle}</p>
+          {showTrackToggle && (
+            <div className="track-toggle" role="tablist" aria-label="Track">
+              <button
+                role="tab"
+                aria-selected={!isConfig}
+                className={`track-seg${!isConfig ? ' active' : ''}`}
+                onClick={() => goToTrack(false)}
+              >
+                ▶ {t('trackRead')}
+              </button>
+              <button
+                role="tab"
+                aria-selected={isConfig}
+                className={`track-seg${isConfig ? ' active' : ''}`}
+                onClick={() => goToTrack(true)}
+              >
+                ⚙ {t('trackConfigure')}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="progress-meta">
