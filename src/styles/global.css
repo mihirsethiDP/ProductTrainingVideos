@@ -328,6 +328,7 @@ button { font-family: var(--sans); }
 .badge.done { background: rgba(45, 134, 89, 0.12); color: var(--leaf); }
 .badge.progress { background: rgba(212, 160, 23, 0.14); color: #a37c10; }
 .badge.soon { background: var(--paper-warm); color: var(--ink-soft); }
+.badge.config { background: rgba(25, 52, 88, 0.10); color: var(--brand); }
 .lesson-cta {
   padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
   font-size: 12px; font-weight: 600; background: var(--ink); color: var(--paper);
@@ -1396,6 +1397,48 @@ button { font-family: var(--sans); }
 .wf-node { border: 1.5px solid; border-radius: 8px; padding: 14px 12px; font-size: 12px; font-weight: 600; text-align: center; width: 132px; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.35; }
 .wf-arrow { color: #9aa7b8; font-size: 16px; }
 
+/* ===== WIDGET CONFIGURATION PANEL (internal build track) ===== */
+.cfg { width: 1080px; max-width: 100%; background: #fff; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10,31,58,0.16); overflow: hidden; }
+.cfg-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #eef2f7; background: var(--brand); color: #fff; }
+.cfg-head-icon { font-size: 16px; }
+.cfg-head-title { font-family: var(--serif); font-weight: 600; font-size: 17px; }
+.cfg-layouts { margin-left: auto; display: flex; gap: 6px; background: rgba(255,255,255,0.12); border-radius: 8px; padding: 3px; }
+.cfg-layout { font-size: 11px; padding: 5px 11px; border-radius: 6px; color: rgba(255,255,255,0.75); }
+.cfg-layout.on { background: #fff; color: var(--brand); font-weight: 700; }
+.cfg-body { display: grid; grid-template-columns: 240px 1fr; gap: 0; }
+.cfg-sensors { border-right: 1px solid #eef2f7; padding: 14px; display: flex; flex-direction: column; gap: 7px; }
+.cfg-col-label, .cfg-card-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.cfg-col-label { margin-bottom: 4px; }
+.cfg-sensor { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; font-size: 12.5px; color: var(--ink); display: flex; flex-direction: column; gap: 2px; }
+.cfg-sensor.active { border-color: var(--brand); background: #eef2f8; }
+.cfg-sensor.add { color: var(--brand); border-style: dashed; font-weight: 600; text-align: center; }
+.cfg-sensor-sub { font-size: 11px; color: var(--ink-soft); }
+.cfg-settings { padding: 14px 18px; display: flex; flex-direction: column; gap: 14px; }
+.cfg-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.cfg-card-title { margin-bottom: 10px; }
+.cfg-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 12.5px; color: var(--ink-soft); }
+.cfg-field:last-child { margin-bottom: 0; }
+.cfg-field.sm { flex: 1; }
+.cfg-input { background: var(--paper-warm); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 12.5px; color: var(--ink); min-width: 150px; text-align: right; }
+.cfg-dd-wrap { position: relative; }
+.cfg-dd { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 12.5px; color: var(--ink); min-width: 150px; display: flex; justify-content: space-between; gap: 8px; }
+.cfg-dd-menu { position: absolute; right: 0; top: 100%; margin-top: 4px; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 28px rgba(10,31,58,0.18); z-index: 5; min-width: 180px; overflow: hidden; }
+.cfg-dd-opt { padding: 8px 12px; font-size: 12.5px; color: var(--ink); }
+.cfg-dd-opt.sel { background: #eef2f8; color: var(--brand); font-weight: 600; }
+.cfg-check { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--ink); margin-bottom: 8px; }
+.cfg-check:last-child { margin-bottom: 0; }
+.cfg-box { width: 17px; height: 17px; border: 1.5px solid var(--line); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; flex-shrink: 0; }
+.cfg-box.on { background: var(--brand); border-color: var(--brand); }
+.cfg-seg { display: inline-flex; background: var(--paper-warm); border-radius: 8px; padding: 3px; }
+.cfg-seg-opt { font-size: 12px; padding: 6px 16px; border-radius: 6px; color: var(--ink-soft); }
+.cfg-seg-opt.on { background: #fff; color: var(--brand); font-weight: 700; box-shadow: 0 1px 4px var(--shadow); }
+.cfg-thr-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.cfg-thr-band { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 7px 10px; border-radius: 6px; margin-bottom: 5px; }
+.cfg-thr-band .cfg-dot { width: 9px; height: 9px; border-radius: 50%; }
+.cfg-thr-band.safe { background: #e7f6ee; color: #1f6b44; } .cfg-thr-band.safe .cfg-dot { background: #2d8659; }
+.cfg-thr-band.caution { background: #fdf3dd; color: #b07d15; } .cfg-thr-band.caution .cfg-dot { background: #d4a017; }
+.cfg-thr-band.critical { background: #fdecea; color: var(--coral); } .cfg-thr-band.critical .cfg-dot { background: var(--coral); }
+
 /* ===== COMMUNICATIONS ===== */
 .comm { width: 1080px; max-width: 100%; background: #fff; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10,31,58,0.16); padding: 20px; }
 .comm-pagetitle { font-family: var(--serif); font-weight: 700; font-size: 24px; color: var(--ink); margin-bottom: 14px; }
@@ -1593,11 +1636,11 @@ button { font-family: var(--sans); }
 .rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring, .scg .ring, .di .ring, .di-card .ring, .di-prev .ring, .di-fileup .ring, .ocr2 .ring, .ocr2-review .ring, .inv .ring, .inv-log .ring, .inv-cats .ring, .inv-modal .ring, .inv-form .ring,
 .ins .ring, .ins-detail .ring, .ins-wa .ring, .ins-digest .ring, .viz .ring,
 .tsk .ring, .tsk-detail .ring, .wf .ring,
-.comm .ring, .comm-modal .ring { position: relative; }
+.comm .ring, .comm-modal .ring, .cfg .ring { position: relative; }
 .rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after, .scg .ring::after, .di .ring::after, .di-card .ring::after, .di-prev .ring::after, .di-fileup .ring::after, .ocr2 .ring::after, .ocr2-review .ring::after, .inv .ring::after, .inv-log .ring::after, .inv-cats .ring::after, .inv-modal .ring::after, .inv-form .ring::after,
 .ins .ring::after, .ins-detail .ring::after, .ins-wa .ring::after, .ins-digest .ring::after, .viz .ring::after,
 .tsk .ring::after, .tsk-detail .ring::after, .wf .ring::after,
-.comm .ring::after, .comm-modal .ring::after {
+.comm .ring::after, .comm-modal .ring::after, .cfg .ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: 6px;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18), 0 0 14px rgba(212, 160, 23, 0.5);

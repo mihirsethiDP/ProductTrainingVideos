@@ -65,7 +65,7 @@ export default function RoleHome() {
         </div>
 
         {modules.map((mod) => {
-          const modComp = moduleCompletion(mod);
+          const modComp = moduleCompletion(mod, roleId);
           return (
           <div className="module-card" key={mod.id}>
             <div className="module-head">
@@ -84,6 +84,8 @@ export default function RoleHome() {
             </div>
             <div className="lesson-list">
               {mod.lessons.map((ref, idx) => {
+                // configuration tracks are internal-only
+                if (ref.internalOnly && roleId !== 'internal') return null;
                 const lesson = getLesson(ref.id);
                 if (!lesson || ref.comingSoon) {
                   return (
@@ -131,7 +133,8 @@ export default function RoleHome() {
                         {content.steps.length} {t('stepWord').toLowerCase()}s
                       </div>
                     </div>
-                    <span className="tag-chip">{lessonTag}</span>
+                    <span className="tag-chip">{lessonTag}{ref.internalOnly ? '·C' : ''}</span>
+                    {ref.internalOnly && <span className="badge config">⚙ {t('configRowBadge')}</span>}
                     {progress?.completed ? (
                       <span className="badge done">✓ {t('completedBadge')}</span>
                     ) : progress ? (

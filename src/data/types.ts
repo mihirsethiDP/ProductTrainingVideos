@@ -420,6 +420,41 @@ export interface WorkflowData {
   highlight?: 'header' | 'scope' | 'legend' | 'nodes' | 'todo' | 'inProgress' | 'done' | 'action' | null;
 }
 
+// ----- Widget Configuration (internal "how to build it" track) -----
+export interface CfgSensor {
+  name?: string;
+  sub?: string; // e.g. an aggregation label under the sensor
+  active?: boolean; // currently-selected sensor
+  add?: boolean; // render as the "+ Add sensor" affordance
+}
+export interface CfgThreshold {
+  min: string;
+  max: string;
+  safe: string;
+  caution: string;
+  critical: string;
+}
+export interface ConfigData {
+  widget: string; // display name, e.g. "Number Widget"
+  layoutChoice?: 'auto' | 'drag'; // show the Add-Widget layout chooser, highlighting one
+  sensors?: CfgSensor[];
+  nickname?: string;
+  unit?: string;
+  unitMenu?: string[]; // render the unit dropdown open
+  category?: string;
+  categoryMenu?: string[]; // render the category dropdown open
+  checks?: { label: string; on: boolean }[]; // the display check-boxes
+  aggregation?: string;
+  aggMenu?: string[]; // render the aggregation dropdown open
+  threshold?: CfgThreshold;
+  extras?: { label: string; value: string }[]; // widget-specific controls (key/value)
+  axes?: { label: string; value: string }[]; // 3-axis advanced table
+  graphType?: 'line' | 'bar'; // graph widget
+  highlight?:
+    | 'layout' | 'sensors' | 'theme' | 'checks' | 'aggregation' | 'threshold'
+    | 'extras' | 'axes' | 'graphtype' | 'name' | null;
+}
+
 // ----- Communications -----
 export type CommMedium = 'email' | 'sms' | 'call' | 'whatsapp';
 export type WaStatus = 'delivered' | 'sent' | 'undelivered' | 'read' | 'failed';
@@ -490,6 +525,8 @@ export interface WidgetState {
   workflow?: WorkflowData;
   // communications
   comm?: CommData;
+  // widget configuration (internal track)
+  config?: ConfigData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 
@@ -525,6 +562,7 @@ export interface Lesson {
 export interface LessonRef {
   id: string;
   comingSoon?: boolean;
+  internalOnly?: boolean; // configuration tracks — visible only to internal users
 }
 
 export interface ModuleDef {

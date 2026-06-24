@@ -12,9 +12,12 @@ export function lessonPercent(lessonId: string): number {
   return Math.min(100, Math.round(((p.lastStep + 1) / total) * 100));
 }
 
-/** Real (non-coming-soon, registered) lessons inside a module. */
-export function moduleLessons(module: ModuleDef): string[] {
-  return module.lessons.filter((l) => !l.comingSoon && getLesson(l.id)).map((l) => l.id);
+/** Real (non-coming-soon, registered) lessons inside a module, scoped to a
+ *  role — internal-only configuration tracks are excluded for other roles. */
+export function moduleLessons(module: ModuleDef, role?: RoleId): string[] {
+  return module.lessons
+    .filter((l) => !l.comingSoon && getLesson(l.id) && (!l.internalOnly || role === 'internal'))
+    .map((l) => l.id);
 }
 
 export interface Tally {
@@ -23,8 +26,8 @@ export interface Tally {
   total: number; // real lessons
 }
 
-export function moduleCompletion(module: ModuleDef): Tally {
-  const ids = moduleLessons(module);
+export function moduleCompletion(module: ModuleDef, role?: RoleId): Tally {
+  const ids = moduleLessons(module, role);
   if (ids.length === 0) return { percent: 0, done: 0, total: 0 };
   const percents = ids.map(lessonPercent);
   const percent = Math.round(percents.reduce((a, b) => a + b, 0) / ids.length);
@@ -34,7 +37,7 @@ export function moduleCompletion(module: ModuleDef): Tally {
 
 /** Overall completion for a role (averaged across every real lesson it sees). */
 export function roleCompletion(role: RoleId): Tally {
-  const ids = modulesForRole(role).flatMap(moduleLessons);
+  const ids = modulesForRole(role).flatMap((m) => moduleLessons(m, role));
   if (ids.length === 0) return { percent: 0, done: 0, total: 0 };
   const percents = ids.map(lessonPercent);
   const percent = Math.round(percents.reduce((a, b) => a + b, 0) / ids.length);
@@ -44,7 +47,7 @@ export function roleCompletion(role: RoleId): Tally {
 
 /** Overall completion across the whole catalog (admin-style view). */
 export function overallCompletion(): Tally {
-  const ids = MODULES.flatMap(moduleLessons);
+  const ids = MODULES.flatMap((m) => moduleLessons(m, 'internal'));
   if (ids.length === 0) return { percent: 0, done: 0, total: 0 };
   const percents = ids.map(lessonPercent);
   const percent = Math.round(percents.reduce((a, b) => a + b, 0) / ids.length);
