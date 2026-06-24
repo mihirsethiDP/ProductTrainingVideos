@@ -1,47 +1,31 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /**
  * Module 2 · Configure — The Number Widget.   Tag: M2.L1·C  (internal only)
- * The "how to build it" track for the Number widget, from the Widget
- * Specifications doc: Add Widget → sensors → theme → check-boxes →
+ * Internal configuration helper, using the real product screens from the
+ * Widget Specifications doc: Add Widget → sensors → theme → check-boxes →
  * aggregation → thresholds.
  */
 
-const UNIT_MENU = ['Litres', 'Kilo litres', 'Kilo litre per hour', 'Metres', 'Percentage', 'Kilograms', 'NTU', 'pH', 'None'];
-const CATEGORY_MENU = ['Water Quality', 'Energy Metrics', 'Plant Automation', 'Mechanical Metrics', 'Ticket Metrics', 'Chemical Metrics', 'None'];
-const AGG_MENU = ['Raw', 'Average', 'Minimum', 'Maximum', 'Time Weighted Sum', 'Cumulative', 'Last Active'];
-
-const BASE: ConfigData = {
-  widget: 'Number Widget',
-  sensors: [{ name: 'Permeate Flow', sub: 'Average', active: true }, { name: 'Inlet Flow' }, { add: true }],
-  nickname: 'Permeate Flow',
-  unit: 'Kilo litre per hour',
-  category: 'Water Quality',
-  checks: [
-    { label: 'Show Percentage Change', on: true },
-    { label: 'Treat Change as Neutral', on: false },
-    { label: 'Treat Decrease as Improvement', on: false },
-  ],
-  aggregation: 'Average',
-  threshold: { min: '0', max: '500', safe: '100 – 400', caution: '400 – 450', critical: '> 450' },
-};
-
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-01-range-number-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 1,
   estimatedMinutes: 5,
-  screenshots: {},
+  screenshots: {
+    config: `${BASE}/number-config.png`,
+    agg: `${BASE}/number-agg.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Add Widget', widgetState: cfg({ layoutChoice: 'auto', highlight: 'layout' }), cursor: [{ at: 0.4, x: 80, y: 12 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Add sensors', widgetState: cfg({ highlight: 'sensors' }), cursor: [{ at: 0.4, x: 12, y: 50 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Widget theme', widgetState: cfg({ highlight: 'theme', unitMenu: UNIT_MENU }), cursor: [{ at: 0.4, x: 70, y: 45 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Widget category', widgetState: cfg({ highlight: 'theme', categoryMenu: CATEGORY_MENU }), cursor: [{ at: 0.4, x: 70, y: 55 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'The check-boxes', widgetState: cfg({ highlight: 'checks' }), cursor: [{ at: 0.4, x: 60, y: 55 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Aggregation', widgetState: cfg({ highlight: 'aggregation', aggMenu: AGG_MENU }), cursor: [{ at: 0.4, x: 70, y: 60 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Thresholds', widgetState: cfg({ highlight: 'threshold' }), cursor: [{ at: 0.4, x: 70, y: 75 }] },
+    { mode: 'detail', screenshot: 'config', caption: 'Add Widget', spotlight: null },
+    { mode: 'detail', screenshot: 'config', caption: 'Add sensors', spotlight: { top: '20%', left: '1%', width: '32%', height: '76%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Widget theme', spotlight: { top: '18%', left: '34%', width: '32%', height: '26%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Widget category', spotlight: { top: '45%', left: '34%', width: '32%', height: '13%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'The check-boxes', spotlight: { top: '70%', left: '34%', width: '40%', height: '18%' } },
+    { mode: 'detail', screenshot: 'agg', caption: 'Aggregation', spotlight: { top: '20%', left: '33%', width: '34%', height: '60%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Thresholds', spotlight: { top: '33%', left: '66%', width: '33%', height: '15%' } },
   ],
   content: {
     en: {

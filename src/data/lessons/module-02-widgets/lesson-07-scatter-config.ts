@@ -1,32 +1,21 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Scatter Graph.   Tag: M2.L7·C  (internal only) */
 
-const AGG_MENU = ['Raw', 'Average', 'Minimum', 'Maximum', 'Time Weighted Sum', 'Cumulative', 'Last Active'];
-
-const BASE: ConfigData = {
-  widget: 'Scatter Graph',
-  sensors: [{ name: 'Pressure  (Y-axis)', sub: 'Average', active: true }, { name: 'Flow  (X-axis)', sub: 'Average' }],
-  nickname: 'Flow vs Pressure',
-  extras: [
-    { label: 'X-axis sensor', value: 'Flow' },
-    { label: 'Y-axis sensor', value: 'Pressure' },
-    { label: 'Description', value: 'Relationship between flow and pressure' },
-  ],
-  aggregation: 'Average',
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-07-scatter-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 7,
   estimatedMinutes: 3,
-  screenshots: {},
+  screenshots: {
+    config: `${BASE}/scatter-config.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'X & Y sensors', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 50 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Name & description', widgetState: cfg({ highlight: 'theme' }), cursor: [{ at: 0.4, x: 65, y: 35 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Aggregation', widgetState: cfg({ highlight: 'aggregation', aggMenu: AGG_MENU }), cursor: [{ at: 0.4, x: 70, y: 65 }] },
+    { mode: 'detail', screenshot: 'config', caption: 'X & Y sensors', spotlight: { top: '36%', left: '1%', width: '98%', height: '22%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Name & description', spotlight: { top: '12%', left: '1%', width: '98%', height: '26%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Aggregation', spotlight: { top: '60%', left: '33%', width: '33%', height: '22%' } },
   ],
   content: {
     en: {

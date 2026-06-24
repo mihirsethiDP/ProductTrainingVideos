@@ -1,27 +1,21 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Table Widget.   Tag: M2.L5·C  (internal only) */
 
-const AGG_MENU = ['Raw', 'Average', 'Minimum', 'Maximum', 'Time Weighted Sum', 'Cumulative', 'Last Active'];
-
-const BASE: ConfigData = {
-  widget: 'Table Widget',
-  sensors: [{ name: 'Aeration DO', sub: 'Average · Maximum', active: true }, { name: 'MLSS' }, { add: true }],
-  nickname: 'Aeration Snapshot',
-  aggregation: 'Average',
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-05-table-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 5,
   estimatedMinutes: 3,
-  screenshots: {},
+  screenshots: {
+    config: `${BASE}/table-config.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Select sensors', widgetState: cfg({ highlight: 'sensors' }), cursor: [{ at: 0.4, x: 12, y: 45 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Name the widget', widgetState: cfg({ highlight: 'theme' }), cursor: [{ at: 0.4, x: 65, y: 35 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Multiple aggregations', widgetState: cfg({ highlight: 'aggregation', aggMenu: AGG_MENU }), cursor: [{ at: 0.4, x: 70, y: 55 }] },
+    { mode: 'detail', screenshot: 'config', caption: 'Select sensors', spotlight: { top: '16%', left: '1%', width: '32%', height: '72%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Name the widget', spotlight: { top: '2%', left: '5%', width: '40%', height: '14%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Multiple aggregations', spotlight: { top: '20%', left: '33%', width: '34%', height: '20%' } },
   ],
   content: {
     en: {

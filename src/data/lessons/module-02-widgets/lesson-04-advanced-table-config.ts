@@ -1,38 +1,22 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Advanced Table.   Tag: M2.L4·C  (internal only) */
 
-const AGG_MENU = ['Average', 'Cumulative', 'Maximum', 'Minimum', 'Current', 'Time Weighted Sum', 'Last Active', 'Percentage Uptime'];
-
-const BASE: ConfigData = {
-  widget: 'Advanced Table',
-  sensors: [{ name: 'Inlet Quality', active: true }, { name: 'Outlet Quality' }, { add: true }],
-  nickname: 'Inlet vs Outlet Quality',
-  axes: [
-    { label: 'X · Relative time', value: 'Today' },
-    { label: 'Y · Sensors', value: 'Inlet, Outlet' },
-    { label: 'Z · Aggregations', value: 'Current · Max · Min · Avg' },
-  ],
-  aggregation: 'Current',
-  extras: [
-    { label: 'Granularity', value: 'Hours' },
-    { label: 'Relative time', value: 'Today' },
-  ],
-  threshold: { min: '0', max: '120', safe: '0 – 80', caution: '80 – 100', critical: '> 100' },
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-04-advanced-table-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 4,
   estimatedMinutes: 5,
-  screenshots: {},
+  screenshots: {
+    axes: `${BASE}/advanced-axes.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Three axes', widgetState: cfg({ highlight: 'axes' }), cursor: [{ at: 0.4, x: 70, y: 35 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Aggregations', widgetState: cfg({ highlight: 'aggregation', aggMenu: AGG_MENU }), cursor: [{ at: 0.4, x: 70, y: 55 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Relative time & granularity', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 65 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Per-sensor thresholds', widgetState: cfg({ highlight: 'threshold' }), cursor: [{ at: 0.4, x: 70, y: 80 }] },
+    { mode: 'detail', screenshot: 'axes', caption: 'Three axes', spotlight: { top: '42%', left: '3%', width: '94%', height: '56%' } },
+    { mode: 'detail', screenshot: 'axes', caption: 'Aggregations', spotlight: { top: '43%', left: '3%', width: '94%', height: '17%' } },
+    { mode: 'detail', screenshot: 'axes', caption: 'Relative time & granularity', spotlight: { top: '60%', left: '3%', width: '94%', height: '18%' } },
+    { mode: 'detail', screenshot: 'axes', caption: 'Per-sensor thresholds', spotlight: { top: '80%', left: '60%', width: '38%', height: '16%' } },
   ],
   content: {
     en: {

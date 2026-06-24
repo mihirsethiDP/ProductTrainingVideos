@@ -1,28 +1,23 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Graph Widget.   Tag: M2.L6·C  (internal only) */
 
-const BASE: ConfigData = {
-  widget: 'Graph Widget',
-  sensors: [{ name: 'Inlet Flow', sub: 'Average', active: true }, { name: 'Outlet Flow', sub: 'Average' }, { add: true }],
-  nickname: 'Flow Trend',
-  graphType: 'line',
-  extras: [{ label: 'Colour theme', value: 'Ocean' }],
-  threshold: { min: '0', max: '500', safe: '100 – 400', caution: '400 – 450', critical: '> 450' },
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-06-graphs-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 6,
   estimatedMinutes: 4,
-  screenshots: {},
+  screenshots: {
+    config: `${BASE}/graph-config.png`,
+    type: `${BASE}/graph-type.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Sensors & aggregations', widgetState: cfg({ highlight: 'sensors' }), cursor: [{ at: 0.4, x: 12, y: 45 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Line or Bar', widgetState: cfg({ highlight: 'graphtype' }), cursor: [{ at: 0.4, x: 65, y: 45 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Colour theme', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 55 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Per-sensor thresholds', widgetState: cfg({ highlight: 'threshold' }), cursor: [{ at: 0.4, x: 70, y: 75 }] },
+    { mode: 'detail', screenshot: 'config', caption: 'Sensors & aggregations', spotlight: { top: '20%', left: '1%', width: '32%', height: '72%' } },
+    { mode: 'detail', screenshot: 'type', caption: 'Line or Bar', spotlight: { top: '18%', left: '1%', width: '34%', height: '78%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Colour theme', spotlight: { top: '80%', left: '33%', width: '34%', height: '16%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Per-sensor thresholds', spotlight: { top: '30%', left: '66%', width: '33%', height: '14%' } },
   ],
   content: {
     en: {

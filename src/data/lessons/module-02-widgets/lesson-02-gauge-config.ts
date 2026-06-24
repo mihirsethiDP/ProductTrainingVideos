@@ -1,33 +1,22 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Gauge Widget.   Tag: M2.L2·C  (internal only) */
 
-const BASE: ConfigData = {
-  widget: 'Gauge Widget',
-  sensors: [{ name: 'Tank Level', sub: 'Last Active', active: true }, { add: true }],
-  nickname: 'Tank Level',
-  unit: 'Percentage',
-  category: 'Water Quality',
-  checks: [
-    { label: 'Show Percentage Change', on: false },
-    { label: 'Treat Change as Neutral', on: false },
-    { label: 'Treat Decrease as Improvement', on: false },
-  ],
-  aggregation: 'Last Active',
-  threshold: { min: '0', max: '100', safe: '20 – 80', caution: '80 – 90', critical: '> 90' },
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-02-gauge-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 2,
   estimatedMinutes: 3,
-  screenshots: {},
+  screenshots: {
+    config: `${BASE}/gauge-config.png`,
+    agg: `${BASE}/gauge-agg.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Same as Number', widgetState: cfg({ highlight: 'theme' }), cursor: [{ at: 0.4, x: 60, y: 40 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Aggregation', widgetState: cfg({ highlight: 'aggregation', aggMenu: ['Raw', 'Average', 'Minimum', 'Maximum', 'Time Weighted Sum', 'Cumulative', 'Last Active'] }), cursor: [{ at: 0.4, x: 70, y: 60 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Thresholds → the arc', widgetState: cfg({ highlight: 'threshold' }), cursor: [{ at: 0.4, x: 70, y: 75 }] },
+    { mode: 'detail', screenshot: 'config', caption: 'Same as Number', spotlight: { top: '18%', left: '34%', width: '32%', height: '40%' } },
+    { mode: 'detail', screenshot: 'agg', caption: 'Aggregation', spotlight: { top: '18%', left: '33%', width: '34%', height: '60%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Thresholds → the arc', spotlight: { top: '28%', left: '66%', width: '33%', height: '22%' } },
   ],
   content: {
     en: {

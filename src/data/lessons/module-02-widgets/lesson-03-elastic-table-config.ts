@@ -1,36 +1,23 @@
-import type { ConfigData, Lesson } from '../../types';
+import type { Lesson } from '../../types';
 
 /** Module 2 · Configure — The Elastic Table.   Tag: M2.L3·C  (internal only) */
 
-const BASE: ConfigData = {
-  widget: 'Elastic Table',
-  sensors: [
-    { name: 'Inlet COD', sub: 'Inlet group', active: true },
-    { name: 'Inlet BOD', sub: 'Inlet group' },
-    { name: 'Outlet COD', sub: 'Outlet group' },
-    { add: true },
-  ],
-  nickname: 'Inlet vs Outlet Quality',
-  extras: [
-    { label: 'Grouping', value: 'Inlet group · Outlet group' },
-    { label: 'Granularity', value: 'Days' },
-    { label: 'Time windows', value: '30  (max 200)' },
-    { label: 'Layout', value: 'Sensors as rows' },
-  ],
-};
-const cfg = (over: Partial<ConfigData>): { config: ConfigData } => ({ config: { ...BASE, ...over } });
+const BASE = `${import.meta.env.BASE_URL}screenshots/module-02-config`;
 
 const lesson: Lesson = {
   id: 'lesson-03-elastic-table-config',
   moduleId: 'module-02-widgets',
   lessonNumber: 3,
   estimatedMinutes: 4,
-  screenshots: {},
+  screenshots: {
+    sensors: `${BASE}/elastic-sensors.png`,
+    grouping: `${BASE}/elastic-grouping.png`,
+  },
   layouts: [
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Select sensors', widgetState: cfg({ highlight: 'sensors' }), cursor: [{ at: 0.4, x: 12, y: 45 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Group sensors', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 40 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Layout: granularity & windows', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 55 }] },
-    { mode: 'widget', widget: 'widgetConfig', caption: 'Two axes & column view', widgetState: cfg({ highlight: 'extras' }), cursor: [{ at: 0.4, x: 70, y: 70 }] },
+    { mode: 'detail', screenshot: 'sensors', caption: 'Select sensors', spotlight: { top: '14%', left: '1%', width: '38%', height: '70%' } },
+    { mode: 'detail', screenshot: 'grouping', caption: 'Group sensors', spotlight: { top: '14%', left: '1%', width: '40%', height: '52%' } },
+    { mode: 'detail', screenshot: 'sensors', caption: 'Layout: granularity & windows', spotlight: { top: '24%', left: '46%', width: '52%', height: '18%' } },
+    { mode: 'detail', screenshot: 'grouping', caption: 'Two axes & column view', spotlight: { top: '60%', left: '1%', width: '98%', height: '38%' } },
   ],
   content: {
     en: {
