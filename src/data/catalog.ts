@@ -3,6 +3,12 @@ import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
 import lessonSmartHours from './lessons/module-01-dashboard/lesson-02-smart-hours';
 import lessonRangeNumber from './lessons/module-02-widgets/lesson-01-range-number';
 import lessonRangeNumberConfig from './lessons/module-02-widgets/lesson-01-range-number-config';
+import lessonGaugeConfig from './lessons/module-02-widgets/lesson-02-gauge-config';
+import lessonElasticConfig from './lessons/module-02-widgets/lesson-03-elastic-table-config';
+import lessonAdvancedConfig from './lessons/module-02-widgets/lesson-04-advanced-table-config';
+import lessonTableConfig from './lessons/module-02-widgets/lesson-05-table-config';
+import lessonGraphsConfig from './lessons/module-02-widgets/lesson-06-graphs-config';
+import lessonScatterConfig from './lessons/module-02-widgets/lesson-07-scatter-config';
 import lessonGauge from './lessons/module-02-widgets/lesson-02-gauge';
 import lessonElastic from './lessons/module-02-widgets/lesson-03-elastic-table';
 import lessonAdvanced from './lessons/module-02-widgets/lesson-04-advanced-table';
@@ -33,6 +39,12 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonSmartHours.id]: lessonSmartHours,
   [lessonRangeNumber.id]: lessonRangeNumber,
   [lessonRangeNumberConfig.id]: lessonRangeNumberConfig,
+  [lessonGaugeConfig.id]: lessonGaugeConfig,
+  [lessonElasticConfig.id]: lessonElasticConfig,
+  [lessonAdvancedConfig.id]: lessonAdvancedConfig,
+  [lessonTableConfig.id]: lessonTableConfig,
+  [lessonGraphsConfig.id]: lessonGraphsConfig,
+  [lessonScatterConfig.id]: lessonScatterConfig,
   [lessonGauge.id]: lessonGauge,
   [lessonElastic.id]: lessonElastic,
   [lessonAdvanced.id]: lessonAdvanced,
@@ -107,11 +119,17 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-01-range-number' },
       { id: 'lesson-01-range-number-config', internalOnly: true },
       { id: 'lesson-02-gauge' },
+      { id: 'lesson-02-gauge-config', internalOnly: true },
       { id: 'lesson-03-elastic-table' },
+      { id: 'lesson-03-elastic-table-config', internalOnly: true },
       { id: 'lesson-04-advanced-table' },
+      { id: 'lesson-04-advanced-table-config', internalOnly: true },
       { id: 'lesson-05-table' },
+      { id: 'lesson-05-table-config', internalOnly: true },
       { id: 'lesson-06-graphs' },
+      { id: 'lesson-06-graphs-config', internalOnly: true },
       { id: 'lesson-07-scatter' },
+      { id: 'lesson-07-scatter-config', internalOnly: true },
       { id: 'lesson-08-sankey' },
       { id: 'lesson-09-map-tickets', comingSoon: true },
     ],
