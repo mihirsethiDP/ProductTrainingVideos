@@ -27,6 +27,7 @@ import lessonInsights1Config from './lessons/module-05-insights/lesson-01-insigh
 import lessonInsights2 from './lessons/module-05-insights/lesson-02-on-the-go';
 import lessonViz from './lessons/module-06-visualization/lesson-01-digital-twin';
 import lessonTask1 from './lessons/module-07-tasks/lesson-01-task-list';
+import lessonTask1Config from './lessons/module-07-tasks/lesson-01-task-list-config';
 import lessonTask2 from './lessons/module-07-tasks/lesson-02-doing-a-task';
 import lessonTask3 from './lessons/module-07-tasks/lesson-03-workflows';
 import lessonComm1 from './lessons/module-08-communications/lesson-01-communications-page';
@@ -66,6 +67,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonInsights2.id]: lessonInsights2,
   [lessonViz.id]: lessonViz,
   [lessonTask1.id]: lessonTask1,
+  [lessonTask1Config.id]: lessonTask1Config,
   [lessonTask2.id]: lessonTask2,
   [lessonTask3.id]: lessonTask3,
   [lessonComm1.id]: lessonComm1,
@@ -247,6 +249,7 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'lesson-01-task-list' },
+      { id: 'lesson-01-task-list-config', internalOnly: true },
       { id: 'lesson-02-doing-a-task' },
       { id: 'lesson-03-workflows' },
     ],
