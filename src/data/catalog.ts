@@ -31,6 +31,7 @@ import lessonTask3 from './lessons/module-07-tasks/lesson-03-workflows';
 import lessonComm1 from './lessons/module-08-communications/lesson-01-communications-page';
 import lessonComm2 from './lessons/module-08-communications/lesson-02-emails-and-whatsapp';
 import lessonEvents from './lessons/module-09-events/lesson-01-events';
+import lessonEventsConfig from './lessons/module-09-events/lesson-01-events-config';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -68,6 +69,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonComm1.id]: lessonComm1,
   [lessonComm2.id]: lessonComm2,
   [lessonEvents.id]: lessonEvents,
+  [lessonEventsConfig.id]: lessonEventsConfig,
 };
 
 /**
@@ -285,7 +287,10 @@ export const MODULES: ModuleDef[] = [
       ta: 'திறக்கும், மூடும் சென்சார் நிபந்தனைகளால் தளம் கண்காணிக்கும் செயல்பாடுகள் — வரலாற்றுப் பதிவுகள் மற்றும் ஒவ்வொரு நிகழ்வின் பின்னணி சென்சார் வரைபடங்களுடன் டாஷ்போர்டில்.',
       mr: 'उघडण्याच्या आणि बंद होण्याच्या सेन्सर अटींनी प्लॅटफॉर्म ट्रॅक करते ते क्रियाकलाप — हिस्ट्री लॉग आणि प्रत्येक घटनेमागील सेन्सर चार्टसह डॅशबोर्डवर.',
     },
-    lessons: [{ id: 'lesson-01-events' }],
+    lessons: [
+      { id: 'lesson-01-events' },
+      { id: 'lesson-01-events-config', internalOnly: true },
+    ],
   },
   {
     id: 'module-10-reports-insights',
