@@ -36,6 +36,7 @@ import lessonComm1 from './lessons/module-08-communications/lesson-01-communicat
 import lessonComm2 from './lessons/module-08-communications/lesson-02-emails-and-whatsapp';
 import lessonEvents from './lessons/module-09-events/lesson-01-events';
 import lessonEventsConfig from './lessons/module-09-events/lesson-01-events-config';
+import lessonTriggers from './lessons/module-10-triggers/lesson-01-triggers';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -78,6 +79,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonComm2.id]: lessonComm2,
   [lessonEvents.id]: lessonEvents,
   [lessonEventsConfig.id]: lessonEventsConfig,
+  [lessonTriggers.id]: lessonTriggers,
 };
 
 /**
@@ -305,9 +307,28 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-10-reports-insights',
+    id: 'module-10-triggers',
     number: 10,
     tag: 'M10',
+    roles: ['internal'],
+    name: {
+      en: 'Triggers',
+      hi: 'ट्रिगर',
+      ta: 'ட்ரிகர்கள்',
+      mr: 'ट्रिगर',
+    },
+    description: {
+      en: 'The automation engine behind Events, Insights and Tasks — One Time, Recurring and Conditional triggers, with opening/closing conditions and the components they fire.',
+      hi: 'इवेंट, इनसाइट और टास्क के पीछे का ऑटोमेशन इंजन — One Time, Recurring और Conditional ट्रिगर, खुलने/बंद होने की शर्तों और वे जो कंपोनेंट फ़ायर करते हैं उनके साथ।',
+      ta: 'நிகழ்வுகள், இன்சைட்கள், பணிகளுக்குப் பின்னுள்ள தானியக்க இயந்திரம் — One Time, Recurring, Conditional ட்ரிகர்கள், திறக்கும்/மூடும் நிபந்தனைகள், அவை தூண்டும் கூறுகளுடன்.',
+      mr: 'इव्हेंट, इनसाइट आणि टास्कमागचे ऑटोमेशन इंजिन — One Time, Recurring आणि Conditional ट्रिगर, उघडण्याच्या/बंद होण्याच्या अटी आणि ते फायर करणारे कंपोनेंट यांसह.',
+    },
+    lessons: [{ id: 'lesson-01-triggers' }],
+  },
+  {
+    id: 'module-11-reports-insights',
+    number: 11,
+    tag: 'M11',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -327,9 +348,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-11-internal-tools',
-    number: 11,
-    tag: 'M11',
+    id: 'module-12-internal-tools',
+    number: 12,
+    tag: 'M12',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

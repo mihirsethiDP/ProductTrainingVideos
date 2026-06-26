@@ -14,8 +14,9 @@ const MODULE_ACCENT: Record<number, string> = {
   7: '#c98a2b', // tasks — amber
   8: '#2a9d8f', // communications — teal
   9: '#b0573f', // events — terracotta
-  10: '#3a7ca5', // reports — steel
-  11: '#5a6b8c', // internal — slate
+  10: '#9a6f1f', // triggers — bronze
+  11: '#3a7ca5', // reports — steel
+  12: '#5a6b8c', // internal — slate
 };
 
 export function moduleAccent(n: number): string {
@@ -33,8 +34,9 @@ const MODULE_GLYPH: Record<number, string> = {
   7: 'list',
   8: 'mail',
   9: 'pulse',
-  10: 'report',
-  11: 'gear',
+  10: 'bolt',
+  11: 'report',
+  12: 'gear',
 };
 
 export function moduleGlyph(n: number): string {
@@ -68,6 +70,7 @@ const LESSON_GLYPH: Record<string, string> = {
   'lesson-01-communications-page': 'chat',
   'lesson-02-emails-and-whatsapp': 'mail',
   'lesson-01-events': 'pulse',
+  'lesson-01-triggers': 'bolt',
 };
 
 export function lessonGlyph(id: string, moduleNumber: number): string {
@@ -187,6 +190,11 @@ const GLYPHS: Record<string, ReactNode> = {
   pulse: (
     <>
       <path d="M-26 0 H-12 L-6 -14 L4 14 L10 0 H26" />
+    </>
+  ),
+  bolt: (
+    <>
+      <path d="M4 -20 L-10 4 H0 L-4 20 L14 -4 H4 Z" />
     </>
   ),
   clipboard: (
