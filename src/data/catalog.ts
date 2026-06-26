@@ -23,6 +23,7 @@ import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-uplo
 import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor';
 import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
 import lessonInsights1 from './lessons/module-05-insights/lesson-01-insights-page';
+import lessonInsights1Config from './lessons/module-05-insights/lesson-01-insights-page-config';
 import lessonInsights2 from './lessons/module-05-insights/lesson-02-on-the-go';
 import lessonViz from './lessons/module-06-visualization/lesson-01-digital-twin';
 import lessonTask1 from './lessons/module-07-tasks/lesson-01-task-list';
@@ -61,6 +62,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonInventory1.id]: lessonInventory1,
   [lessonInventory2.id]: lessonInventory2,
   [lessonInsights1.id]: lessonInsights1,
+  [lessonInsights1Config.id]: lessonInsights1Config,
   [lessonInsights2.id]: lessonInsights2,
   [lessonViz.id]: lessonViz,
   [lessonTask1.id]: lessonTask1,
@@ -203,6 +205,7 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'lesson-01-insights-page' },
+      { id: 'lesson-01-insights-page-config', internalOnly: true },
       { id: 'lesson-02-on-the-go' },
     ],
   },
