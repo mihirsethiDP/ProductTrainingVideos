@@ -20,6 +20,7 @@ import lessonDataInput1 from './lessons/module-03-data-input/lesson-01-entering-
 import lessonDataInput1Config from './lessons/module-03-data-input/lesson-01-entering-readings-config';
 import lessonDataInput2 from './lessons/module-03-data-input/lesson-02-types-and-bulk';
 import lessonDataInput3 from './lessons/module-03-data-input/lesson-03-ocr';
+import lessonDataInput3Config from './lessons/module-03-data-input/lesson-03-ocr-config';
 import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-upload';
 import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor';
 import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
@@ -61,6 +62,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonDataInput1Config.id]: lessonDataInput1Config,
   [lessonDataInput2.id]: lessonDataInput2,
   [lessonDataInput3.id]: lessonDataInput3,
+  [lessonDataInput3Config.id]: lessonDataInput3Config,
   [lessonDataInput4.id]: lessonDataInput4,
   [lessonInventory1.id]: lessonInventory1,
   [lessonInventory2.id]: lessonInventory2,
@@ -166,6 +168,7 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-01-entering-readings-config', internalOnly: true },
       { id: 'lesson-02-types-and-bulk' },
       { id: 'lesson-03-ocr' },
+      { id: 'lesson-03-ocr-config', internalOnly: true },
       { id: 'lesson-04-bulk-upload' },
     ],
   },
