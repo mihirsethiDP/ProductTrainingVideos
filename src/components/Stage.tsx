@@ -131,6 +131,7 @@ export default function Stage(props: StageProps) {
               (layout.widget === 'task' && layout.widgetState?.task?.mode === 'list') ||
               (layout.widget === 'comm' && layout.widgetState?.comm?.mode === 'list') ||
               layout.widget === 'widgetConfig' ||
+              (layout.widget === 'events' && layout.widgetState?.events?.mode === 'list') ||
               layout.widget === 'workflow' ||
               layout.widget === 'visualization'
                 ? ' widget-stage-wide'

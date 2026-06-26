@@ -30,6 +30,7 @@ import lessonTask2 from './lessons/module-07-tasks/lesson-02-doing-a-task';
 import lessonTask3 from './lessons/module-07-tasks/lesson-03-workflows';
 import lessonComm1 from './lessons/module-08-communications/lesson-01-communications-page';
 import lessonComm2 from './lessons/module-08-communications/lesson-02-emails-and-whatsapp';
+import lessonEvents from './lessons/module-09-events/lesson-01-events';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -66,6 +67,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonTask3.id]: lessonTask3,
   [lessonComm1.id]: lessonComm1,
   [lessonComm2.id]: lessonComm2,
+  [lessonEvents.id]: lessonEvents,
 };
 
 /**
@@ -267,9 +269,28 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-09-reports-insights',
+    id: 'module-09-events',
     number: 9,
     tag: 'M9',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Events',
+      hi: 'इवेंट्स',
+      ta: 'நிகழ்வுகள்',
+      mr: 'इव्हेंट्स',
+    },
+    description: {
+      en: 'Activities the platform tracks via opening and closing sensor conditions — shown on the dashboard with history logs and the sensor charts behind each occurrence.',
+      hi: 'प्लेटफ़ॉर्म जिन गतिविधियों को खुलने और बंद होने की सेंसर शर्तों से ट्रैक करता है — डैशबोर्ड पर हिस्ट्री लॉग और हर घटना के पीछे के सेंसर चार्ट के साथ।',
+      ta: 'திறக்கும், மூடும் சென்சார் நிபந்தனைகளால் தளம் கண்காணிக்கும் செயல்பாடுகள் — வரலாற்றுப் பதிவுகள் மற்றும் ஒவ்வொரு நிகழ்வின் பின்னணி சென்சார் வரைபடங்களுடன் டாஷ்போர்டில்.',
+      mr: 'उघडण्याच्या आणि बंद होण्याच्या सेन्सर अटींनी प्लॅटफॉर्म ट्रॅक करते ते क्रियाकलाप — हिस्ट्री लॉग आणि प्रत्येक घटनेमागील सेन्सर चार्टसह डॅशबोर्डवर.',
+    },
+    lessons: [{ id: 'lesson-01-events' }],
+  },
+  {
+    id: 'module-10-reports-insights',
+    number: 10,
+    tag: 'M10',
     roles: ['supervisor'],
     name: {
       en: 'Reports & Team Access',
@@ -289,9 +310,9 @@ export const MODULES: ModuleDef[] = [
     ],
   },
   {
-    id: 'module-10-internal-tools',
-    number: 10,
-    tag: 'M10',
+    id: 'module-11-internal-tools',
+    number: 11,
+    tag: 'M11',
     roles: ['internal'],
     name: {
       en: 'Internal Tools & Onboarding',

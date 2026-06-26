@@ -455,6 +455,48 @@ export interface ConfigData {
     | 'extras' | 'axes' | 'graphtype' | 'name' | null;
 }
 
+// ----- Events -----
+export interface EventLog {
+  start: string; // "27 Nov 2025 | 6:33 PM"
+  end: string;
+  duration: string; // "2 hrs 47 min"
+  active?: boolean; // highlighted / most recent row
+}
+export interface EventChart {
+  title: string; // "MBR Tank-2 LV"
+  points: number[];
+  xLabels: string[];
+  yMin: number;
+  yMax: number;
+  color?: string;
+}
+export interface EventRow {
+  name: string;
+  desc: string;
+  status: 'Active' | 'Inactive';
+  createdAt?: string;
+  equipment: string[];
+  workspace: string;
+  asset: string;
+  avgDuration: string; // "1 hr 35 min"
+  avgRecurrence: string; // "5 min 50 sec"
+  frequency: string; // "2"
+  ring?: boolean;
+}
+export interface EventsData {
+  mode: 'list' | 'detail';
+  // list
+  rows?: EventRow[];
+  assetFilter?: string;
+  // detail
+  event?: EventRow;
+  logs?: EventLog[];
+  charts?: EventChart[];
+  highlight?:
+    | 'filters' | 'status' | 'equipment' | 'workspace' | 'duration' | 'recurrence'
+    | 'frequency' | 'row' | 'summary' | 'logs' | 'charts' | null;
+}
+
 // ----- Communications -----
 export type CommMedium = 'email' | 'sms' | 'call' | 'whatsapp';
 export type WaStatus = 'delivered' | 'sent' | 'undelivered' | 'read' | 'failed';
@@ -527,6 +569,8 @@ export interface WidgetState {
   comm?: CommData;
   // widget configuration (internal track)
   config?: ConfigData;
+  // events
+  events?: EventsData;
   highlight?: 'value' | 'tag' | 'timeframe' | 'change' | 'menu' | 'scale' | 'thresholds' | null;
 }
 

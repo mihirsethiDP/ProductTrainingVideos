@@ -18,6 +18,7 @@ import TaskWidget from './TaskWidget';
 import WorkflowWidget from './WorkflowWidget';
 import CommWidget from './CommWidget';
 import WidgetConfigWidget from './WidgetConfigWidget';
+import EventsWidget from './EventsWidget';
 
 /**
  * Registry of interactive widget recreations, keyed by the string used in a
@@ -42,4 +43,5 @@ export const WIDGETS: Record<string, FC<WidgetState>> = {
   workflow: WorkflowWidget,
   comm: CommWidget,
   widgetConfig: WidgetConfigWidget,
+  events: EventsWidget,
 };

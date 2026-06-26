@@ -1409,6 +1409,56 @@ button { font-family: var(--sans); }
 .wf-node { border: 1.5px solid; border-radius: 8px; padding: 14px 12px; font-size: 12px; font-weight: 600; text-align: center; width: 132px; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.35; }
 .wf-arrow { color: #9aa7b8; font-size: 16px; }
 
+/* ===== EVENTS ===== */
+.ev { width: 1120px; max-width: 100%; background: #fff; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10,31,58,0.16); padding: 20px; }
+.ev-pagetitle { font-family: var(--serif); font-weight: 700; font-size: 24px; color: var(--ink); margin-bottom: 14px; }
+.ev-filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.ev-search { border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; color: var(--ink-soft); font-size: 12.5px; }
+.ev-field { border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; color: var(--ink); font-size: 12.5px; display: flex; align-items: center; gap: 8px; position: relative; }
+.ev-field-label { font-size: 9px; color: var(--ink-soft); position: absolute; top: -7px; left: 10px; background: #fff; padding: 0 4px; }
+.ev-scroll { border-top: 1px solid var(--line); overflow: hidden; }
+.ev-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.ev-table th { text-align: left; padding: 12px; color: var(--ink-soft); border-bottom: 1px solid var(--line); font-weight: 600; }
+.ev-table td { padding: 14px 12px; border-bottom: 1px solid #eef2f7; vertical-align: top; }
+.ev-th-hl { background: rgba(212,160,23,0.10); }
+.ev-row-name { font-weight: 700; color: var(--ink); font-size: 14px; }
+.ev-row-desc { color: var(--ink-soft); margin-top: 2px; }
+.ev-row-meta { font-family: var(--mono); font-size: 10px; color: #9aa7b8; margin-top: 6px; }
+.ev-status { font-weight: 600; white-space: nowrap; }
+.ev-status.active { color: var(--leaf); }
+.ev-status.inactive { color: var(--ink-soft); }
+.ev-equip { display: flex; gap: 6px; flex-wrap: wrap; }
+.ev-chip { border: 1px solid var(--line); border-radius: 16px; padding: 3px 11px; font-size: 11px; color: var(--ink-soft); background: var(--paper-warm); white-space: nowrap; }
+.ev-wa { color: var(--ink-soft); }
+.ev-wa-sub { color: #9aa7b8; margin-top: 2px; }
+.ev-pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 16px; padding: 4px 11px; font-size: 11.5px; color: var(--ink); white-space: nowrap; }
+/* event detail modal */
+.ev-modal { width: 1000px; max-width: 100%; background: #fff; border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(10,31,58,0.22); overflow: hidden; }
+.ev-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid #eef2f7; font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--ink); }
+.ev-x { color: var(--ink-soft); font-size: 14px; }
+.ev-modal-body { padding: 20px 22px; }
+.ev-desc-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.ev-desc { color: var(--ink-soft); font-size: 13px; margin: 4px 0 16px; }
+.ev-summary { display: flex; gap: 26px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid #eef2f7; }
+.ev-stat { display: flex; flex-direction: column; gap: 3px; }
+.ev-stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.ev-stat-val { font-size: 13.5px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+.ev-stat-sub { font-size: 12px; color: var(--ink-soft); }
+.ev-ic { opacity: 0.8; }
+.ev-logs { margin: 16px 0; background: #fafbfd; border: 1px solid #eef2f7; border-radius: 10px; padding: 14px 16px; }
+.ev-logs-title { font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 10px; }
+.ev-log { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-soft); padding: 10px; border-radius: 8px; }
+.ev-log.active { background: #e6f0fa; color: var(--ink); }
+.ev-log-ic { opacity: 0.6; }
+.ev-dot { color: #c4ccd6; }
+.ev-log-dur { font-weight: 600; color: var(--ink); }
+.ev-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+.ev-chart { border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.ev-chart-title { text-align: center; font-size: 12.5px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.ev-chart-svg { width: 100%; height: auto; display: block; }
+.ev-chart-tick { font-size: 8px; fill: #9aa7b8; }
+.ev-chart-xlabel { font-size: 6px; fill: #9aa7b8; }
+
 /* ===== WIDGET CONFIGURATION PANEL (internal build track) ===== */
 .cfg { width: 1080px; max-width: 100%; background: #fff; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(10,31,58,0.16); overflow: hidden; }
 .cfg-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #eef2f7; background: var(--brand); color: #fff; }
@@ -1648,11 +1698,11 @@ button { font-family: var(--sans); }
 .rnw .ring, .gw .ring, .et .ring, .adv .ring, .stbl .ring, .gr .ring, .sh .ring, .scg .ring, .di .ring, .di-card .ring, .di-prev .ring, .di-fileup .ring, .ocr2 .ring, .ocr2-review .ring, .inv .ring, .inv-log .ring, .inv-cats .ring, .inv-modal .ring, .inv-form .ring,
 .ins .ring, .ins-detail .ring, .ins-wa .ring, .ins-digest .ring, .viz .ring,
 .tsk .ring, .tsk-detail .ring, .wf .ring,
-.comm .ring, .comm-modal .ring, .cfg .ring { position: relative; }
+.comm .ring, .comm-modal .ring, .cfg .ring, .ev .ring, .ev-modal .ring { position: relative; }
 .rnw .ring::after, .gw .ring::after, .et .ring::after, .adv .ring::after, .stbl .ring::after, .gr .ring::after, .sh .ring::after, .scg .ring::after, .di .ring::after, .di-card .ring::after, .di-prev .ring::after, .di-fileup .ring::after, .ocr2 .ring::after, .ocr2-review .ring::after, .inv .ring::after, .inv-log .ring::after, .inv-cats .ring::after, .inv-modal .ring::after, .inv-form .ring::after,
 .ins .ring::after, .ins-detail .ring::after, .ins-wa .ring::after, .ins-digest .ring::after, .viz .ring::after,
 .tsk .ring::after, .tsk-detail .ring::after, .wf .ring::after,
-.comm .ring::after, .comm-modal .ring::after, .cfg .ring::after {
+.comm .ring::after, .comm-modal .ring::after, .cfg .ring::after, .ev .ring::after, .ev-modal .ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: 6px;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18), 0 0 14px rgba(212, 160, 23, 0.5);
