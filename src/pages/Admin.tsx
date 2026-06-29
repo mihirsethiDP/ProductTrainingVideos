@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProgressRing from '../components/ProgressRing';
@@ -123,6 +123,9 @@ export default function Admin() {
           <div className="eyebrow">{t('adminEyebrow')}</div>
           <h1 className="lesson-title">{t('adminTitle')}</h1>
           <p className="lesson-subtitle">{t('adminSubtitle')}</p>
+          <Link to="/admin/studio">
+            <button className="lesson-cta" style={{ marginTop: 16 }}>🎬 Content Studio — build demos & lessons →</button>
+          </Link>
         </div>
 
         {/* invite */}

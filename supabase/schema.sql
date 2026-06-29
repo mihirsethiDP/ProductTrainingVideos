@@ -122,3 +122,64 @@ create policy lp_admin_read on public.lesson_progress
 -- 1) Sign up once through the app with your email.
 -- 2) Then run this (replace the email) to make yourself an admin:
 --    update public.profiles set role = 'admin' where email = 'you@digitalpaani.com';
+
+-- ============================================================
+--  Content Studio — upload recordings/content; Claude turns them
+--  into personalized demos and new lessons.
+-- ============================================================
+
+-- queued uploads awaiting generation (admins only)
+create table if not exists public.generation_jobs (
+  id               uuid primary key default gen_random_uuid(),
+  kind             text not null check (kind in ('demo', 'content')),
+  title            text not null,
+  client_email     text,                 -- for kind='demo': the client this demo is for
+  storage_path     text not null,        -- object path inside the 'uploads' bucket
+  status           text not null default 'queued' check (status in ('queued', 'processing', 'done', 'failed')),
+  result_lesson_id text,                  -- the generated lesson id, once done
+  notes            text,                  -- implementer instructions, or a failure reason
+  created_by       uuid references auth.users (id),
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+-- which generated demo a given client may see
+create table if not exists public.client_demos (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid references auth.users (id) on delete cascade,
+  client_email text,                      -- lets a demo be assigned before the client signs up
+  lesson_id    text not null,             -- static lesson id of the generated demo
+  title        text not null,
+  created_by   uuid references auth.users (id),
+  created_at   timestamptz not null default now()
+);
+create index if not exists client_demos_user_idx on public.client_demos (user_id);
+create index if not exists client_demos_email_idx on public.client_demos (lower(client_email));
+
+alter table public.generation_jobs enable row level security;
+alter table public.client_demos    enable row level security;
+
+-- generation_jobs: admins only
+drop policy if exists genjobs_admin on public.generation_jobs;
+create policy genjobs_admin on public.generation_jobs
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- client_demos: the assigned client sees their own (matched by id or email); admins manage all
+drop policy if exists demos_read on public.client_demos;
+create policy demos_read on public.client_demos
+  for select using (
+    user_id = auth.uid()
+    or lower(client_email) = lower((select email from public.profiles where id = auth.uid()))
+    or public.is_admin()
+  );
+drop policy if exists demos_admin on public.client_demos;
+create policy demos_admin on public.client_demos
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- storage ----------
+-- Create a PRIVATE bucket named 'uploads' in the dashboard (Storage → New bucket
+-- → name 'uploads', Public = off). Then these policies let admins upload & read:
+drop policy if exists uploads_admin_all on storage.objects;
+create policy uploads_admin_all on storage.objects
+  for all using (bucket_id = 'uploads' and public.is_admin())
+  with check (bucket_id = 'uploads' and public.is_admin());

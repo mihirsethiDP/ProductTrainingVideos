@@ -1904,3 +1904,23 @@ button { font-family: var(--sans); }
   .module-head { padding: 18px 16px 14px; }
   .module-name { font-size: 20px; }
 }
+
+/* ===== CONTENT STUDIO (admin) ===== */
+.studio-kind { display: flex; gap: 8px; margin: 4px 0 18px; flex-wrap: wrap; }
+.studio-fields { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+.studio-field { display: flex; flex-direction: column; gap: 5px; }
+.studio-field > span {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.studio-field input, .studio-field textarea {
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font-family: var(--sans); font-size: 14px; background: #fff; color: var(--ink);
+}
+.studio-field textarea { resize: vertical; }
+.badge.studio-status.queued { background: var(--paper-warm); color: var(--ink-soft); }
+.badge.studio-status.processing { background: rgba(212, 160, 23, 0.16); color: #a37c10; }
+.badge.studio-status.done { background: rgba(45, 134, 89, 0.14); color: var(--leaf); }
+.badge.studio-status.failed { background: rgba(200, 60, 60, 0.12); color: #b3413b; }
+.studio-err { font-size: 11px; color: #b3413b; margin-top: 4px; }
+.ai-msg.err { color: #b3413b; }
