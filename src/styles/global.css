@@ -607,7 +607,8 @@ button { font-family: var(--sans); }
 
 /* ===== ON-VIDEO PLAYER CONTROL BAR ===== */
 .stage-controls {
-  width: calc(100% + 40px); margin: 18px -20px -20px auto;
+  width: calc(100% + 40px); margin: 18px -20px -20px;
+  align-self: stretch;
   background: var(--brand); color: #fff;
   border-radius: 0 0 12px 12px; overflow: hidden; z-index: 70;
 }
@@ -1856,4 +1857,32 @@ button { font-family: var(--sans); }
   .lesson-row { flex-wrap: wrap; row-gap: 8px; }
   .lesson-row-info { flex: 1 1 150px; }
   .lesson-cta { margin-left: auto; }
+
+  /* tighter stage so the screenshot/widget gets more room */
+  .stage-frame { padding: 12px; min-height: 280px; }
+  .stage-controls { width: calc(100% + 24px); margin: 14px -12px -12px; }
+
+  /* player control bar: transport on its own centered row, settings
+     wrap below, voice picker gets its own full-width row */
+  .sc-row { padding: 10px; gap: 10px; }
+  .sc-left, .sc-right { width: 100%; justify-content: center; }
+  .sc-status { margin-left: 0; flex: 1 1 100%; justify-content: center; }
+  .sc-voice { flex: 1 1 100%; max-width: none; padding: 9px 10px; }
+  .sc-speed-btn { padding: 6px 11px; }
+
+  /* internal Read / Configure toggle stretches full width */
+  .track-toggle { display: flex; width: 100%; }
+  .track-seg { flex: 1; padding: 10px 8px; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 18px 12px; }
+  .title-block { padding: 18px 4px 16px; }
+  .lesson-title { font-size: 28px; }
+  .lesson-subtitle { font-size: 15px; }
+  .narration { padding: 16px; }
+  .sc-toggle { padding: 6px 10px; font-size: 10px; }
+  .sc-speed-btn { padding: 5px 9px; font-size: 10px; }
+  .module-head { padding: 18px 16px 14px; }
+  .module-name { font-size: 20px; }
 }
