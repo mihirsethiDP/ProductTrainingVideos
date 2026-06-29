@@ -1,4 +1,5 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
+import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
 import lessonSmartHours from './lessons/module-01-dashboard/lesson-02-smart-hours';
 import lessonRangeNumber from './lessons/module-02-widgets/lesson-01-range-number';
@@ -42,6 +43,7 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
+  [lessonReading.id]: lessonReading,
   [lesson01.id]: lesson01,
   [lessonSmartHours.id]: lessonSmartHours,
   [lessonRangeNumber.id]: lessonRangeNumber,
@@ -105,12 +107,12 @@ export const MODULES: ModuleDef[] = [
       mr: 'डॅशबोर्डची मूलतत्त्वे',
     },
     description: {
-      en: "The operator's cockpit — every control at the top of your dashboard, from page selection to sharing.",
-      hi: 'ऑपरेटर का कॉकपिट — पेज चयन से साझाकरण तक, डैशबोर्ड के ऊपर का हर नियंत्रण।',
-      ta: 'இயக்குனரின் பணியிடம் — பக்கத் தேர்விலிருந்து பகிர்வு வரை, டாஷ்போர்டின் ஒவ்வொரு கட்டுப்பாடும்.',
-      mr: 'ऑपरेटरचे कॉकपिट — पृष्ठ निवडीपासून शेअरिंगपर्यंत, डॅशबोर्डवरील प्रत्येक नियंत्रण.',
+      en: "The operator's cockpit — learn to read every widget on your dashboard, then master the controls that drive the page.",
+      hi: 'ऑपरेटर का कॉकपिट — डैशबोर्ड के हर विजेट को पढ़ना सीखें, फिर पेज चलाने वाले नियंत्रणों में महारत पाएँ।',
+      ta: 'இயக்குனரின் பணியிடம் — டாஷ்போர்டின் ஒவ்வொரு விட்ஜெட்டையும் படிக்கக் கற்று, பின் பக்கத்தை இயக்கும் கட்டுப்பாடுகளில் தேர்ச்சி பெறுங்கள்.',
+      mr: 'ऑपरेटरचे कॉकपिट — डॅशबोर्डवरील प्रत्येक विजेट वाचायला शिका, मग पान चालवणाऱ्या नियंत्रणांवर प्रभुत्व मिळवा.',
     },
-    lessons: [{ id: 'lesson-01-overview' }, { id: 'lesson-02-smart-hours' }],
+    lessons: [{ id: 'lesson-01-reading' }, { id: 'lesson-01-overview' }, { id: 'lesson-02-smart-hours' }],
   },
   {
     id: 'module-02-widgets',

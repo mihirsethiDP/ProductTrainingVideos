@@ -21,7 +21,7 @@ function sh(o: Partial<SmartHoursData>): SmartHoursData {
 const lesson: Lesson = {
   id: 'lesson-02-smart-hours',
   moduleId: 'module-01-dashboard',
-  lessonNumber: 2,
+  lessonNumber: 3,
   estimatedMinutes: 3,
   screenshots: {},
   layouts: [

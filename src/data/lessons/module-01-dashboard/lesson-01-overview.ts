@@ -12,7 +12,7 @@ const BASE = `${import.meta.env.BASE_URL}screenshots/module-01`;
 const lesson: Lesson = {
   id: 'lesson-01-overview',
   moduleId: 'module-01-dashboard',
-  lessonNumber: 1,
+  lessonNumber: 2,
   estimatedMinutes: 3,
   screenshots: {
     fullDashboard: `${BASE}/fullDashboard.jpg`,
@@ -94,7 +94,7 @@ const lesson: Lesson = {
   ],
   content: {
     en: {
-      title: 'Your <em>Dashboard,</em><br>end to end.',
+      title: 'Driving your <em>dashboard.</em>',
       subtitle: "Sensors stream data every minute from your plant. The dashboard turns that stream into something you can act on. In the next few steps, you'll learn every control that lives at the top of the page.",
       chapter: "Chapter One · The Operator's Cockpit",
       steps: [
@@ -141,7 +141,7 @@ const lesson: Lesson = {
       ],
     },
     hi: {
-      title: 'आपका <em>डैशबोर्ड,</em><br>शुरू से अंत तक।',
+      title: 'अपना <em>डैशबोर्ड</em><br>चलाना।',
       subtitle: 'आपके प्लांट से सेंसर हर मिनट डेटा भेजते हैं। डैशबोर्ड उस डेटा को ऐसी जानकारी में बदलता है जिस पर आप कार्रवाई कर सकें।',
       chapter: 'अध्याय एक · ऑपरेटर का कॉकपिट',
       steps: [
@@ -188,7 +188,7 @@ const lesson: Lesson = {
       ],
     },
     ta: {
-      title: 'உங்கள் <em>டாஷ்போர்டு,</em><br>முழுமையாக.',
+      title: 'உங்கள் <em>டாஷ்போர்டை</em><br>இயக்குதல்.',
       subtitle: 'உங்கள் ஆலையின் சென்சார்கள் ஒவ்வொரு நிமிடமும் தரவை அனுப்புகின்றன. டாஷ்போர்டு அந்த தரவை செயல்படக்கூடிய நுண்ணறிவாக மாற்றுகிறது.',
       chapter: 'அத்தியாயம் ஒன்று · இயக்குனரின் பணியிடம்',
       steps: [
@@ -235,7 +235,7 @@ const lesson: Lesson = {
       ],
     },
     mr: {
-      title: 'तुमचा <em>डॅशबोर्ड,</em><br>संपूर्ण.',
+      title: 'तुमचा <em>डॅशबोर्ड</em><br>चालवणे.',
       subtitle: 'तुमच्या प्लांटमधील सेन्सर्स दर मिनिटाला डेटा पाठवतात. डॅशबोर्ड त्या डेटाचे कृती करण्यायोग्य माहितीमध्ये रूपांतर करतो.',
       chapter: 'अध्याय एक · ऑपरेटरचे कॉकपिट',
       steps: [
