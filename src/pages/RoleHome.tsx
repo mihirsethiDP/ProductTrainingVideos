@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Thumb, { lessonGlyph, moduleAccent, moduleGlyph } from '../components/Thumb';
 import ProgressRing from '../components/ProgressRing';
+import SearchBar from '../components/SearchBar';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
@@ -50,6 +51,8 @@ export default function RoleHome() {
           <h1 className="lesson-title" dangerouslySetInnerHTML={{ __html: t('homeTitle') }} />
           <p className="lesson-subtitle">{t('homeSubtitle')}</p>
         </div>
+
+        <SearchBar role={roleId} />
 
         <div className="progress-summary" data-tour="progress-summary">
           <ProgressRing percent={overall.percent} size={62} stroke={6} />
