@@ -7,19 +7,10 @@ export interface GenerationJob {
   id: string;
   kind: JobKind;
   title: string;
-  client_email: string | null;
   storage_path: string;
   status: JobStatus;
   result_lesson_id: string | null;
   notes: string | null;
-  created_at: string;
-}
-
-export interface ClientDemo {
-  id: string;
-  lesson_id: string;
-  title: string;
-  client_email: string | null;
   created_at: string;
 }
 
@@ -36,7 +27,6 @@ const slug = (s: string) =>
 export async function submitJob(opts: {
   kind: JobKind;
   title: string;
-  clientEmail?: string;
   notes?: string;
   file: File;
   stamp: number; // pass Date.now() from the caller
@@ -49,7 +39,6 @@ export async function submitJob(opts: {
   const ins = await supabase.from('generation_jobs').insert({
     kind: opts.kind,
     title: opts.title.trim(),
-    client_email: opts.kind === 'demo' ? (opts.clientEmail ?? '').trim().toLowerCase() || null : null,
     storage_path: path,
     notes: opts.notes?.trim() || null,
     created_by: who.user?.id ?? null,
@@ -60,16 +49,7 @@ export async function submitJob(opts: {
 export async function listJobs(): Promise<GenerationJob[]> {
   const { data } = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,client_email,storage_path,status,result_lesson_id,notes,created_at')
+    .select('id,kind,title,storage_path,status,result_lesson_id,notes,created_at')
     .order('created_at', { ascending: false });
   return (data as GenerationJob[]) ?? [];
-}
-
-/** Demos assigned to the currently signed-in client (RLS scopes this per user). */
-export async function listMyDemos(): Promise<ClientDemo[]> {
-  const { data } = await supabase
-    .from('client_demos')
-    .select('id,lesson_id,title,client_email,created_at')
-    .order('created_at', { ascending: false });
-  return (data as ClientDemo[]) ?? [];
 }

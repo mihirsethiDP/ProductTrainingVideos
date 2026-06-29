@@ -23,7 +23,6 @@ export default function Studio() {
 
   const [kind, setKind] = useState<JobKind>('demo');
   const [title, setTitle] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -44,14 +43,12 @@ export default function Studio() {
     const file = fileRef.current?.files?.[0];
     if (!file) return setMsg({ ok: false, text: 'Choose a file to upload.' });
     if (!title.trim()) return setMsg({ ok: false, text: 'Give it a title.' });
-    if (kind === 'demo' && !clientEmail.trim()) return setMsg({ ok: false, text: "Enter the client's email." });
     setBusy(true);
-    const { error } = await submitJob({ kind, title, clientEmail, notes, file, stamp: Date.now() });
+    const { error } = await submitJob({ kind, title, notes, file, stamp: Date.now() });
     setBusy(false);
     if (error) return setMsg({ ok: false, text: error });
     setMsg({ ok: true, text: 'Uploaded & queued. It will appear below as it’s generated.' });
     setTitle('');
-    setClientEmail('');
     setNotes('');
     if (fileRef.current) fileRef.current.value = '';
     refresh();
@@ -99,13 +96,6 @@ export default function Studio() {
               />
             </label>
 
-            {kind === 'demo' && (
-              <label className="studio-field">
-                <span>Client email (who sees this demo)</span>
-                <input type="email" placeholder="client@company.com" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} />
-              </label>
-            )}
-
             <label className="studio-field">
               <span>Recording / content file</span>
               <input ref={fileRef} type="file" accept="video/*,.pdf,.docx,.png,.jpg,.jpeg" />
@@ -136,7 +126,6 @@ export default function Studio() {
           <div className="au-head studio-head">
             <span>Upload</span>
             <span>Type</span>
-            <span>For</span>
             <span>Status</span>
           </div>
           {jobs.length === 0 && <div className="au-empty">No uploads yet.</div>}
@@ -147,7 +136,6 @@ export default function Studio() {
                 <div className="au-email">{new Date(j.created_at).toLocaleString()}</div>
               </div>
               <div><span className="tag-chip">{j.kind === 'demo' ? 'Demo' : 'Lesson'}</span></div>
-              <div className="au-email">{j.client_email ?? '—'}</div>
               <div>
                 <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
                 {j.status === 'failed' && j.notes && <div className="studio-err">{j.notes}</div>}
