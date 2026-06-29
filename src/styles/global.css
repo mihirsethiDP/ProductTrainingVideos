@@ -638,11 +638,13 @@ button { font-family: var(--sans); }
 .sc-speed-btn.active { background: #fff; color: var(--brand); font-weight: 700; }
 .sc-toggle { background: rgba(255, 255, 255, 0.12); border: none; color: rgba(255, 255, 255, 0.82); font-size: 11px; font-weight: 600; padding: 7px 12px; border-radius: 16px; cursor: pointer; white-space: nowrap; }
 .sc-toggle.active { background: var(--accent); color: var(--brand); }
-.sc-voice {
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #fff; font-size: 11px; border-radius: 8px; padding: 6px 8px; max-width: 160px;
+.sc-voice-toggle { display: flex; background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 2px; }
+.sc-voice-btn {
+  background: none; border: none; color: rgba(255, 255, 255, 0.72);
+  font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 16px;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
 }
-.sc-voice option { color: var(--ink); }
+.sc-voice-btn.active { background: #fff; color: var(--brand); }
 
 /* === SHOWCASE === */
 .dashboard-showcase { width: 100%; display: flex; flex-direction: column; align-items: center; }
@@ -1798,6 +1800,12 @@ button { font-family: var(--sans); }
   backdrop-filter: blur(10px);
   border: 1px solid var(--line); border-radius: 14px;
   box-shadow: 0 12px 32px rgba(10, 31, 58, 0.16); flex-wrap: wrap; gap: 16px;
+}
+/* while the video's own controls are on screen, sit quietly in normal flow so
+   the floating bar never covers the play / voice controls */
+.player-controls.with-video {
+  position: static; background: white; backdrop-filter: none;
+  box-shadow: 0 4px 12px var(--shadow);
 }
 .btn {
   padding: 11px 22px; border-radius: 8px;

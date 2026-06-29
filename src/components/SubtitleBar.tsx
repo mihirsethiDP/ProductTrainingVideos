@@ -14,7 +14,7 @@ export default function SubtitleBar({ text, charIndex, visible }: Props) {
 
   return (
     <div className={`subtitle-bar${visible && current ? ' visible' : ''}`} aria-live="polite">
-      <span className="cc-tag">CC · RIYA</span>
+      <span className="cc-tag">CC</span>
       {current}
     </div>
   );

@@ -7,16 +7,15 @@ import Stage from '../components/Stage';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
 import type { RoleId } from '../data/types';
+import { onVoicesChanged, pickVoiceForLanguage } from '../lib/tts';
 import {
-  cancelSpeech,
-  getVoices,
-  onVoicesChanged,
-  pauseSpeech,
-  pickVoiceForLanguage,
-  resumeSpeech,
-  speak,
-  ttsSupported,
-} from '../lib/tts';
+  cancelNarration,
+  pauseNarration,
+  playNarration,
+  resumeNarration,
+  setNarrationRate,
+  type Gender,
+} from '../lib/narration';
 import { getLessonProgress, saveLessonStep } from '../lib/progress';
 
 export default function LessonPage() {
@@ -43,7 +42,12 @@ export default function LessonPage() {
   const [charIndex, setCharIndex] = useState(0);
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [voiceTick, setVoiceTick] = useState(0); // re-render when system voices load
-  const [voiceName, setVoiceName] = useState<string | null>(null);
+  // the sticky bottom nav only floats once the on-video controls scroll away,
+  // so it never overlaps the player's own play/voice controls
+  const [videoControlsVisible, setVideoControlsVisible] = useState(true);
+  const [gender, setGender] = useState<Gender>('f');
+  const genderRef = useRef(gender);
+  genderRef.current = gender;
 
   const autoAdvanceRef = useRef(autoAdvance);
   autoAdvanceRef.current = autoAdvance;
@@ -56,30 +60,48 @@ export default function LessonPage() {
   const totalSteps = content?.steps.length ?? 0;
 
   // ---- voices ----
+  // voice pick is now only the *fallback* (Web Speech) voice, used for any
+  // step whose edge-tts clip hasn't been generated yet. Try to honor the
+  // chosen gender for the fallback when a matching system voice exists.
   const voicePick = useMemo(() => pickVoiceForLanguage(meta.langCode), [meta.langCode, voiceTick]);
   useEffect(() => onVoicesChanged(() => setVoiceTick((n) => n + 1)), []);
-  useEffect(() => {
-    setVoiceName(voicePick.best?.name ?? null);
-  }, [voicePick]);
 
-  const currentVoice = useMemo(
-    () => getVoices().find((v) => v.name === voiceName) ?? voicePick.best,
-    [voiceName, voicePick, voiceTick],
-  );
+  // watch whether the on-video control bar is on screen; the sticky nav floats
+  // only when it isn't (i.e. once the viewer has scrolled into the narration)
+  useEffect(() => {
+    const el = document.querySelector('.stage-controls');
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setVideoControlsVisible(e.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [lessonId]);
+
+  const currentVoice = useMemo(() => {
+    const wantMale = gender === 'm';
+    const match = voicePick.voices.find((v) =>
+      wantMale ? /male|madhur|prabhat|valluvar|manohar|guy|christopher|eric/i.test(v.name) : !/male/i.test(v.name),
+    );
+    return match ?? voicePick.best;
+  }, [voicePick, gender, voiceTick]);
 
   // ---- speech ----
   const speakStep = useCallback(
     (index: number) => {
-      if (!lesson || !ttsSupported()) return;
+      if (!lesson) return;
       const text = lesson.content[lang].steps[index]?.voice;
       if (!text) return;
       setProgress(0);
       setCharIndex(0);
       setStatusOverride(null);
       if (lesson.layouts[index]?.mode === 'showcase') setPlayKey((k) => k + 1);
-      speak(text, {
+      void playNarration({
+        lessonId: lesson.id,
+        step: index,
+        lang,
+        gender: genderRef.current,
+        text,
         voice: currentVoice ?? null,
-        lang: meta.langCode,
+        langCode: meta.langCode,
         rate: rateRef.current,
         onStart: () => {
           setSpeaking(true);
@@ -117,7 +139,7 @@ export default function LessonPage() {
   );
 
   const stopAll = useCallback(() => {
-    cancelSpeech();
+    cancelNarration();
     setSpeaking(false);
     setPaused(false);
   }, []);
@@ -207,10 +229,10 @@ export default function LessonPage() {
 
   function handlePlayPause() {
     if (speaking && !paused) {
-      pauseSpeech();
+      pauseNarration();
       setPaused(true);
     } else if (paused) {
-      resumeSpeech();
+      resumeNarration();
       setPaused(false);
     } else {
       speakStep(stepRef.current);
@@ -305,10 +327,10 @@ export default function LessonPage() {
               onPrev={goPrev}
               onNext={goNext}
               canPrev={step > 0}
-              voices={voicePick.voices}
-              selectedVoiceName={voiceName}
-              onVoiceChange={(name) => {
-                setVoiceName(name);
+              gender={gender}
+              onGenderChange={(g) => {
+                setGender(g);
+                genderRef.current = g;
                 if (speaking) {
                   stopAll();
                   setTimeout(() => speakStep(stepRef.current), 200);
@@ -317,10 +339,8 @@ export default function LessonPage() {
               rate={rate}
               onRateChange={(r) => {
                 setRate(r);
-                if (speaking) {
-                  stopAll();
-                  setTimeout(() => speakStep(stepRef.current), 200);
-                }
+                rateRef.current = r;
+                setNarrationRate(r); // live for audio; fallback picks it up next step
               }}
               subtitlesOn={subtitlesOn}
               onSubtitlesToggle={() => setSubtitlesOn((s) => !s)}
@@ -346,7 +366,7 @@ export default function LessonPage() {
           )}
         </div>
 
-        <div className="player-controls">
+        <div className={`player-controls${videoControlsVisible ? ' with-video' : ''}`}>
           <button className="btn btn-prev" disabled={step === 0} onClick={goPrev}>
             {t('prev')}
           </button>

@@ -10,15 +10,14 @@ interface StageControlsProps {
   onPrev: () => void;
   onNext: () => void;
   canPrev: boolean;
-  voices: SpeechSynthesisVoice[];
-  selectedVoiceName: string | null;
-  onVoiceChange: (name: string) => void;
   rate: number;
   onRateChange: (rate: number) => void;
   subtitlesOn: boolean;
   onSubtitlesToggle: () => void;
   autoAdvance: boolean;
   onAutoAdvanceToggle: () => void;
+  gender: 'f' | 'm';
+  onGenderChange: (g: 'f' | 'm') => void;
 }
 
 const SPEEDS = [0.85, 1, 1.15, 1.3];
@@ -80,18 +79,24 @@ export default function StageControls(props: StageControlsProps) {
           >
             ⏭ {t('autoAdvance')}
           </button>
-          <select
-            className="sc-voice"
-            value={props.selectedVoiceName ?? ''}
-            onChange={(e) => props.onVoiceChange(e.target.value)}
-            title={t('voiceLabel')}
-            aria-label={t('voiceLabel')}
-          >
-            {props.voices.length === 0 && <option value="">—</option>}
-            {props.voices.map((v) => (
-              <option key={v.name} value={v.name}>{v.name}</option>
-            ))}
-          </select>
+          <div className="sc-voice-toggle" role="group" aria-label={t('voiceLabel')}>
+            <button
+              className={`sc-voice-btn${props.gender === 'f' ? ' active' : ''}`}
+              onClick={() => props.onGenderChange('f')}
+              aria-pressed={props.gender === 'f'}
+              title={t('voiceFemale')}
+            >
+              ♀ {t('voiceFemale')}
+            </button>
+            <button
+              className={`sc-voice-btn${props.gender === 'm' ? ' active' : ''}`}
+              onClick={() => props.onGenderChange('m')}
+              aria-pressed={props.gender === 'm'}
+              title={t('voiceMale')}
+            >
+              ♂ {t('voiceMale')}
+            </button>
+          </div>
         </div>
       </div>
     </div>
