@@ -110,3 +110,24 @@ export async function pullRemoteProgress(userId: string): Promise<void> {
   }
   write(store);
 }
+
+/** Push every locally-stored lesson record up to the cloud for this user.
+ *  Without this, progress made before the auth session was ready (or while
+ *  briefly offline) would never reach the server, so admins saw 0% even for
+ *  users who had finished modules. Runs on login, after the pull/merge, so it
+ *  uploads the best-known state for each lesson. */
+export async function pushLocalProgress(userId: string): Promise<void> {
+  const store = read();
+  const rows = Object.entries(store.lessons).map(([lesson_id, p]) => ({
+    user_id: userId,
+    lesson_id,
+    last_step: p.lastStep,
+    total_steps: p.totalSteps,
+    completed: p.completed,
+    updated_at: new Date().toISOString(),
+  }));
+  if (rows.length === 0) return;
+  await supabase
+    .from('lesson_progress')
+    .upsert(rows, { onConflict: 'user_id,lesson_id' });
+}

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, type Profile } from '../lib/supabase';
-import { pullRemoteProgress, setProgressSyncUser } from '../lib/progress';
+import { pullRemoteProgress, pushLocalProgress, setProgressSyncUser } from '../lib/progress';
 
 interface AuthCtx {
   session: Session | null;
@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setProgressSyncUser(userId);
     await pullRemoteProgress(userId); // mirror cloud progress into the local store
+    await pushLocalProgress(userId); // and upload anything that only lived locally
   }, []);
 
   useEffect(() => {
