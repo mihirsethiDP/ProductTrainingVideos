@@ -65,7 +65,7 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
     /* offline or 404 — fall back below */
   }
 
-  if (!timing) {
+  const fallback = () => {
     usingFallback = true;
     webSpeak(o.text, {
       voice: o.voice,
@@ -76,6 +76,10 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
       onError: o.onError,
       onProgress: o.onProgress,
     });
+  };
+
+  if (!timing) {
+    fallback();
     return;
   }
 
@@ -98,7 +102,7 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
     return Math.min(total, Math.round(cur.c + frac * (nxt.c - cur.c)));
   };
 
-  const audio = new Audio(clipUrl(o, 'mp3'));
+  const audio = new Audio(clipUrl(o, 'webm'));
   audio.playbackRate = o.rate;
   audioEl = audio;
 
@@ -121,7 +125,12 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
   };
   audio.onerror = () => {
     stopRaf();
-    o.onError?.();
+    // a device that can't decode WebM/Opus (e.g. very old iOS) — use the
+    // browser's own voice instead of leaving the learner with silence
+    if (audioEl === audio) {
+      audioEl = null;
+      fallback();
+    }
   };
 
   try {

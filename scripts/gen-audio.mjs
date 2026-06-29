@@ -19,8 +19,15 @@
  */
 import { createServer } from 'vite';
 import { EdgeTTS } from '@andresaya/edge-tts';
+import ffmpegPath from 'ffmpeg-static';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+
+// edge-tts only emits 48 kbit MP3 (its "opus" option isn't smaller), so we
+// re-encode each clip to ~24 kbit Opus/WebM — about half the size at better
+// speech quality. The word timings come from the original synthesis, unchanged.
+const OPUS_BITRATE = '24k';
 
 // One male + one female neural voice per language. Neerja-Expressive is the
 // warmest English option; the Indic locales each expose exactly one M/F pair.
@@ -91,7 +98,7 @@ try {
     const dir = path.join(OUT, job.lessonId);
     fs.mkdirSync(dir, { recursive: true });
     const base = path.join(dir, `s${job.i}.${job.lang}.${job.g}`);
-    if (!force && fs.existsSync(base + '.mp3') && fs.existsSync(base + '.json')) {
+    if (!force && fs.existsSync(base + '.webm') && fs.existsSync(base + '.json')) {
       skipped++;
       continue;
     }
@@ -99,6 +106,12 @@ try {
       const tts = new EdgeTTS();
       await tts.synthesize(job.text, VOICES[job.lang][job.g], { rate: '0%', pitch: '0Hz', volume: '0%' });
       await tts.toFile(base); // writes <base>.mp3
+      execFileSync(
+        ffmpegPath,
+        ['-y', '-i', base + '.mp3', '-c:a', 'libopus', '-b:a', OPUS_BITRATE, '-ac', '1', base + '.webm'],
+        { stdio: 'ignore' },
+      );
+      fs.unlinkSync(base + '.mp3');
       fs.writeFileSync(base + '.json', JSON.stringify(buildTiming(job.text, tts.getWordBoundaries())));
       done++;
       if (done % 10 === 0) console.log(`  …${done} generated, ${skipped} skipped`);
