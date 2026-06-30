@@ -144,6 +144,9 @@ export default function Studio() {
                 ) : (
                   <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
                 )}
+                {j.status === 'done' && j.result_lesson_id && (
+                  <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
+                )}
                 {j.status === 'failed' && j.notes && <div className="studio-err">{j.notes}</div>}
               </div>
             </div>

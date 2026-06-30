@@ -1,0 +1,51 @@
+# Content Studio — generation playbook
+
+Path B (hybrid): implementers/admins upload in the app (`/admin/studio`); the
+**Claude Code agent** turns each ready job into a deployed demo or lesson. The
+app never runs AI — generation happens here, by the agent, using `studio.mjs`
+for the mechanical glue and authoring the lesson by hand (high quality).
+
+## One-time setup
+1. Run `supabase/schema.sql` (creates `generation_jobs`, roles, RLS, storage policy).
+2. Create a **private** Storage bucket named `uploads`.
+3. Get the project **service-role key** (Supabase → Settings → API). Keep it secret:
+   - PowerShell: `$env:SUPABASE_SERVICE_ROLE = "<key>"`, or
+   - put it in `scripts/service.local` (gitignored).
+
+## Processing a job
+```
+node scripts/studio.mjs list                 # what's ready (approved content + all demos)
+node scripts/studio.mjs pickup <jobId>        # downloads the file + extracts frames, marks "processing"
+```
+`pickup` writes to `.studio-work/<jobId>/` (gitignored): `source.<ext>` and, for
+videos, `frames/f###.jpg`. The agent **Reads the frames** to see the recording.
+
+Then author the lesson, following the existing patterns:
+- **A demo** (`kind: demo`): create a lesson file under a hidden module so it is
+  reachable by URL but never listed in anyone's nav. Use `module-demos` (register
+  it in `catalog.ts` once; do NOT add it to any role's home list). Author with
+  live widgets / detail screenshots like `lesson-01-reading`. Route =
+  `internal/module-demos/<lessonId>`.
+- **A lesson** (`kind: content`, already admin-approved): add it to the right
+  existing module (or a new module) in `catalog.ts`, set `lessonNumber`, author
+  the steps in all 4 languages.
+
+Generate its audio and deploy:
+```
+npm run gen:audio -- --lesson=<lessonId>      # edge-tts clips + word timings
+npm run build                                  # sanity
+git add ... && git commit && git push          # GitHub Pages deploys
+```
+
+Finalize the job so the Studio shows it as Ready (with an Open link):
+```
+node scripts/studio.mjs done <jobId> internal/module-demos/<lessonId>
+# or on failure:
+node scripts/studio.mjs fail <jobId> "couldn't read the recording — re-upload at higher resolution"
+```
+
+## Notes
+- Demos publish straight through; lesson content only appears in `list` once an
+  admin has approved it (Admin page → approval queue).
+- `done`'s route path is stored in `result_lesson_id`; the Studio renders it as
+  an **Open** link, so admins can view the finished demo from the job list.
