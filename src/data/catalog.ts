@@ -1,4 +1,5 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
+import demoHindalco from './lessons/module-demos/demo-hindalco';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
 import lessonSmartHours from './lessons/module-01-dashboard/lesson-02-smart-hours';
@@ -43,6 +44,7 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
+  [demoHindalco.id]: demoHindalco,
   [lessonReading.id]: lessonReading,
   [lesson01.id]: lesson01,
   [lessonSmartHours.id]: lessonSmartHours,
@@ -370,6 +372,22 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-building-dashboards', comingSoon: true },
       { id: 'lesson-customer-hub', comingSoon: true },
     ],
+  },
+  // Hidden holder for generated personalized demos. roles: [] keeps it out of
+  // every home list, but the route still resolves so demos open via their link.
+  {
+    id: 'module-demos',
+    number: 99,
+    tag: 'DEMO',
+    roles: [],
+    name: { en: 'Personalized Demos', hi: 'व्यक्तिगत डेमो', ta: 'தனிப்பயன் டெமோக்கள்', mr: 'वैयक्तिक डेमो' },
+    description: {
+      en: 'Client-specific demos generated from a recording — reachable by link, not listed.',
+      hi: 'रिकॉर्डिंग से बनाए गए क्लाइंट-विशिष्ट डेमो — लिंक से पहुँच योग्य, सूचीबद्ध नहीं।',
+      ta: 'பதிவிலிருந்து உருவாக்கப்பட்ட வாடிக்கையாளர் டெமோக்கள் — இணைப்பால் அணுகலாம், பட்டியலிடப்படவில்லை.',
+      mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
+    },
+    lessons: [{ id: 'demo-hindalco' }],
   },
 ];
 
