@@ -6,6 +6,7 @@ import ProgressRing from '../components/ProgressRing';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase, type AppRole, type Profile } from '../lib/supabase';
+import { listJobs, reviewJob, type GenerationJob } from '../lib/studio';
 import { MODULES, getLesson } from '../data/catalog';
 
 interface ProgRow {
@@ -39,17 +40,25 @@ export default function Admin() {
   const [inviteRole, setInviteRole] = useState<AppRole>('user');
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
+  const [jobs, setJobs] = useState<GenerationJob[]>([]);
 
   const load = useCallback(async () => {
     setFetching(true);
-    const [{ data: p }, { data: lp }] = await Promise.all([
+    const [{ data: p }, { data: lp }, jb] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
+      listJobs(),
     ]);
     setUsers((p as Profile[]) ?? []);
     setProgress((lp as ProgRow[]) ?? []);
+    setJobs(jb);
     setFetching(false);
   }, []);
+
+  async function review(id: string, decision: 'approved' | 'rejected') {
+    await reviewJob(id, decision);
+    load();
+  }
 
   useEffect(() => {
     if (isAdmin) load();
@@ -141,6 +150,7 @@ export default function Admin() {
             />
             <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as AppRole)}>
               <option value="user">{t('roleUserLabel')}</option>
+              <option value="implementer">{t('roleImplementerLabel')}</option>
               <option value="admin">{t('roleAdminLabel')}</option>
             </select>
             <button type="submit" className="lesson-cta">{t('adminInviteBtn')}</button>
@@ -148,6 +158,32 @@ export default function Admin() {
           {inviteMsg && <div className="ai-msg">{inviteMsg}</div>}
           <div className="ai-hint">{t('adminInviteHint')}</div>
         </form>
+
+        {/* lesson-content approvals (implementer uploads awaiting review) */}
+        {jobs.some((j) => j.approval_status === 'pending') && (
+          <div className="admin-users" style={{ marginBottom: 24 }}>
+            <div className="au-head" style={{ gridTemplateColumns: '2.6fr 1fr 1.4fr' }}>
+              <span>Lesson awaiting approval</span>
+              <span>Uploaded</span>
+              <span>Decision</span>
+            </div>
+            {jobs
+              .filter((j) => j.approval_status === 'pending')
+              .map((j) => (
+                <div key={j.id} className="au-row" style={{ gridTemplateColumns: '2.6fr 1fr 1.4fr', cursor: 'default' }}>
+                  <div className="au-user">
+                    <div className="au-name">{j.title}</div>
+                    {j.notes && <div className="au-email">{j.notes}</div>}
+                  </div>
+                  <div className="au-email">{new Date(j.created_at).toLocaleDateString()}</div>
+                  <div className="studio-review">
+                    <button className="lesson-cta" onClick={() => review(j.id, 'approved')}>Approve</button>
+                    <button className="au-toggle" onClick={() => review(j.id, 'rejected')}>Reject</button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
 
         {/* users */}
         <div className="admin-users">
@@ -178,6 +214,7 @@ export default function Admin() {
                       onChange={(e) => setRole(u.id, e.target.value as AppRole)}
                     >
                       <option value="user">{t('roleUserLabel')}</option>
+                      <option value="implementer">{t('roleImplementerLabel')}</option>
                       <option value="admin">{t('roleAdminLabel')}</option>
                     </select>
                   </div>

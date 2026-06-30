@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 
 export type JobKind = 'demo' | 'content';
 export type JobStatus = 'queued' | 'processing' | 'done' | 'failed';
+export type ApprovalStatus = 'not_required' | 'pending' | 'approved' | 'rejected';
 
 export interface GenerationJob {
   id: string;
@@ -9,6 +10,7 @@ export interface GenerationJob {
   title: string;
   storage_path: string;
   status: JobStatus;
+  approval_status: ApprovalStatus;
   result_lesson_id: string | null;
   notes: string | null;
   created_at: string;
@@ -49,7 +51,17 @@ export async function submitJob(opts: {
 export async function listJobs(): Promise<GenerationJob[]> {
   const { data } = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,status,result_lesson_id,notes,created_at')
+    .select('id,kind,title,storage_path,status,approval_status,result_lesson_id,notes,created_at')
     .order('created_at', { ascending: false });
   return (data as GenerationJob[]) ?? [];
+}
+
+/** Admin approves / rejects an implementer's lesson-content upload. */
+export async function reviewJob(id: string, decision: 'approved' | 'rejected'): Promise<{ error: string | null }> {
+  const { data: who } = await supabase.auth.getUser();
+  const { error } = await supabase
+    .from('generation_jobs')
+    .update({ approval_status: decision, approved_by: who.user?.id ?? null, reviewed_at: new Date().toISOString() })
+    .eq('id', id);
+  return { error: error?.message ?? null };
 }

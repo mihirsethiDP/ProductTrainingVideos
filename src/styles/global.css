@@ -1919,6 +1919,9 @@ button { font-family: var(--sans); }
 }
 .studio-field textarea { resize: vertical; }
 .studio-head, .studio-row { grid-template-columns: 2.6fr 1fr 1.2fr; cursor: default; }
+.studio-review { display: flex; gap: 8px; align-items: center; }
+.studio-review .lesson-cta { padding: 7px 14px; font-size: 12px; }
+.studio-review .au-toggle { padding: 7px 12px; }
 .badge.studio-status.queued { background: var(--paper-warm); color: var(--ink-soft); }
 .badge.studio-status.processing { background: rgba(212, 160, 23, 0.16); color: #a37c10; }
 .badge.studio-status.done { background: rgba(45, 134, 89, 0.14); color: var(--leaf); }

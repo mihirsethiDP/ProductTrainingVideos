@@ -10,7 +10,7 @@ const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
 export default function Header({ meta }: { meta?: ReactNode }) {
   const { t } = useLanguage();
   const { startTour } = useTour();
-  const { session, profile, isAdmin, signOut } = useAuth();
+  const { session, profile, isAdmin, canCreate, signOut } = useAuth();
   const navigate = useNavigate();
   return (
     <div className="header">
@@ -30,6 +30,11 @@ export default function Header({ meta }: { meta?: ReactNode }) {
           </svg>
           <span>{t('tourButtonLabel')}</span>
         </button>
+        {canCreate && !isAdmin && (
+          <Link to="/admin/studio" className="tour-button" title="Content Studio">
+            <span>🎬 Studio</span>
+          </Link>
+        )}
         {isAdmin && (
           <Link to="/admin" className="tour-button" title={t('adminTitle')}>
             <span>{t('adminTitle')}</span>

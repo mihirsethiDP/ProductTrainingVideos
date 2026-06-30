@@ -13,13 +13,13 @@ const STATUS_LABEL: Record<GenerationJob['status'], string> = {
 };
 
 /**
- * Admin-only "Content Studio". Implementers upload a client screen recording
- * (to build a personalized demo) or new product content (to author new
- * lessons). Each upload is queued; a Claude Code agent generates and deploys
- * the result and flips the job to "Ready".
+ * "Content Studio" for implementers & admins. Upload a client screen recording
+ * (to build a personalized demo — publishes straight through) or new product
+ * content (to author a lesson — an implementer's upload waits for admin
+ * approval). A Claude Code agent generates the result and flips it to "Ready".
  */
 export default function Studio() {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, canCreate, loading } = useAuth();
 
   const [kind, setKind] = useState<JobKind>('demo');
   const [title, setTitle] = useState('');
@@ -34,8 +34,8 @@ export default function Studio() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin) refresh();
-  }, [isAdmin, refresh]);
+    if (canCreate) refresh();
+  }, [canCreate, refresh]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,20 +55,20 @@ export default function Studio() {
   }
 
   if (loading) return null;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!canCreate) return <Navigate to="/" replace />;
 
   return (
     <div className="page">
       <div className="container">
-        <Header meta={<Link to="/admin" className="header-link">← Admin</Link>} />
+        <Header meta={<Link to={isAdmin ? '/admin' : '/'} className="header-link">← {isAdmin ? 'Admin' : 'Home'}</Link>} />
 
         <div className="title-block">
-          <div className="eyebrow">Admin · Content Studio</div>
+          <div className="eyebrow">Content Studio</div>
           <h1 className="lesson-title">Content Studio</h1>
           <p className="lesson-subtitle">
-            Upload a client screen recording to build a <strong>personalized demo</strong>, or upload new product
-            content to author <strong>new lessons</strong>. Each upload is queued and turned into a step-by-step,
-            narrated walkthrough.
+            Upload a client screen recording to build a <strong>personalized demo</strong> (publishes straight away), or
+            upload new product content to author a <strong>new lesson</strong>{!isAdmin && ' (goes to an admin for approval first)'}.
+            Each upload is turned into a step-by-step, narrated walkthrough.
           </p>
         </div>
 
@@ -137,7 +137,13 @@ export default function Studio() {
               </div>
               <div><span className="tag-chip">{j.kind === 'demo' ? 'Demo' : 'Lesson'}</span></div>
               <div>
-                <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
+                {j.approval_status === 'pending' ? (
+                  <span className="badge studio-status processing">Awaiting approval</span>
+                ) : j.approval_status === 'rejected' ? (
+                  <span className="badge studio-status failed">Rejected</span>
+                ) : (
+                  <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
+                )}
                 {j.status === 'failed' && j.notes && <div className="studio-err">{j.notes}</div>}
               </div>
             </div>

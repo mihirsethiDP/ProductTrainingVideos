@@ -143,17 +143,87 @@ create table if not exists public.generation_jobs (
   updated_at       timestamptz not null default now()
 );
 
+-- approval workflow: personalized demos publish straight away; lesson/module
+-- content uploaded by an implementer waits for an admin's approval first.
+alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';
+alter table public.generation_jobs add column if not exists approved_by uuid references auth.users (id);
+alter table public.generation_jobs add column if not exists reviewed_at timestamptz;
+alter table public.generation_jobs drop constraint if exists generation_jobs_approval_status_check;
+alter table public.generation_jobs add constraint generation_jobs_approval_status_check
+  check (approval_status in ('not_required', 'pending', 'approved', 'rejected'));
+
 alter table public.generation_jobs enable row level security;
 
--- generation_jobs: admins only
+-- ---------- implementer role ----------
+-- Allow a third role: 'implementer' — can upload demos & lesson content, but
+-- has no admin powers. Their lesson/module uploads need admin approval.
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'implementer', 'user'));
+
+-- can this user create content (implementer or admin)?
+create or replace function public.can_create()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role in ('admin', 'implementer') and active = true
+  );
+$$;
+
+-- on insert: stamp the owner, and set the approval gate. Demos never need
+-- approval; content is auto-approved only when an admin uploads it.
+create or replace function public.set_job_approval()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  new.created_by := auth.uid();
+  if new.kind = 'demo' then
+    new.approval_status := 'not_required';
+  else
+    new.approval_status := case when public.is_admin() then 'approved' else 'pending' end;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists gen_jobs_approval on public.generation_jobs;
+create trigger gen_jobs_approval
+  before insert on public.generation_jobs
+  for each row execute function public.set_job_approval();
+
+-- generation_jobs RLS: creators read/insert their own; admins manage everything
 drop policy if exists genjobs_admin on public.generation_jobs;
-create policy genjobs_admin on public.generation_jobs
-  for all using (public.is_admin()) with check (public.is_admin());
+drop policy if exists genjobs_select on public.generation_jobs;
+create policy genjobs_select on public.generation_jobs
+  for select using (created_by = auth.uid() or public.is_admin());
+drop policy if exists genjobs_insert on public.generation_jobs;
+create policy genjobs_insert on public.generation_jobs
+  for insert with check (public.can_create());
+drop policy if exists genjobs_update on public.generation_jobs;
+create policy genjobs_update on public.generation_jobs
+  for update using (public.is_admin()) with check (public.is_admin());
+drop policy if exists genjobs_delete on public.generation_jobs;
+create policy genjobs_delete on public.generation_jobs
+  for delete using (public.is_admin());
 
 -- ---------- storage ----------
 -- Create a PRIVATE bucket named 'uploads' in the dashboard (Storage → New bucket
--- → name 'uploads', Public = off). Then these policies let admins upload & read:
+-- → name 'uploads', Public = off). Then these policies let creators upload & read:
 drop policy if exists uploads_admin_all on storage.objects;
-create policy uploads_admin_all on storage.objects
-  for all using (bucket_id = 'uploads' and public.is_admin())
-  with check (bucket_id = 'uploads' and public.is_admin());
+drop policy if exists uploads_create_all on storage.objects;
+create policy uploads_create_all on storage.objects
+  for all using (bucket_id = 'uploads' and public.can_create())
+  with check (bucket_id = 'uploads' and public.can_create());
+
+-- ---------- migrate existing admins to implementer (keep only Mihir as admin) ----------
+-- Run this once. Everyone currently an admin EXCEPT mihir.sethi@digitalpaani.com
+-- becomes an implementer and loses admin functionality.
+update public.profiles
+  set role = 'implementer'
+  where role = 'admin' and lower(email) <> 'mihir.sethi@digitalpaani.com';
