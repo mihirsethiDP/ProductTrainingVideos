@@ -102,22 +102,34 @@ try {
       skipped++;
       continue;
     }
-    try {
-      const tts = new EdgeTTS();
-      await tts.synthesize(job.text, VOICES[job.lang][job.g], { rate: '0%', pitch: '0Hz', volume: '0%' });
-      await tts.toFile(base); // writes <base>.mp3
-      execFileSync(
-        ffmpegPath,
-        ['-y', '-i', base + '.mp3', '-c:a', 'libopus', '-b:a', OPUS_BITRATE, '-ac', '1', base + '.webm'],
-        { stdio: 'ignore' },
-      );
-      fs.unlinkSync(base + '.mp3');
-      fs.writeFileSync(base + '.json', JSON.stringify(buildTiming(job.text, tts.getWordBoundaries())));
+    // Retry transient failures (DNS blips, dropped sockets) with backoff so one
+    // network hiccup doesn't abandon a clip on a long unattended run.
+    let ok = false;
+    let lastErr;
+    for (let attempt = 1; attempt <= 4 && !ok; attempt++) {
+      try {
+        const tts = new EdgeTTS();
+        await tts.synthesize(job.text, VOICES[job.lang][job.g], { rate: '0%', pitch: '0Hz', volume: '0%' });
+        await tts.toFile(base); // writes <base>.mp3
+        execFileSync(
+          ffmpegPath,
+          ['-y', '-i', base + '.mp3', '-c:a', 'libopus', '-b:a', OPUS_BITRATE, '-ac', '1', base + '.webm'],
+          { stdio: 'ignore' },
+        );
+        fs.unlinkSync(base + '.mp3');
+        fs.writeFileSync(base + '.json', JSON.stringify(buildTiming(job.text, tts.getWordBoundaries())));
+        ok = true;
+      } catch (e) {
+        lastErr = e;
+        if (attempt < 4) await new Promise((r) => setTimeout(r, attempt * 2500));
+      }
+    }
+    if (ok) {
       done++;
       if (done % 10 === 0) console.log(`  …${done} generated, ${skipped} skipped`);
-    } catch (e) {
+    } else {
       failed++;
-      console.error(`FAIL ${path.relative(OUT, base)}: ${e.message}`);
+      console.error(`FAIL ${path.relative(OUT, base)}: ${lastErr?.message}`);
     }
   }
   console.log(`Done. generated=${done} skipped=${skipped} failed=${failed}`);
