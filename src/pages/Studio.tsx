@@ -44,7 +44,14 @@ export default function Studio() {
     if (!file) return setMsg({ ok: false, text: 'Choose a file to upload.' });
     if (!title.trim()) return setMsg({ ok: false, text: 'Give it a title.' });
     setBusy(true);
-    const { error } = await submitJob({ kind, title, notes, file, stamp: Date.now() });
+    const { error } = await submitJob({
+      kind,
+      title,
+      notes,
+      file,
+      stamp: Date.now(),
+      onProgress: (done, total) => setMsg(total > 1 ? { ok: true, text: `Uploading large file… part ${done} of ${total}` } : null),
+    });
     setBusy(false);
     if (error) return setMsg({ ok: false, text: error });
     setMsg({ ok: true, text: 'Uploaded & queued. It will appear below as it’s generated.' });
@@ -117,8 +124,8 @@ export default function Studio() {
           </button>
           {msg && <div className={`ai-msg${msg.ok ? '' : ' err'}`}>{msg.text}</div>}
           <div className="ai-hint">
-            Files are stored privately in Supabase. Generation runs separately — the job below moves to “Ready” when the
-            demo or lesson is live.
+            Files are stored privately in Supabase. Large recordings are split into chunks automatically and reassembled
+            during generation. The job below moves to “Ready” when the demo or lesson is live.
           </div>
         </form>
 

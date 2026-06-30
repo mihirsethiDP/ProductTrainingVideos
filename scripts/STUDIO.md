@@ -19,6 +19,9 @@ node scripts/studio.mjs pickup <jobId>        # downloads the file + extracts fr
 ```
 `pickup` writes to `.studio-work/<jobId>/` (gitignored): `source.<ext>` and, for
 videos, `frames/f###.jpg`. The agent **Reads the frames** to see the recording.
+(Large uploads were split into `job.parts` byte-chunks client-side; `pickup`
+downloads `storage_path.part0..partN-1` and concatenates them back to the exact
+original — transparent, nothing extra to do.)
 
 Then author the lesson, following the existing patterns:
 - **A demo** (`kind: demo`): create a lesson file under a hidden module so it is

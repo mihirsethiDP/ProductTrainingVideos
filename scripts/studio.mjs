@@ -62,11 +62,26 @@ async function pickup(id) {
   const dir = path.join(WORK, id);
   fs.mkdirSync(dir, { recursive: true });
 
-  const dl = await db.storage.from('uploads').download(job.storage_path);
-  if (dl.error) throw dl.error;
+  const parts = job.parts ?? 1;
+  let buf;
+  if (parts <= 1) {
+    const dl = await db.storage.from('uploads').download(job.storage_path);
+    if (dl.error) throw dl.error;
+    buf = Buffer.from(await dl.data.arrayBuffer());
+  } else {
+    // reassemble the byte-chunks in order — reproduces the original file exactly
+    const chunks = [];
+    for (let i = 0; i < parts; i++) {
+      const dl = await db.storage.from('uploads').download(`${job.storage_path}.part${i}`);
+      if (dl.error) throw new Error(`part ${i}: ${dl.error.message}`);
+      chunks.push(Buffer.from(await dl.data.arrayBuffer()));
+    }
+    buf = Buffer.concat(chunks);
+    console.log(`  reassembled ${parts} chunks → ${(buf.length / 1048576).toFixed(1)} MB`);
+  }
   const ext = path.extname(job.storage_path) || '.bin';
   const src = path.join(dir, `source${ext}`);
-  fs.writeFileSync(src, Buffer.from(await dl.data.arrayBuffer()));
+  fs.writeFileSync(src, buf);
 
   let frames = null;
   if (/\.(mp4|mov|webm|mkv|avi)$/i.test(ext)) {

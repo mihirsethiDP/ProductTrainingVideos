@@ -143,6 +143,10 @@ create table if not exists public.generation_jobs (
   updated_at       timestamptz not null default now()
 );
 
+-- files over the storage per-object limit are split into N byte-chunks on the
+-- client (object.part0..partN-1) and reassembled by the generator. 1 = single file.
+alter table public.generation_jobs add column if not exists parts integer not null default 1;
+
 -- approval workflow: personalized demos publish straight away; lesson/module
 -- content uploaded by an implementer waits for an admin's approval first.
 alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';
