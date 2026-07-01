@@ -621,15 +621,22 @@ button { font-family: var(--sans); }
 .sc-left, .sc-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sc-btn {
   background: rgba(255, 255, 255, 0.12); border: none; color: #fff;
-  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: background 0.15s;
 }
 .sc-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
 .sc-btn svg { width: 16px; height: 16px; }
 .sc-btn:disabled { opacity: 0.4; cursor: default; }
-.sc-play { width: 44px; height: 44px; background: var(--accent); color: var(--brand); }
-.sc-play:hover:not(:disabled) { background: #e6b020; }
-.sc-play svg { width: 20px; height: 20px; }
+.sc-play {
+  width: 58px; height: 58px; flex-shrink: 0; background: var(--accent); color: var(--brand);
+  box-shadow: 0 4px 16px rgba(212, 160, 23, 0.6), 0 0 0 5px rgba(212, 160, 23, 0.2);
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.sc-play:hover:not(:disabled) {
+  background: #e6b020; transform: scale(1.07);
+  box-shadow: 0 6px 20px rgba(212, 160, 23, 0.7), 0 0 0 6px rgba(212, 160, 23, 0.26);
+}
+.sc-play svg { width: 27px; height: 27px; }
 .sc-status { font-size: 11px; display: flex; align-items: center; gap: 6px; opacity: 0.85; margin-left: 6px; white-space: nowrap; }
 .sc-dot { width: 7px; height: 7px; border-radius: 50%; background: #9aa7b8; }
 .sc-status.on .sc-dot { background: var(--leaf-soft); box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25); animation: rnw-ring 1.4s infinite; }
