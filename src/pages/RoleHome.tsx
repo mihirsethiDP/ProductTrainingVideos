@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import Thumb, { lessonGlyph, moduleAccent, moduleGlyph } from '../components/Thumb';
 import ProgressRing from '../components/ProgressRing';
 import SearchBar from '../components/SearchBar';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
@@ -23,6 +24,7 @@ export default function RoleHome() {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const { maybeStartFirstVisit } = useTour();
+  const { assignedRole } = useAuth();
 
   const validRole = !!role && ROLES.includes(role as RoleId);
   useEffect(() => {
@@ -30,6 +32,8 @@ export default function RoleHome() {
   }, [validRole, maybeStartFirstVisit]);
 
   if (!validRole) return <Navigate to="/" replace />;
+  // invited users only see the path the admin assigned them
+  if (assignedRole && role !== assignedRole) return <Navigate to={`/${assignedRole}`} replace />;
   const roleId = role as RoleId;
   const modules = modulesForRole(roleId);
   const overall = roleCompletion(roleId);
@@ -39,9 +43,13 @@ export default function RoleHome() {
       <div className="container">
         <Header
           meta={
-            <Link to="/" className="header-link">
-              {t(ROLE_LABEL_KEY[roleId])} · {t('changePath')}
-            </Link>
+            assignedRole ? (
+              <span className="header-link">{t(ROLE_LABEL_KEY[roleId])}</span>
+            ) : (
+              <Link to="/" className="header-link">
+                {t(ROLE_LABEL_KEY[roleId])} · {t('changePath')}
+              </Link>
+            )
           }
         />
         <div className="title-block">

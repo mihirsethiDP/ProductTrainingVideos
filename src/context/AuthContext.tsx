@@ -10,6 +10,9 @@ interface AuthCtx {
   isAdmin: boolean;
   isCsm: boolean;
   canCreate: boolean; // admin or CSM — may use the Content Studio
+  /** the training path this user is locked to (set by the admin at invite time);
+   *  null = free choice (admins, CSMs, and legacy unassigned accounts) */
+  assignedRole: 'operator' | 'supervisor' | 'internal' | null;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null; needsConfirm: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -104,6 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: profile?.role === 'admin',
       isCsm: profile?.role === 'csm',
       canCreate: profile?.role === 'admin' || profile?.role === 'csm',
+      // only plain users are locked to their assigned path; staff roam freely
+      assignedRole: profile?.role === 'user' ? (profile?.training_role ?? null) : null,
       signUp,
       signIn,
       signOut,

@@ -1,6 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
@@ -15,6 +16,10 @@ const ROLE_CARDS: { id: RoleId; icon: string; nameKey: string; descKey: string }
 export default function RoleSelect() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { assignedRole } = useAuth();
+
+  // invited users are locked to the path the admin chose — no picker for them
+  if (assignedRole) return <Navigate to={`/${assignedRole}`} replace />;
 
   return (
     <div className="page">

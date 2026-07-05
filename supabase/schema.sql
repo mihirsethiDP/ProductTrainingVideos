@@ -237,3 +237,48 @@ create policy uploads_create_all on storage.objects
 update public.profiles
   set role = 'csm'
   where role = 'admin' and lower(email) <> 'mihir.sethi@digitalpaani.com';
+
+-- ============================================================
+--  Training role — assigned by the admin at invite time.
+--  A user with a training_role only sees that role's modules
+--  (operator / supervisor / internal). NULL = unrestricted
+--  (legacy accounts, admins, CSMs).
+-- ============================================================
+
+alter table public.profiles add column if not exists training_role text
+  check (training_role in ('operator', 'supervisor', 'internal'));
+alter table public.invites add column if not exists training_role text
+  check (training_role in ('operator', 'supervisor', 'internal'));
+
+-- re-create the signup trigger so an invite's training_role is applied too
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inv public.invites%rowtype;
+begin
+  select * into inv
+  from public.invites
+  where lower(email) = lower(new.email) and used = false
+  order by created_at desc
+  limit 1;
+
+  insert into public.profiles (id, email, full_name, role, training_role)
+  values (
+    new.id,
+    new.email,
+    new.raw_user_meta_data ->> 'full_name',
+    coalesce(inv.role, 'user'),
+    inv.training_role
+  );
+
+  if inv.id is not null then
+    update public.invites set used = true where id = inv.id;
+  end if;
+
+  return new;
+end;
+$$;

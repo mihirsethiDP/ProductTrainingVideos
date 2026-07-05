@@ -12,12 +12,15 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 export type AppRole = 'admin' | 'csm' | 'user';
+export type TrainingRole = 'operator' | 'supervisor' | 'internal';
 
 export interface Profile {
   id: string;
   email: string;
   full_name: string | null;
   role: AppRole;
+  /** admin-assigned training path; the user only sees this role's modules. NULL = unrestricted. */
+  training_role: TrainingRole | null;
   active: boolean;
 }
 

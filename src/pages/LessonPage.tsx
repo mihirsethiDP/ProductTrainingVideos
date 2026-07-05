@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StageControls from '../components/StageControls';
 import Stage from '../components/Stage';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
 import type { RoleId } from '../data/types';
@@ -21,6 +22,7 @@ import { getLessonProgress, saveLessonStep } from '../lib/progress';
 export default function LessonPage() {
   const { role, moduleId, lessonId } = useParams();
   const { lang, meta, t } = useLanguage();
+  const { assignedRole } = useAuth();
   const navigate = useNavigate();
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
@@ -187,6 +189,11 @@ export default function LessonPage() {
 
   if (!lesson || !content || !module || !role || !ROLES.includes(role as RoleId)) {
     return <Navigate to="/" replace />;
+  }
+  // invited users are locked to their assigned path. Hidden modules (demos,
+  // shorts — roles: []) aren't part of any path, so they stay reachable.
+  if (assignedRole && role !== assignedRole && module.roles.length > 0) {
+    return <Navigate to={`/${assignedRole}`} replace />;
   }
 
   // clamp for the single render right after a lesson switch, before the reset effect runs

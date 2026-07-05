@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import ProgressRing from '../components/ProgressRing';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { supabase, type AppRole, type Profile } from '../lib/supabase';
+import { supabase, type AppRole, type Profile, type TrainingRole } from '../lib/supabase';
 import { listJobs, reviewJob, type GenerationJob } from '../lib/studio';
 import { MODULES, getLesson } from '../data/catalog';
 
@@ -38,6 +38,7 @@ export default function Admin() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<AppRole>('user');
+  const [inviteTraining, setInviteTraining] = useState<TrainingRole>('operator');
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
@@ -89,6 +90,10 @@ export default function Admin() {
     await supabase.from('profiles').update({ role }).eq('id', id);
     load();
   }
+  async function setTraining(id: string, training_role: TrainingRole | null) {
+    await supabase.from('profiles').update({ training_role }).eq('id', id);
+    load();
+  }
   async function setActive(id: string, active: boolean) {
     await supabase.from('profiles').update({ active }).eq('id', id);
     load();
@@ -99,10 +104,12 @@ export default function Admin() {
     const email = inviteEmail.trim().toLowerCase();
     if (!email) return;
     const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}`;
+    // training path only applies to plain users; staff roam all modules
+    const training_role = inviteRole === 'user' ? inviteTraining : null;
     try {
       // preferred path: the invite-user Edge Function emails the invitee
       const { data, error } = await supabase.functions.invoke('invite-user', {
-        body: { email, role: inviteRole, redirectTo },
+        body: { email, role: inviteRole, training_role, redirectTo },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -114,7 +121,7 @@ export default function Admin() {
       // fallback (function not deployed yet): just pre-authorize the role
       const { error: insErr } = await supabase
         .from('invites')
-        .insert({ email, role: inviteRole, created_by: profile?.id });
+        .insert({ email, role: inviteRole, training_role, created_by: profile?.id });
       setInviteMsg(insErr ? insErr.message : t('adminInviteSaved').replace('{email}', email));
       if (!insErr) setInviteEmail('');
     }
@@ -153,6 +160,17 @@ export default function Admin() {
               <option value="csm">{t('roleCsmLabel')}</option>
               <option value="admin">{t('roleAdminLabel')}</option>
             </select>
+            {inviteRole === 'user' && (
+              <select
+                value={inviteTraining}
+                onChange={(e) => setInviteTraining(e.target.value as TrainingRole)}
+                title={t('adminTrainingPath')}
+              >
+                <option value="operator">{t('roleOperator')}</option>
+                <option value="supervisor">{t('roleSupervisor')}</option>
+                <option value="internal">{t('roleInternal')}</option>
+              </select>
+            )}
             <button type="submit" className="lesson-cta">{t('adminInviteBtn')}</button>
           </div>
           {inviteMsg && <div className="ai-msg">{inviteMsg}</div>}
@@ -217,6 +235,21 @@ export default function Admin() {
                       <option value="csm">{t('roleCsmLabel')}</option>
                       <option value="admin">{t('roleAdminLabel')}</option>
                     </select>
+                    {u.role === 'user' && (
+                      <select
+                        className="au-role"
+                        style={{ marginTop: 6 }}
+                        value={u.training_role ?? ''}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => setTraining(u.id, (e.target.value || null) as TrainingRole | null)}
+                        title={t('adminTrainingPath')}
+                      >
+                        <option value="">{t('adminAllPaths')}</option>
+                        <option value="operator">{t('roleOperator')}</option>
+                        <option value="supervisor">{t('roleSupervisor')}</option>
+                        <option value="internal">{t('roleInternal')}</option>
+                      </select>
+                    )}
                   </div>
                   <div className="au-prog">
                     <ProgressRing percent={o.percent} size={34} stroke={4} />
