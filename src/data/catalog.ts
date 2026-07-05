@@ -1,5 +1,7 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
 import demoHindalco from './lessons/module-demos/demo-hindalco';
+import shortOperational from './lessons/module-shorts/short-operational';
+import shortNonOperational from './lessons/module-shorts/short-non-operational';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
 import lesson01 from './lessons/module-01-dashboard/lesson-01-overview';
 import lessonSmartHours from './lessons/module-01-dashboard/lesson-02-smart-hours';
@@ -45,6 +47,8 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
   [demoHindalco.id]: demoHindalco,
+  [shortOperational.id]: shortOperational,
+  [shortNonOperational.id]: shortNonOperational,
   [lessonReading.id]: lessonReading,
   [lesson01.id]: lesson01,
   [lessonSmartHours.id]: lessonSmartHours,
@@ -388,6 +392,23 @@ export const MODULES: ModuleDef[] = [
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
     lessons: [{ id: 'demo-hindalco' }],
+  },
+  // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
+  // of every home list; the /watch/* routes serve them WITHOUT login.
+  // NOTE: re-edit both shorts whenever a new module/lesson ships.
+  {
+    id: 'module-shorts',
+    number: 98,
+    tag: 'SHORT',
+    roles: [],
+    name: { en: 'Quick Tours', hi: 'क्विक टूर', ta: 'விரைவுச் சுற்றுகள்', mr: 'क्विक टूर' },
+    description: {
+      en: 'Two-minute persona reels — forwardable to anyone, no sign-in needed.',
+      hi: 'दो मिनट के पर्सोना वीडियो — किसी को भी भेजें, साइन-इन ज़रूरी नहीं।',
+      ta: 'இரண்டு நிமிட பர்சோனா சுருள்கள் — யாருக்கும் அனுப்பலாம், உள்நுழைவு தேவையில்லை.',
+      mr: 'दोन मिनिटांचे पर्सोना व्हिडिओ — कोणालाही पाठवा, साइन-इन आवश्यक नाही.',
+    },
+    lessons: [{ id: 'short-operational' }, { id: 'short-non-operational' }],
   },
 ];
 
