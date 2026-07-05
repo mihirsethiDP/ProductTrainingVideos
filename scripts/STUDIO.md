@@ -17,11 +17,16 @@ for the mechanical glue and authoring the lesson by hand (high quality).
 node scripts/studio.mjs list                 # what's ready (approved content + all demos)
 node scripts/studio.mjs pickup <jobId>        # downloads the file + extracts frames, marks "processing"
 ```
-`pickup` writes to `.studio-work/<jobId>/` (gitignored): `source.<ext>` and, for
-videos, `frames/f###.jpg`. The agent **Reads the frames** to see the recording.
-(Large uploads were split into `job.parts` byte-chunks client-side; `pickup`
-downloads `storage_path.part0..partN-1` and concatenates them back to the exact
-original — transparent, nothing extra to do.)
+`pickup` writes to `.studio-work/<jobId>/` (gitignored). A job can carry ANY mix
+of context files — screen recordings, PDFs, Word docs, text notes, spreadsheets,
+images (`job.files` manifest; legacy single-file jobs still work). Every file is
+downloaded (byte-chunked uploads are concatenated back to the exact original);
+videos additionally get `frames-<name>/f###.jpg` extracted. The agent then:
+- **Reads the frames** to watch each recording,
+- **Reads PDFs/docs/text directly** (pdf & docx skills for those formats),
+and decides how each piece of context maps onto the system's capabilities —
+plant terminology from docs, metrics/layout from the recording, priorities from
+the notes field — before authoring.
 
 Then author the lesson, following the existing patterns:
 - **A demo** (`kind: demo`): create a lesson file under a hidden module so it is

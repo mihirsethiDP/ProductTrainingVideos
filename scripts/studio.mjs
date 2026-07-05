@@ -56,46 +56,55 @@ async function list() {
   console.log(`\n${ready.length} ready. Next: node scripts/studio.mjs pickup <jobId>`);
 }
 
+/** Download one storage object, reassembling byte-chunks when parts > 1. */
+async function fetchObject(objectPath, parts) {
+  if ((parts ?? 1) <= 1) {
+    const dl = await db.storage.from('uploads').download(objectPath);
+    if (dl.error) throw new Error(`${objectPath}: ${dl.error.message}`);
+    return Buffer.from(await dl.data.arrayBuffer());
+  }
+  const chunks = [];
+  for (let i = 0; i < parts; i++) {
+    const dl = await db.storage.from('uploads').download(`${objectPath}.part${i}`);
+    if (dl.error) throw new Error(`${objectPath}.part${i}: ${dl.error.message}`);
+    chunks.push(Buffer.from(await dl.data.arrayBuffer()));
+  }
+  return Buffer.concat(chunks);
+}
+
+/** For videos, extract 1 frame / 2s so the agent can "watch" the recording. */
+function maybeExtractFrames(dir, filePath) {
+  if (!/\.(mp4|mov|webm|mkv|avi)$/i.test(filePath)) return null;
+  const frames = path.join(dir, `frames-${path.basename(filePath).replace(/\.[^.]+$/, '')}`);
+  fs.mkdirSync(frames, { recursive: true });
+  execFileSync(ffmpegPath, ['-y', '-i', filePath, '-vf', 'fps=1/2,scale=900:-1', path.join(frames, 'f%03d.jpg')], { stdio: 'ignore' });
+  return frames;
+}
+
 async function pickup(id) {
   const { data: job, error } = await db.from('generation_jobs').select('*').eq('id', id).single();
   if (error || !job) throw error || new Error('job not found');
   const dir = path.join(WORK, id);
   fs.mkdirSync(dir, { recursive: true });
 
-  const parts = job.parts ?? 1;
-  let buf;
-  if (parts <= 1) {
-    const dl = await db.storage.from('uploads').download(job.storage_path);
-    if (dl.error) throw dl.error;
-    buf = Buffer.from(await dl.data.arrayBuffer());
-  } else {
-    // reassemble the byte-chunks in order — reproduces the original file exactly
-    const chunks = [];
-    for (let i = 0; i < parts; i++) {
-      const dl = await db.storage.from('uploads').download(`${job.storage_path}.part${i}`);
-      if (dl.error) throw new Error(`part ${i}: ${dl.error.message}`);
-      chunks.push(Buffer.from(await dl.data.arrayBuffer()));
-    }
-    buf = Buffer.concat(chunks);
-    console.log(`  reassembled ${parts} chunks → ${(buf.length / 1048576).toFixed(1)} MB`);
-  }
-  const ext = path.extname(job.storage_path) || '.bin';
-  const src = path.join(dir, `source${ext}`);
-  fs.writeFileSync(src, buf);
+  // multi-file jobs carry a manifest; legacy jobs are a single object at storage_path
+  const files = Array.isArray(job.files) && job.files.length > 0
+    ? job.files.map((f) => ({ object: `${job.storage_path}/${f.name}`, local: f.name, parts: f.parts }))
+    : [{ object: job.storage_path, local: `source${path.extname(job.storage_path) || '.bin'}`, parts: job.parts ?? 1 }];
 
-  let frames = null;
-  if (/\.(mp4|mov|webm|mkv|avi)$/i.test(ext)) {
-    frames = path.join(dir, 'frames');
-    fs.mkdirSync(frames, { recursive: true });
-    execFileSync(ffmpegPath, ['-y', '-i', src, '-vf', 'fps=1/2,scale=900:-1', path.join(frames, 'f%03d.jpg')], { stdio: 'ignore' });
+  console.log(`Picked up "${job.title}" (${job.kind}) — ${files.length} file(s).`);
+  for (const f of files) {
+    const buf = await fetchObject(f.object, f.parts);
+    const local = path.join(dir, f.local);
+    fs.writeFileSync(local, buf);
+    const frames = maybeExtractFrames(dir, local);
+    console.log(`  • ${f.local}  (${(buf.length / 1048576).toFixed(1)} MB)${frames ? `\n      frames: ${frames} (${fs.readdirSync(frames).length} images — Read these to watch it)` : ''}`);
   }
   await db.from('generation_jobs').update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', id);
 
-  console.log(`Picked up "${job.title}" (${job.kind}).`);
-  console.log(`  source: ${src}`);
-  if (frames) console.log(`  frames: ${frames}  (${fs.readdirSync(frames).length} images — Read these to see the recording)`);
   console.log(`  notes:  ${job.notes ?? '—'}`);
-  console.log(`\nAuthor the lesson, then: node scripts/studio.mjs done ${id} <routePath>`);
+  console.log('\nRead every file (frames for videos; PDFs/docs/text directly), author the');
+  console.log(`lesson, then: node scripts/studio.mjs done ${id} <routePath>`);
 }
 
 async function finish(id, routePath) {

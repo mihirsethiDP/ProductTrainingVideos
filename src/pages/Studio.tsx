@@ -40,17 +40,17 @@ export default function Studio() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
-    const file = fileRef.current?.files?.[0];
-    if (!file) return setMsg({ ok: false, text: 'Choose a file to upload.' });
+    const files = Array.from(fileRef.current?.files ?? []);
+    if (files.length === 0) return setMsg({ ok: false, text: 'Choose at least one file to upload.' });
     if (!title.trim()) return setMsg({ ok: false, text: 'Give it a title.' });
     setBusy(true);
     const { error } = await submitJob({
       kind,
       title,
       notes,
-      file,
+      files,
       stamp: Date.now(),
-      onProgress: (done, total) => setMsg(total > 1 ? { ok: true, text: `Uploading large file… part ${done} of ${total}` } : null),
+      onProgress: (text) => setMsg({ ok: true, text }),
     });
     setBusy(false);
     if (error) return setMsg({ ok: false, text: error });
@@ -73,9 +73,10 @@ export default function Studio() {
           <div className="eyebrow">Content Studio</div>
           <h1 className="lesson-title">Content Studio</h1>
           <p className="lesson-subtitle">
-            Upload a client screen recording to build a <strong>personalized demo</strong> (publishes straight away), or
-            upload new product content to author a <strong>new lesson</strong>{!isAdmin && ' (goes to an admin for approval first)'}.
-            Each upload is turned into a step-by-step, narrated walkthrough.
+            Upload everything you have for a <strong>personalized demo</strong> (publishes straight away) — screen
+            recordings, PDFs, Word docs, notes, spreadsheets — or new product content to author a{' '}
+            <strong>new lesson</strong>{!isAdmin && ' (goes to an admin for approval first)'}. The generator reads all of
+            it and turns it into a step-by-step, narrated walkthrough.
           </p>
         </div>
 
@@ -104,8 +105,13 @@ export default function Studio() {
             </label>
 
             <label className="studio-field">
-              <span>Recording / content file</span>
-              <input ref={fileRef} type="file" accept="video/*,.pdf,.docx,.png,.jpg,.jpeg" />
+              <span>Context files — recordings, PDFs, docs, notes… (select several)</span>
+              <input
+                ref={fileRef}
+                type="file"
+                multiple
+                accept="video/*,audio/*,.pdf,.doc,.docx,.txt,.md,.csv,.xlsx,.png,.jpg,.jpeg"
+              />
             </label>
 
             <label className="studio-field">

@@ -4,12 +4,18 @@ export type JobKind = 'demo' | 'content';
 export type JobStatus = 'queued' | 'processing' | 'done' | 'failed';
 export type ApprovalStatus = 'not_required' | 'pending' | 'approved' | 'rejected';
 
+export interface JobFile {
+  name: string; // object name inside the job's storage folder
+  parts: number; // 1 = whole object; >1 = byte-chunks name.part0..partN-1
+}
+
 export interface GenerationJob {
   id: string;
   kind: JobKind;
   title: string;
   storage_path: string;
   parts: number;
+  files: JobFile[];
   status: JobStatus;
   approval_status: ApprovalStatus;
   result_lesson_id: string | null;
@@ -25,43 +31,56 @@ const CHUNK_BYTES = 45 * 1024 * 1024;
 const slug = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'file';
 
+/** Upload one file (chunking if needed) at `path`; returns the part count. */
+async function uploadOne(path: string, file: File): Promise<{ parts: number; error: string | null }> {
+  const size = file.size;
+  const parts = size <= CHUNK_BYTES ? 1 : Math.ceil(size / CHUNK_BYTES);
+  if (parts === 1) {
+    const up = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
+    return { parts, error: up.error?.message ?? null };
+  }
+  // raw byte-slices — reassembling them in order reproduces the file exactly
+  for (let i = 0; i < parts; i++) {
+    const blob = file.slice(i * CHUNK_BYTES, Math.min(size, (i + 1) * CHUNK_BYTES));
+    const up = await supabase.storage.from(BUCKET).upload(`${path}.part${i}`, blob, { upsert: false });
+    if (up.error) return { parts, error: `part ${i + 1}/${parts}: ${up.error.message}` };
+  }
+  return { parts, error: null };
+}
+
 /**
- * Uploads a recording/content file to the private `uploads` bucket and queues a
- * generation job. A Claude Code agent later picks the job up, authors the demo
- * or lesson, deploys it, and flips the job to `done`.
+ * Uploads the job's context files (screen recordings, PDFs, docs, notes — any
+ * mix) into a private folder and queues a generation job. A Claude Code agent
+ * later picks it up, reads every file, authors the demo or lesson, deploys it,
+ * and flips the job to `done`.
  */
 export async function submitJob(opts: {
   kind: JobKind;
   title: string;
   notes?: string;
-  file: File;
+  files: File[];
   stamp: number; // pass Date.now() from the caller
-  onProgress?: (donePart: number, totalParts: number) => void;
+  onProgress?: (message: string) => void;
 }): Promise<{ error: string | null }> {
-  const base = `${opts.kind}/${opts.stamp}-${slug(opts.file.name)}`;
-  const size = opts.file.size;
-  const parts = size <= CHUNK_BYTES ? 1 : Math.ceil(size / CHUNK_BYTES);
+  if (opts.files.length === 0) return { error: 'No files selected.' };
+  const folder = `${opts.kind}/${opts.stamp}-${slug(opts.title)}`;
 
-  if (parts === 1) {
-    const up = await supabase.storage.from(BUCKET).upload(base, opts.file, { upsert: false });
-    if (up.error) return { error: up.error.message };
-    opts.onProgress?.(1, 1);
-  } else {
-    // raw byte-slices — reassembling them in order reproduces the file exactly
-    for (let i = 0; i < parts; i++) {
-      const blob = opts.file.slice(i * CHUNK_BYTES, Math.min(size, (i + 1) * CHUNK_BYTES));
-      const up = await supabase.storage.from(BUCKET).upload(`${base}.part${i}`, blob, { upsert: false });
-      if (up.error) return { error: `part ${i + 1}/${parts}: ${up.error.message}` };
-      opts.onProgress?.(i + 1, parts);
-    }
+  const manifest: JobFile[] = [];
+  for (let i = 0; i < opts.files.length; i++) {
+    const f = opts.files[i];
+    const name = `${i}-${slug(f.name)}`;
+    opts.onProgress?.(`Uploading ${i + 1} of ${opts.files.length} — ${f.name}…`);
+    const { parts, error } = await uploadOne(`${folder}/${name}`, f);
+    if (error) return { error: `${f.name}: ${error}` };
+    manifest.push({ name, parts });
   }
 
   const { data: who } = await supabase.auth.getUser();
   const ins = await supabase.from('generation_jobs').insert({
     kind: opts.kind,
     title: opts.title.trim(),
-    storage_path: base,
-    parts,
+    storage_path: folder,
+    files: manifest,
     notes: opts.notes?.trim() || null,
     created_by: who.user?.id ?? null,
   });
@@ -71,7 +90,7 @@ export async function submitJob(opts: {
 export async function listJobs(): Promise<GenerationJob[]> {
   const { data } = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,parts,status,approval_status,result_lesson_id,notes,created_at')
+    .select('id,kind,title,storage_path,parts,files,status,approval_status,result_lesson_id,notes,created_at')
     .order('created_at', { ascending: false });
   return (data as GenerationJob[]) ?? [];
 }

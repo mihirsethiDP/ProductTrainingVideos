@@ -147,6 +147,11 @@ create table if not exists public.generation_jobs (
 -- client (object.part0..partN-1) and reassembled by the generator. 1 = single file.
 alter table public.generation_jobs add column if not exists parts integer not null default 1;
 
+-- a job can carry MULTIPLE context files (recording + pdf + docx + notes …).
+-- storage_path then holds the folder prefix; files lists [{name, parts}] within
+-- it. Empty array = legacy single-file job (storage_path + parts).
+alter table public.generation_jobs add column if not exists files jsonb not null default '[]'::jsonb;
+
 -- approval workflow: personalized demos publish straight away; lesson/module
 -- content uploaded by a CSM waits for an admin's approval first.
 alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';
