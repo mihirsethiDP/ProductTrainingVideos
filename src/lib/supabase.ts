@@ -11,7 +11,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true },
 });
 
-export type AppRole = 'admin' | 'implementer' | 'user';
+export type AppRole = 'admin' | 'csm' | 'user';
 
 export interface Profile {
   id: string;

@@ -8,8 +8,8 @@ interface AuthCtx {
   profile: Profile | null;
   loading: boolean;
   isAdmin: boolean;
-  isImplementer: boolean;
-  canCreate: boolean; // admin or implementer — may use the Content Studio
+  isCsm: boolean;
+  canCreate: boolean; // admin or CSM — may use the Content Studio
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null; needsConfirm: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -102,8 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       loading,
       isAdmin: profile?.role === 'admin',
-      isImplementer: profile?.role === 'implementer',
-      canCreate: profile?.role === 'admin' || profile?.role === 'implementer',
+      isCsm: profile?.role === 'csm',
+      canCreate: profile?.role === 'admin' || profile?.role === 'csm',
       signUp,
       signIn,
       signOut,

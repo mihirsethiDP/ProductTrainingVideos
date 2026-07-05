@@ -1,7 +1,7 @@
 /**
  * Content Studio — generation glue for the Claude Code agent.
  *
- * Path B is hybrid: implementers/admins upload in the app; THIS script lets the
+ * Path B is hybrid: CSMs/admins upload in the app; THIS script lets the
  * agent pull a ready job, fetch its recording, and update the job's lifecycle.
  * The agent does the authoring in between (watch frames → write the lesson →
  * register + generate audio → commit/deploy), exactly like the M1 dashboard

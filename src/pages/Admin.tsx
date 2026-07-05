@@ -150,7 +150,7 @@ export default function Admin() {
             />
             <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as AppRole)}>
               <option value="user">{t('roleUserLabel')}</option>
-              <option value="implementer">{t('roleImplementerLabel')}</option>
+              <option value="csm">{t('roleCsmLabel')}</option>
               <option value="admin">{t('roleAdminLabel')}</option>
             </select>
             <button type="submit" className="lesson-cta">{t('adminInviteBtn')}</button>
@@ -159,7 +159,7 @@ export default function Admin() {
           <div className="ai-hint">{t('adminInviteHint')}</div>
         </form>
 
-        {/* lesson-content approvals (implementer uploads awaiting review) */}
+        {/* lesson-content approvals (CSM uploads awaiting review) */}
         {jobs.some((j) => j.approval_status === 'pending') && (
           <div className="admin-users" style={{ marginBottom: 24 }}>
             <div className="au-head" style={{ gridTemplateColumns: '2.6fr 1fr 1.4fr' }}>
@@ -214,7 +214,7 @@ export default function Admin() {
                       onChange={(e) => setRole(u.id, e.target.value as AppRole)}
                     >
                       <option value="user">{t('roleUserLabel')}</option>
-                      <option value="implementer">{t('roleImplementerLabel')}</option>
+                      <option value="csm">{t('roleCsmLabel')}</option>
                       <option value="admin">{t('roleAdminLabel')}</option>
                     </select>
                   </div>

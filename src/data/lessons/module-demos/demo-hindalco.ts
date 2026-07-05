@@ -2,7 +2,7 @@ import type { Lesson } from '../../types';
 
 /**
  * Personalized demo — Hindalco Mahaan.   (hidden module-demos)
- * Built from the implementer's screen recording of Hindalco's Summary Page: a
+ * Built from the CSM's screen recording of Hindalco's Summary Page: a
  * water-balance dashboard of Range-Number widgets. Each step recreates one of
  * their real widgets and explains what it means for their plant.
  */

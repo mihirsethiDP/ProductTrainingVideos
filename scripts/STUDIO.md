@@ -1,6 +1,6 @@
 # Content Studio — generation playbook
 
-Path B (hybrid): implementers/admins upload in the app (`/admin/studio`); the
+Path B (hybrid): CSMs/admins upload in the app (`/admin/studio`); the
 **Claude Code agent** turns each ready job into a deployed demo or lesson. The
 app never runs AI — generation happens here, by the agent, using `studio.mjs`
 for the mechanical glue and authoring the lesson by hand (high quality).

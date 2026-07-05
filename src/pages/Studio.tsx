@@ -13,9 +13,9 @@ const STATUS_LABEL: Record<GenerationJob['status'], string> = {
 };
 
 /**
- * "Content Studio" for implementers & admins. Upload a client screen recording
+ * "Content Studio" for CSMs & admins. Upload a client screen recording
  * (to build a personalized demo — publishes straight through) or new product
- * content (to author a lesson — an implementer's upload waits for admin
+ * content (to author a lesson — a CSM's upload waits for admin
  * approval). A Claude Code agent generates the result and flips it to "Ready".
  */
 export default function Studio() {

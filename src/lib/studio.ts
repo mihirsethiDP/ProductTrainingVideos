@@ -76,7 +76,7 @@ export async function listJobs(): Promise<GenerationJob[]> {
   return (data as GenerationJob[]) ?? [];
 }
 
-/** Admin approves / rejects an implementer's lesson-content upload. */
+/** Admin approves / rejects a CSM's lesson-content upload. */
 export async function reviewJob(id: string, decision: 'approved' | 'rejected'): Promise<{ error: string | null }> {
   const { data: who } = await supabase.auth.getUser();
   const { error } = await supabase

@@ -148,7 +148,7 @@ create table if not exists public.generation_jobs (
 alter table public.generation_jobs add column if not exists parts integer not null default 1;
 
 -- approval workflow: personalized demos publish straight away; lesson/module
--- content uploaded by an implementer waits for an admin's approval first.
+-- content uploaded by a CSM waits for an admin's approval first.
 alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';
 alter table public.generation_jobs add column if not exists approved_by uuid references auth.users (id);
 alter table public.generation_jobs add column if not exists reviewed_at timestamptz;
@@ -158,13 +158,19 @@ alter table public.generation_jobs add constraint generation_jobs_approval_statu
 
 alter table public.generation_jobs enable row level security;
 
--- ---------- implementer role ----------
--- Allow a third role: 'implementer' — can upload demos & lesson content, but
--- has no admin powers. Their lesson/module uploads need admin approval.
+-- ---------- CSM role (formerly 'implementer') ----------
+-- Third role: 'csm' — can upload demos & lesson content, but has no admin
+-- powers. Their lesson/module uploads need admin approval.
 alter table public.profiles drop constraint if exists profiles_role_check;
-alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'implementer', 'user'));
+update public.profiles set role = 'csm' where role = 'implementer'; -- one-time rename migration
+alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'csm', 'user'));
 
--- can this user create content (implementer or admin)?
+-- invites must accept the csm role too (the original check only allowed admin/user)
+alter table public.invites drop constraint if exists invites_role_check;
+update public.invites set role = 'csm' where role = 'implementer';
+alter table public.invites add constraint invites_role_check check (role in ('admin', 'csm', 'user'));
+
+-- can this user create content (CSM or admin)?
 create or replace function public.can_create()
 returns boolean
 language sql
@@ -173,7 +179,7 @@ set search_path = public
 as $$
   select exists (
     select 1 from public.profiles
-    where id = auth.uid() and role in ('admin', 'implementer') and active = true
+    where id = auth.uid() and role in ('admin', 'csm') and active = true
   );
 $$;
 
@@ -225,9 +231,9 @@ create policy uploads_create_all on storage.objects
   for all using (bucket_id = 'uploads' and public.can_create())
   with check (bucket_id = 'uploads' and public.can_create());
 
--- ---------- migrate existing admins to implementer (keep only Mihir as admin) ----------
+-- ---------- migrate existing admins to CSM (keep only Mihir as admin) ----------
 -- Run this once. Everyone currently an admin EXCEPT mihir.sethi@digitalpaani.com
--- becomes an implementer and loses admin functionality.
+-- becomes a CSM and loses admin functionality.
 update public.profiles
-  set role = 'implementer'
+  set role = 'csm'
   where role = 'admin' and lower(email) <> 'mihir.sethi@digitalpaani.com';
