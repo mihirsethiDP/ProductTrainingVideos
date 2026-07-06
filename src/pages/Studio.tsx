@@ -131,7 +131,8 @@ export default function Studio() {
           {msg && <div className={`ai-msg${msg.ok ? '' : ' err'}`}>{msg.text}</div>}
           <div className="ai-hint">
             Files are stored privately in Supabase. Large recordings are split into chunks automatically and reassembled
-            during generation. The job below moves to “Ready” when the demo or lesson is live.
+            during generation. Generation picks new uploads up within ~10 minutes — the job below moves through
+            “Generating…” to “Ready” when the demo or lesson is live.
           </div>
         </form>
 
