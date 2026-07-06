@@ -13,7 +13,7 @@ const lesson: Lesson = {
   id: 'demo-hindalco',
   moduleId: 'module-demos',
   lessonNumber: 1,
-  estimatedMinutes: 3,
+  estimatedMinutes: 5,
   screenshots: {},
   layouts: [
     {
@@ -56,6 +56,44 @@ const lesson: Lesson = {
       },
       cursor: [{ at: 0.3, x: 50, y: 44 }],
     },
+    // — extended from the second (full) recording: Detailed Analytics, the
+    //   live digital twin, and the Data Input page —
+    {
+      mode: 'widget', widget: 'rangeNumber', caption: 'Detailed Analytics',
+      widgetState: {
+        accent: 'teal', title: '% of Unaccounted Loss & Leakages', value: '-1.27', unit: '%',
+        unitTag: 'Hindalco Mahaan', fromLabel: 'Jun 29 | 17:20', toLabel: 'Jun 30 | 17:20',
+        changePct: '0', highlight: 'value',
+      },
+      cursor: [{ at: 0.25, x: 50, y: 44 }, { at: 0.7, x: 50, y: 64 }],
+    },
+    {
+      mode: 'widget', widget: 'visualization', caption: 'Your plant, live',
+      widgetState: {
+        viz: {
+          plant: 'Hindalco Mahaan', date: 'Jun 30, 2026 · 05:27 PM', live: true, page: 'Full Plant',
+          collectionLevel: 62, aerationLevel: 70, pump1On: true, pump2On: true, highlight: 'animation',
+        },
+      },
+      cursor: [{ at: 0.25, x: 30, y: 45 }, { at: 0.65, x: 65, y: 50 }],
+    },
+    {
+      mode: 'widget', widget: 'dataInput', caption: 'Daily lab readings',
+      widgetState: {
+        dataInput: {
+          mode: 'card',
+          submitLabel: 'Submit Reading',
+          card: {
+            sensor: 'pH Water Quality — Joint 6 CT CPP',
+            asset: 'Hindalco Mahaan',
+            typeLabel: 'Number',
+            validRange: '0 – 14',
+            safeRange: '6.5 – 8.5',
+          },
+        },
+      },
+      cursor: [{ at: 0.3, x: 50, y: 40 }, { at: 0.7, x: 50, y: 78, click: true }],
+    },
   ],
   content: {
     en: {
@@ -87,8 +125,23 @@ const lesson: Lesson = {
         },
         {
           label: 'Potable', title: 'Down to the last litre',
-          body: "Finally, <strong>Total Potable Water</strong> — 1,314 KL across smelter, CPP and colony. From reservoir to potable, your entire balance is on one page. Explore the rest of your widgets, and reach out any time to add more.",
-          voice: "And finally, total potable water — about thirteen hundred kilolitres across the smelter, C P P and colony. From the reservoir all the way to potable, your entire water balance lives on this one page. Take a look around the rest of your widgets, and reach out any time if you'd like us to add more.",
+          body: "<strong>Total Potable Water</strong> — 1,314 KL across smelter, CPP and colony. From reservoir to potable, your entire balance is on one page. And that's just the Summary — there's more.",
+          voice: "Total potable water — about thirteen hundred kilolitres across the smelter, C P P and colony. From the reservoir all the way to potable, your entire water balance lives on this one page. And that's just the Summary Page — let me show you what else we've set up for you.",
+        },
+        {
+          label: 'Analytics', title: 'Water accounting, automated',
+          body: "Your <strong>Detailed Analytics</strong> page reconciles the whole balance for you — every section, plus a computed <strong>Deviation</strong> and <strong>% of Unaccounted Loss &amp; Leakages</strong>. At −1.27%, your books balance almost to the litre, checked automatically every day.",
+          voice: "Beyond the summary, your Detailed Analytics page does the water accounting for you. It reconciles every section — raw water, clarified, D M water — and computes the deviation and the percentage of unaccounted loss and leakages. Yours reads minus one point two seven percent — your water books balance almost to the litre, and the system checks it automatically, every single day.",
+        },
+        {
+          label: 'Digital Twin', title: 'Your plant, live on screen',
+          body: "Your <strong>Plant View</strong> is a live digital twin of Hindalco Mahaan — raw water tank, PDMS pumping, the DM plant, CHP, filtration — with real flow rates animating on the diagram. Watch water move through your plant from your desk.",
+          voice: "And here is our favourite part — your plant view. It's a live digital twin of Hindalco Mahaan: the raw water tank, the pumping station, the D M plant, C H P, the filtration lines — with real flow rates animating right on the diagram. You can watch water move through your plant, live, from your desk.",
+        },
+        {
+          label: 'Data Input', title: 'Daily lab readings, one page',
+          body: "Lab chemistry that has no sensor — alkalinity, chlorides, hardness, <strong>pH at Joint 6 CT CPP</strong> — goes in on the <strong>Data Input</strong> page, once a day. Each entry keeps its last value and feeds the same dashboards. That's your complete setup — reach out any time to extend it.",
+          voice: "Finally, the readings that come from your lab rather than a sensor — alkalinity, chlorides, hardness, the p H at joint six C T C P P — go in on the Data Input page, once a day. Each entry keeps its last value and feeds the very same dashboards. And that's your complete setup: summary, analytics, a living twin, and daily lab entry. Reach out any time you'd like us to extend it.",
         },
       ],
     },
@@ -120,8 +173,23 @@ const lesson: Lesson = {
         },
         {
           label: 'पीने योग्य', title: 'आख़िरी लीटर तक',
-          body: "अंत में, <strong>कुल पीने योग्य पानी</strong> — स्मेल्टर, सीपीपी और कॉलोनी में 1,314 KL। जलाशय से पीने योग्य पानी तक, आपका पूरा संतुलन एक पृष्ठ पर। बाकी विजेट देखें, और और जोड़ने के लिए कभी भी संपर्क करें।",
-          voice: "और अंत में, कुल पीने योग्य पानी — स्मेल्टर, सीपीपी और कॉलोनी में लगभग तेरह सौ किलोलीटर। जलाशय से लेकर पीने योग्य पानी तक, आपका पूरा जल संतुलन इसी एक पृष्ठ पर रहता है। बाकी विजेट देखें, और अगर आप और जोड़वाना चाहें तो कभी भी संपर्क करें।",
+          body: "<strong>कुल पीने योग्य पानी</strong> — स्मेल्टर, सीपीपी और कॉलोनी में 1,314 KL। जलाशय से पीने योग्य पानी तक, आपका पूरा संतुलन एक पृष्ठ पर। और यह तो सिर्फ़ सारांश है — आगे और भी है।",
+          voice: "कुल पीने योग्य पानी — स्मेल्टर, सीपीपी और कॉलोनी में लगभग तेरह सौ किलोलीटर। जलाशय से लेकर पीने योग्य पानी तक, आपका पूरा जल संतुलन इसी एक पृष्ठ पर रहता है। और यह तो सिर्फ़ सारांश पृष्ठ है — आइए दिखाएँ कि हमने आपके लिए और क्या तैयार किया है।",
+        },
+        {
+          label: 'एनालिटिक्स', title: 'जल लेखा, स्वचालित',
+          body: "आपका <strong>विस्तृत एनालिटिक्स</strong> पृष्ठ पूरा संतुलन खुद मिलाता है — हर खंड, साथ में परिकलित <strong>विचलन</strong> और <strong>अस्पष्ट हानि व रिसाव %</strong>। −1.27% पर, आपका जल-लेखा लगभग लीटर तक मिलता है — हर दिन अपने-आप जाँचा हुआ।",
+          voice: "सारांश से आगे, आपका विस्तृत एनालिटिक्स पृष्ठ आपके लिए जल लेखा करता है। यह हर खंड का मिलान करता है — कच्चा पानी, स्पष्ट किया पानी, डीएम पानी — और विचलन तथा अस्पष्ट हानि और रिसाव का प्रतिशत निकालता है। आपका माइनस एक दशमलव दो सात प्रतिशत है — आपका जल-लेखा लगभग लीटर तक मिलता है, और सिस्टम इसे हर दिन अपने-आप जाँचता है।",
+        },
+        {
+          label: 'डिजिटल ट्विन', title: 'आपका प्लांट, स्क्रीन पर लाइव',
+          body: "आपका <strong>प्लांट व्यू</strong> हिंडाल्को महान का लाइव डिजिटल ट्विन है — कच्चे पानी की टंकी, पीडीएमएस पंपिंग, डीएम प्लांट, सीएचपी, फिल्ट्रेशन — आरेख पर असली प्रवाह दरों के साथ। अपनी डेस्क से पानी को प्लांट में बहते देखें।",
+          voice: "और यह हमारा पसंदीदा हिस्सा — आपका प्लांट व्यू। यह हिंडाल्को महान का लाइव डिजिटल ट्विन है: कच्चे पानी की टंकी, पंपिंग स्टेशन, डीएम प्लांट, सीएचपी, फिल्ट्रेशन लाइनें — आरेख पर असली प्रवाह दरें चलती हुईं। आप अपनी डेस्क से, लाइव, पानी को अपने प्लांट में बहते देख सकते हैं।",
+        },
+        {
+          label: 'डेटा इनपुट', title: 'दैनिक लैब रीडिंग, एक पृष्ठ',
+          body: "जिस लैब केमिस्ट्री का कोई सेंसर नहीं — क्षारीयता, क्लोराइड, कठोरता, <strong>जॉइंट 6 सीटी सीपीपी का pH</strong> — वह <strong>डेटा इनपुट</strong> पृष्ठ पर दिन में एक बार दर्ज होती है। हर प्रविष्टि अपना पिछला मान रखती है और उन्हीं डैशबोर्ड में जाती है। यही है आपका पूरा सेटअप — बढ़ाने के लिए कभी भी संपर्क करें।",
+          voice: "अंत में, जो रीडिंग सेंसर से नहीं बल्कि आपकी लैब से आती हैं — क्षारीयता, क्लोराइड, कठोरता, जॉइंट छह सीटी सीपीपी का पी एच — वे डेटा इनपुट पृष्ठ पर दिन में एक बार दर्ज होती हैं। हर प्रविष्टि अपना पिछला मान रखती है और उन्हीं डैशबोर्ड में जाती है। और यही है आपका पूरा सेटअप: सारांश, एनालिटिक्स, एक जीवंत ट्विन, और दैनिक लैब प्रविष्टि। इसे बढ़ाने के लिए कभी भी संपर्क करें।",
         },
       ],
     },
@@ -153,8 +221,23 @@ const lesson: Lesson = {
         },
         {
           label: 'குடிநீர்', title: 'கடைசி லிட்டர் வரை',
-          body: "இறுதியாக, <strong>மொத்த குடிநீர்</strong> — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் 1,314 KL. நீர்த்தேக்கம் முதல் குடிநீர் வரை, உங்கள் முழு சமநிலையும் ஒரே பக்கத்தில். மற்ற விட்ஜெட்டுகளைப் பாருங்கள், மேலும் சேர்க்க எப்போது வேண்டுமானாலும் தொடர்பு கொள்ளுங்கள்.",
-          voice: "இறுதியாக, மொத்த குடிநீர் — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் சுமார் ஆயிரத்து முந்நூறு கிலோலிட்டர். நீர்த்தேக்கத்திலிருந்து குடிநீர் வரை, உங்கள் முழு நீர் சமநிலையும் இந்த ஒரே பக்கத்தில் இருக்கிறது. மற்ற விட்ஜெட்டுகளைப் பார்வையிடுங்கள், மேலும் சேர்க்க விரும்பினால் எப்போது வேண்டுமானாலும் எங்களைத் தொடர்பு கொள்ளுங்கள்.",
+          body: "<strong>மொத்த குடிநீர்</strong> — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் 1,314 KL. நீர்த்தேக்கம் முதல் குடிநீர் வரை, உங்கள் முழு சமநிலையும் ஒரே பக்கத்தில். இது சுருக்கம் மட்டுமே — இன்னும் இருக்கிறது.",
+          voice: "மொத்த குடிநீர் — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் சுமார் ஆயிரத்து முந்நூறு கிலோலிட்டர். நீர்த்தேக்கத்திலிருந்து குடிநீர் வரை, உங்கள் முழு நீர் சமநிலையும் இந்த ஒரே பக்கத்தில் இருக்கிறது. இது சுருக்கப் பக்கம் மட்டுமே — உங்களுக்காக நாங்கள் வேறு என்ன அமைத்திருக்கிறோம் என்பதைக் காட்டுகிறேன்.",
+        },
+        {
+          label: 'அனலிட்டிக்ஸ்', title: 'நீர் கணக்கு, தானியங்கி',
+          body: "உங்கள் <strong>விரிவான அனலிட்டிக்ஸ்</strong> பக்கம் முழு சமநிலையையும் தானே சரிபார்க்கிறது — ஒவ்வொரு பிரிவும், கணக்கிடப்பட்ட <strong>விலகல்</strong> மற்றும் <strong>கணக்கில் வராத இழப்பு & கசிவு %</strong> உடன். −1.27% — உங்கள் நீர்க் கணக்கு கிட்டத்தட்ட லிட்டர் அளவுக்குச் சரியாக உள்ளது, தினமும் தானாகச் சரிபார்க்கப்படுகிறது.",
+          voice: "சுருக்கத்திற்கு அப்பால், உங்கள் விரிவான அனலிட்டிக்ஸ் பக்கம் உங்களுக்காக நீர் கணக்கைச் செய்கிறது. ஒவ்வொரு பிரிவையும் சரிபார்க்கிறது — மூல நீர், தெளிவுபடுத்தப்பட்ட நீர், டி எம் நீர் — விலகலையும், கணக்கில் வராத இழப்பு மற்றும் கசிவின் சதவீதத்தையும் கணக்கிடுகிறது. உங்களுடையது மைனஸ் ஒன்று புள்ளி இரண்டு ஏழு சதவீதம் — உங்கள் நீர்க் கணக்கு கிட்டத்தட்ட லிட்டர் அளவுக்குச் சரியாக உள்ளது, சிஸ்டம் அதை ஒவ்வொரு நாளும் தானாகச் சரிபார்க்கிறது.",
+        },
+        {
+          label: 'டிஜிட்டல் ட்வின்', title: 'உங்கள் ஆலை, திரையில் நேரலை',
+          body: "உங்கள் <strong>பிளாண்ட் வியூ</strong> ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின் — மூல நீர் தொட்டி, பிடிஎம்எஸ் பம்பிங், டிஎம் ஆலை, சிஎச்பி, வடிகட்டல் — வரைபடத்தில் உண்மையான ஓட்ட விகிதங்கள் அசைகின்றன. உங்கள் மேசையிலிருந்தே ஆலையில் நீர் ஓடுவதைப் பாருங்கள்.",
+          voice: "இதோ எங்களின் விருப்பமான பகுதி — உங்கள் பிளாண்ட் வியூ. இது ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின்: மூல நீர் தொட்டி, பம்பிங் நிலையம், டி எம் ஆலை, சி எச் பி, வடிகட்டல் வரிசைகள் — வரைபடத்திலேயே உண்மையான ஓட்ட விகிதங்கள் அசைகின்றன. உங்கள் மேசையிலிருந்தே, நேரலையில், உங்கள் ஆலையில் நீர் ஓடுவதைப் பார்க்கலாம்.",
+        },
+        {
+          label: 'தரவு உள்ளீடு', title: 'தினசரி ஆய்வக அளவீடுகள், ஒரே பக்கம்',
+          body: "சென்சார் இல்லாத ஆய்வக வேதியியல் — காரத்தன்மை, குளோரைடுகள், கடினத்தன்மை, <strong>ஜாயிண்ட் 6 சிடி சிபிபி pH</strong> — <strong>தரவு உள்ளீடு</strong> பக்கத்தில் தினம் ஒருமுறை பதிவாகிறது. ஒவ்வொரு பதிவும் தன் கடைசி மதிப்பை வைத்திருந்து அதே டாஷ்போர்டுகளுக்குச் செல்கிறது. இதுதான் உங்கள் முழு அமைப்பு — விரிவாக்க எப்போதும் தொடர்பு கொள்ளுங்கள்.",
+          voice: "இறுதியாக, சென்சாரிலிருந்து அல்லாமல் உங்கள் ஆய்வகத்திலிருந்து வரும் அளவீடுகள் — காரத்தன்மை, குளோரைடுகள், கடினத்தன்மை, ஜாயிண்ட் ஆறு சிடி சிபிபியின் பி எச் — தரவு உள்ளீடு பக்கத்தில் தினம் ஒருமுறை பதிவாகின்றன. ஒவ்வொரு பதிவும் தன் கடைசி மதிப்பை வைத்திருந்து, அதே டாஷ்போர்டுகளுக்குச் செல்கிறது. இதுதான் உங்கள் முழு அமைப்பு: சுருக்கம், அனலிட்டிக்ஸ், ஒரு உயிருள்ள ட்வின், தினசரி ஆய்வகப் பதிவு. விரிவாக்க விரும்பினால் எப்போதும் தொடர்பு கொள்ளுங்கள்.",
         },
       ],
     },
@@ -186,8 +269,23 @@ const lesson: Lesson = {
         },
         {
           label: 'पिण्यायोग्य', title: 'शेवटच्या लिटरपर्यंत',
-          body: "शेवटी, <strong>एकूण पिण्यायोग्य पाणी</strong> — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये 1,314 KL. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण संतुलन एकाच पानावर. बाकीचे विजेट पाहा, आणि अधिक जोडण्यासाठी कधीही संपर्क करा.",
-          voice: "आणि शेवटी, एकूण पिण्यायोग्य पाणी — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये सुमारे तेराशे किलोलीटर. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण जल संतुलन याच एका पानावर राहते. बाकीचे विजेट पाहा, आणि अधिक जोडायचे असल्यास कधीही आमच्याशी संपर्क करा.",
+          body: "<strong>एकूण पिण्यायोग्य पाणी</strong> — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये 1,314 KL. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण संतुलन एकाच पानावर. आणि हा तर फक्त सारांश आहे — अजून बरेच आहे.",
+          voice: "एकूण पिण्यायोग्य पाणी — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये सुमारे तेराशे किलोलीटर. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण जल संतुलन याच एका पानावर राहते. आणि हे तर फक्त सारांश पान आहे — तुमच्यासाठी आम्ही आणखी काय तयार केले आहे ते दाखवतो.",
+        },
+        {
+          label: 'अ‍ॅनालिटिक्स', title: 'जल लेखा, स्वयंचलित',
+          body: "तुमचे <strong>तपशीलवार अ‍ॅनालिटिक्स</strong> पान संपूर्ण संतुलन स्वतः जुळवते — प्रत्येक विभाग, शिवाय गणना केलेले <strong>विचलन</strong> आणि <strong>बेहिशेबी तोटा व गळती %</strong>. −1.27% वर, तुमचा जल-हिशेब जवळजवळ लिटरपर्यंत जुळतो — दररोज आपोआप तपासलेला.",
+          voice: "सारांशाच्या पुढे, तुमचे तपशीलवार अ‍ॅनालिटिक्स पान तुमच्यासाठी जल लेखा करते. ते प्रत्येक विभाग जुळवते — कच्चे पाणी, स्पष्ट केलेले पाणी, डीएम पाणी — आणि विचलन तसेच बेहिशेबी तोटा आणि गळतीची टक्केवारी काढते. तुमची उणे एक पूर्णांक दोन सात टक्के आहे — तुमचा जल-हिशेब जवळजवळ लिटरपर्यंत जुळतो, आणि सिस्टीम ते दररोज आपोआप तपासते.",
+        },
+        {
+          label: 'डिजिटल ट्विन', title: 'तुमचा प्लांट, स्क्रीनवर लाइव्ह',
+          body: "तुमचा <strong>प्लांट व्ह्यू</strong> हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन आहे — कच्च्या पाण्याची टाकी, पीडीएमएस पंपिंग, डीएम प्लांट, सीएचपी, गाळण — आकृतीवर खऱ्या प्रवाह दरांसह. तुमच्या डेस्कवरूनच पाणी प्लांटमधून वाहताना पाहा.",
+          voice: "आणि हा आमचा आवडता भाग — तुमचा प्लांट व्ह्यू. हा हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन आहे: कच्च्या पाण्याची टाकी, पंपिंग स्टेशन, डीएम प्लांट, सीएचपी, गाळण रेषा — आकृतीवरच खरे प्रवाह दर हलताना. तुम्ही तुमच्या डेस्कवरूनच, लाइव्ह, पाणी तुमच्या प्लांटमधून वाहताना पाहू शकता.",
+        },
+        {
+          label: 'डेटा इनपुट', title: 'दैनिक लॅब रीडिंग, एक पान',
+          body: "ज्या लॅब रसायनशास्त्राला सेन्सर नाही — क्षारता, क्लोराइड्स, कठीणता, <strong>जॉइंट 6 सीटी सीपीपीचे pH</strong> — ते <strong>डेटा इनपुट</strong> पानावर दिवसातून एकदा नोंदवले जाते. प्रत्येक नोंद आपले शेवटचे मूल्य ठेवते आणि त्याच डॅशबोर्डमध्ये जाते. हाच तुमचा संपूर्ण सेटअप — वाढवण्यासाठी कधीही संपर्क करा.",
+          voice: "शेवटी, ज्या रीडिंग सेन्सरकडून नव्हे तर तुमच्या लॅबकडून येतात — क्षारता, क्लोराइड्स, कठीणता, जॉइंट सहा सीटी सीपीपीचे पीएच — त्या डेटा इनपुट पानावर दिवसातून एकदा नोंदवल्या जातात. प्रत्येक नोंद आपले शेवटचे मूल्य ठेवते आणि त्याच डॅशबोर्डमध्ये जाते. आणि हाच तुमचा संपूर्ण सेटअप: सारांश, अ‍ॅनालिटिक्स, एक जिवंत ट्विन, आणि दैनिक लॅब नोंद. वाढवायचे असल्यास कधीही संपर्क करा.",
         },
       ],
     },
