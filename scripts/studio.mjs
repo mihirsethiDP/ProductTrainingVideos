@@ -100,25 +100,30 @@ async function pickup(id) {
     const frames = maybeExtractFrames(dir, local);
     console.log(`  • ${f.local}  (${(buf.length / 1048576).toFixed(1)} MB)${frames ? `\n      frames: ${frames} (${fs.readdirSync(frames).length} images — Read these to watch it)` : ''}`);
   }
-  await db.from('generation_jobs').update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', id);
+  await updateJob(id, { status: 'processing' });
 
   console.log(`  notes:  ${job.notes ?? '—'}`);
   console.log('\nRead every file (frames for videos; PDFs/docs/text directly), author the');
   console.log(`lesson, then: node scripts/studio.mjs done ${id} <routePath>`);
 }
 
+/** Update a job and VERIFY the write landed — a dropped connection must not
+ *  print success (that once left a finished job stuck on "processing"). */
+async function updateJob(id, patch) {
+  const { error } = await db.from('generation_jobs').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) throw new Error(`status update failed: ${error.message}`);
+  const { data, error: e2 } = await db.from('generation_jobs').select('status').eq('id', id).single();
+  if (e2 || data?.status !== patch.status) throw new Error(`status update did not stick (now: ${data?.status ?? 'unknown'}) — re-run this command`);
+}
+
 async function finish(id, routePath) {
   if (!routePath) throw new Error('pass the route path, e.g. internal/module-demos/demo-acme');
-  await db.from('generation_jobs')
-    .update({ status: 'done', result_lesson_id: routePath, updated_at: new Date().toISOString() })
-    .eq('id', id);
+  await updateJob(id, { status: 'done', result_lesson_id: routePath });
   console.log(`Marked ${id} done → ${routePath}`);
 }
 
 async function fail(id, reason) {
-  await db.from('generation_jobs')
-    .update({ status: 'failed', notes: reason ?? 'generation failed', updated_at: new Date().toISOString() })
-    .eq('id', id);
+  await updateJob(id, { status: 'failed', notes: reason ?? 'generation failed' });
   console.log(`Marked ${id} failed.`);
 }
 
