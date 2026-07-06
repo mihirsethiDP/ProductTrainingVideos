@@ -1,291 +1,268 @@
 import type { Lesson } from '../../types';
 
+const BASE = `${import.meta.env.BASE_URL}screenshots/demo-hindalco`;
+
 /**
  * Personalized demo — Hindalco Mahaan.   (hidden module-demos)
- * Built from the CSM's screen recording of Hindalco's Summary Page: a
- * water-balance dashboard of Range-Number widgets. Each step recreates one of
- * their real widgets and explains what it means for their plant.
+ * Built from the CSM's two screen recordings. Style (per Mihir's feedback):
+ * cover EVERYTHING in the context, move fast (pages & sections, not one
+ * widget per step), and teach navigation know-how. Real screenshots from the
+ * recordings; one quick interactive step teaches how to read any widget.
  */
-const FROM = 'Jun 29 | 23:00';
-const TO = 'Jun 30 | 18:03';
-
 const lesson: Lesson = {
   id: 'demo-hindalco',
   moduleId: 'module-demos',
   lessonNumber: 1,
-  estimatedMinutes: 5,
-  screenshots: {},
+  estimatedMinutes: 3,
+  screenshots: {
+    nav: `${BASE}/nav.jpg`,
+    summary: `${BASE}/summary.jpg`,
+    analytics: `${BASE}/analytics.jpg`,
+    twin: `${BASE}/twin.jpg`,
+    datainput: `${BASE}/datainput.jpg`,
+  },
   layouts: [
+    // S1 — navigation: pages, time, refresh/download
     {
-      mode: 'widget', widget: 'rangeNumber', caption: 'Plant Summary',
-      widgetState: {
-        accent: 'teal', title: 'Raw Water Drawn From Reservoir', value: '31660.6', unitTag: 'Hindalco Mahaan',
-        timeframeLabel: 'Last 24 Hours', fromLabel: FROM, toLabel: TO, changePct: '43.5', highlight: 'value',
-      },
-      cursor: [{ at: 0.2, x: 50, y: 44, click: true }],
+      mode: 'detail', screenshot: 'nav', caption: 'Navigating your dashboard',
+      spotlight: { top: '22%', left: '1%', width: '98%', height: '28%' },
+      cursor: [
+        { at: 0.1, x: 13, y: 40, click: true },
+        { at: 0.45, x: 38, y: 41 },
+        { at: 0.7, x: 62, y: 41 },
+        { at: 0.88, x: 74, y: 28, click: true },
+      ],
     },
+    // S2 — how to read ANY widget (one quick interactive step)
     {
-      mode: 'widget', widget: 'rangeNumber', caption: 'Where the water goes',
-      widgetState: {
-        accent: 'teal', title: 'Raw Water Consumption to PT Plant', value: '31657', unitTag: 'Hindalco Mahaan',
-        fromLabel: FROM, toLabel: TO, changePct: '43.5', highlight: 'value',
-      },
-      cursor: [{ at: 0.3, x: 50, y: 44 }],
-    },
-    {
-      mode: 'widget', widget: 'rangeNumber', caption: 'CPP & Metal demand',
+      mode: 'widget', widget: 'rangeNumber', caption: 'Reading any widget — 3 seconds',
       widgetState: {
         accent: 'pink', title: 'CPP Water Consumption', value: '30220.77', unitTag: 'Hindalco Mahaan',
-        fromLabel: FROM, toLabel: TO, changePct: '45.4', highlight: 'value',
+        fromLabel: 'Jun 29 | 23:00', toLabel: 'Jun 30 | 18:03', changePct: '45.4', highlight: 'change',
       },
-      cursor: [{ at: 0.3, x: 50, y: 44 }],
+      cursor: [
+        { at: 0.15, x: 50, y: 12 },
+        { at: 0.4, x: 50, y: 44 },
+        { at: 0.75, x: 82, y: 88, click: true },
+      ],
     },
+    // S3 — the Summary Page, end to end
     {
-      mode: 'widget', widget: 'rangeNumber', caption: 'Clarified water',
-      widgetState: {
-        accent: 'pink', title: 'CT Make Up (Fresh Water)', value: '28529', unitTag: 'Hindalco Mahaan',
-        fromLabel: FROM, toLabel: TO, changePct: '7.4', highlight: 'change',
-      },
-      cursor: [{ at: 0.2, x: 28, y: 88 }, { at: 0.6, x: 82, y: 88, click: true }],
+      mode: 'detail', screenshot: 'summary', caption: 'Summary Page — your water balance',
+      spotlight: null,
+      cursor: [
+        { at: 0.15, x: 14, y: 27 },
+        { at: 0.5, x: 55, y: 45 },
+        { at: 0.8, x: 55, y: 80 },
+      ],
     },
+    // S4 — Detailed Analytics + automated water accounting
     {
-      mode: 'widget', widget: 'rangeNumber', caption: 'Potable water',
-      widgetState: {
-        accent: 'purple', title: 'Total Potable Water', value: '1314.25', unitTag: 'Hindalco Mahaan',
-        fromLabel: FROM, toLabel: TO, changePct: '2.1', highlight: 'value',
-      },
-      cursor: [{ at: 0.3, x: 50, y: 44 }],
+      mode: 'detail', screenshot: 'analytics', caption: 'Detailed Analytics — water accounting',
+      spotlight: null,
+      cursor: [
+        { at: 0.15, x: 14, y: 30 },
+        { at: 0.45, x: 50, y: 60 },
+        { at: 0.78, x: 40, y: 92 },
+      ],
     },
-    // — extended from the second (full) recording: Detailed Analytics, the
-    //   live digital twin, and the Data Input page —
+    // S5 — the live digital twin
     {
-      mode: 'widget', widget: 'rangeNumber', caption: 'Detailed Analytics',
-      widgetState: {
-        accent: 'teal', title: '% of Unaccounted Loss & Leakages', value: '-1.27', unit: '%',
-        unitTag: 'Hindalco Mahaan', fromLabel: 'Jun 29 | 17:20', toLabel: 'Jun 30 | 17:20',
-        changePct: '0', highlight: 'value',
-      },
-      cursor: [{ at: 0.25, x: 50, y: 44 }, { at: 0.7, x: 50, y: 64 }],
+      mode: 'detail', screenshot: 'twin', caption: 'Plant View — your live digital twin',
+      spotlight: null,
+      cursor: [
+        { at: 0.15, x: 25, y: 45 },
+        { at: 0.5, x: 55, y: 55 },
+        { at: 0.8, x: 80, y: 50 },
+      ],
     },
+    // S6 — Data Input: daily lab readings
     {
-      mode: 'widget', widget: 'visualization', caption: 'Your plant, live',
-      widgetState: {
-        viz: {
-          plant: 'Hindalco Mahaan', date: 'Jun 30, 2026 · 05:27 PM', live: true, page: 'Full Plant',
-          collectionLevel: 62, aerationLevel: 70, pump1On: true, pump2On: true, highlight: 'animation',
-        },
-      },
-      cursor: [{ at: 0.25, x: 30, y: 45 }, { at: 0.65, x: 65, y: 50 }],
+      mode: 'detail', screenshot: 'datainput', caption: 'Data Input — daily lab readings',
+      spotlight: null,
+      cursor: [
+        { at: 0.15, x: 25, y: 38 },
+        { at: 0.5, x: 48, y: 58 },
+        { at: 0.8, x: 90, y: 58 },
+      ],
     },
+    // S7 — wrap: how it all connects
     {
-      mode: 'widget', widget: 'dataInput', caption: 'Daily lab readings',
-      widgetState: {
-        dataInput: {
-          mode: 'card',
-          submitLabel: 'Submit Reading',
-          card: {
-            sensor: 'pH Water Quality — Joint 6 CT CPP',
-            asset: 'Hindalco Mahaan',
-            typeLabel: 'Number',
-            validRange: '0 – 14',
-            safeRange: '6.5 – 8.5',
-          },
-        },
-      },
-      cursor: [{ at: 0.3, x: 50, y: 40 }, { at: 0.7, x: 50, y: 78, click: true }],
+      mode: 'detail', screenshot: 'nav', caption: 'Your complete setup',
+      spotlight: null,
+      cursor: [
+        { at: 0.25, x: 13, y: 40 },
+        { at: 0.6, x: 50, y: 70 },
+      ],
     },
   ],
   content: {
     en: {
-      title: 'Your <em>Hindalco Mahaan</em><br>dashboard.',
+      title: 'Your <em>Hindalco Mahaan</em><br>setup.',
       subtitle:
-        'A quick tour of the Summary Page we set up for your plant — your full water balance, reservoir to potable, in one glance.',
+        'A fast tour of everything we set up for your plant — how to move around, how to read it, and where each feature lives.',
       chapter: 'Personalized demo · Hindalco Mahaan',
       steps: [
         {
-          label: 'Plant Summary', title: 'Your water balance at a glance',
-          body: "Your Summary Page opens with <strong>Plant Summary</strong>. The first reading is <strong>Raw Water Drawn From Reservoir</strong> — 31,660 KL over the last 24 hours. Every widget is tagged <strong>Hindalco Mahaan</strong> and refreshes every minute.",
-          voice: "Welcome — this is the dashboard we've set up for Hindalco Mahaan. It opens on your Plant Summary, your whole water balance in one view. The first reading is raw water drawn from the reservoir — about thirty-one thousand six hundred kilolitres over the last twenty-four hours. Every widget here is tagged to Hindalco Mahaan and refreshes every minute.",
+          label: 'Navigate', title: 'Moving around your dashboard',
+          body: "The <strong>Page selector</strong> (top-left) switches between your dashboards — <strong>Summary, Detailed Analytics, MBR STP, Plant View</strong>. Next to it, <strong>Granularity</strong> and the <strong>time range</strong> drive every widget on the page at once. Top-right: <strong>refresh</strong> and <strong>download</strong>.",
+          voice: "Welcome — here's everything we've set up for Hindalco Mahaan, and how to get around it. Top left, the Page selector switches between your dashboards: Summary, Detailed Analytics, M B R S T P, and Plant View. Beside it, granularity and the time range drive every widget on the page at once. And top right — refresh for the latest data, download to export.",
         },
         {
-          label: 'To PT Plant', title: 'Raw water into treatment',
-          body: "Next, <strong>Raw Water Consumption to PT Plant</strong> — 31,657 KL. Reading it right beside the reservoir draw lets you confirm, at a glance, that what you pull in is what reaches treatment.",
-          voice: "Right next to it is raw water consumption to the P T plant — thirty-one thousand six hundred and fifty-seven kilolitres. Reading it beside the reservoir draw lets you confirm, at a glance, that what you pull in is what actually reaches treatment.",
+          label: 'Read', title: 'Reading any widget — three seconds',
+          body: "Every card works the same way: the <strong>title</strong> says which reading, the <strong>big number</strong> is its value for your chosen time range, and the <strong>bottom %</strong> compares it to the previous period — red down, green up. Learn one card, and you've learnt them all.",
+          voice: "Every card on every page works the same way. The title says which reading it is. The big number is its value over your chosen time range. And the bottom percentage compares it to the previous period — red means down, green means up. Here, C P P water consumption: thirty thousand kilolitres, down forty-five percent. Learn one card, and you've learnt them all.",
         },
         {
-          label: 'CPP & Metal', title: 'Where demand is highest',
-          body: "<strong>CPP Water Consumption</strong> sits at 30,220 KL — your single biggest draw. The dashboard groups the captive power plant and metal demand together so you can see where your water is really going.",
-          voice: "Your captive power plant is the biggest draw — C P P water consumption at thirty thousand two hundred kilolitres. The dashboard groups power-plant and metal demand together, so you can see exactly where your water is really going.",
+          label: 'Summary', title: 'Summary Page — the water balance',
+          body: "Your <strong>Summary Page</strong> is the daily view: <strong>Plant Summary</strong> (reservoir draw, PT plant, CPP, metal), then <strong>Clarified Water</strong> (production, CT make-up, service water) and <strong>Potable Water</strong> (smelter, CPP, colony). One scroll = your entire balance, reservoir to tap.",
+          voice: "Your Summary Page is the daily view. Plant Summary up top — reservoir draw, the P T plant, C P P and metal. Then clarified water: production, C T make-up, service water. And potable water across the smelter, C P P and colony. One scroll and you've read your entire water balance, reservoir to tap.",
         },
         {
-          label: 'Clarified', title: 'Reading the trend, not just the number',
-          body: "<strong>CT Make Up (Fresh Water)</strong> is 28,529 KL. Notice the figure at the bottom — <strong>+7.4%</strong> versus the previous period. That little number tells you whether a reading is climbing or easing, without studying a chart.",
-          voice: "Now look at C T make-up fresh water — twenty-eight thousand kilolitres. See the small figure at the bottom? Plus seven point four percent against the previous period. That one number tells you whether a reading is climbing or easing, without you having to study a chart.",
-          tip: { type: 'tipLabel', text: 'Green is up versus the last period, red is down — your fastest signal that something changed.' },
+          label: 'Analytics', title: 'Detailed Analytics — automated accounting',
+          body: "The <strong>Detailed Analytics</strong> page goes deeper: <strong>Raw → Clarified → PT Quality → Evaporation Loss → DM Water</strong>, section by section. Best of all, it computes your <strong>Deviation</strong> and <strong>% Unaccounted Loss &amp; Leakages</strong> (−1.27%) automatically, every day.",
+          voice: "When you need to go deeper, switch to Detailed Analytics. It walks the whole chain — raw water, clarified, P T quality, evaporation loss, D M water — section by section. And at the bottom, it does your water accounting for you: deviation and percentage of unaccounted loss and leakages, minus one point two seven percent, computed automatically every day.",
         },
         {
-          label: 'Potable', title: 'Down to the last litre',
-          body: "<strong>Total Potable Water</strong> — 1,314 KL across smelter, CPP and colony. From reservoir to potable, your entire balance is on one page. And that's just the Summary — there's more.",
-          voice: "Total potable water — about thirteen hundred kilolitres across the smelter, C P P and colony. From the reservoir all the way to potable, your entire water balance lives on this one page. And that's just the Summary Page — let me show you what else we've set up for you.",
+          label: 'Plant View', title: 'Your live digital twin',
+          body: "<strong>Plant View</strong> is a live digital twin of Hindalco Mahaan — raw water tank, pumping, DM plant, CHP, filtration lines — with <strong>real flow rates animating</strong> on the diagram. Watch water move through your plant from your desk.",
+          voice: "Plant View is our favourite — a live digital twin of Hindalco Mahaan. The raw water tank, pumping, the D M plant, C H P, the filtration lines — with real flow rates animating right on the diagram. You watch water move through your plant, live, from your desk.",
         },
         {
-          label: 'Analytics', title: 'Water accounting, automated',
-          body: "Your <strong>Detailed Analytics</strong> page reconciles the whole balance for you — every section, plus a computed <strong>Deviation</strong> and <strong>% of Unaccounted Loss &amp; Leakages</strong>. At −1.27%, your books balance almost to the litre, checked automatically every day.",
-          voice: "Beyond the summary, your Detailed Analytics page does the water accounting for you. It reconciles every section — raw water, clarified, D M water — and computes the deviation and the percentage of unaccounted loss and leakages. Yours reads minus one point two seven percent — your water books balance almost to the litre, and the system checks it automatically, every single day.",
+          label: 'Data Input', title: 'Daily lab readings',
+          body: "Readings with no sensor — alkalinity, chlorides, hardness, pH — go in on <strong>Data Input</strong>, once a day. <strong>Search or filter</strong> to find the sensor, type the value, done; each row keeps its <strong>last value</strong>, and entries feed the same dashboards.",
+          voice: "And the readings that come from your lab rather than a sensor — alkalinity, chlorides, hardness, p H — go in on the Data Input page, once a day. Search or filter to find the row, type the value, done. Each row remembers its last value, and everything you enter feeds those same dashboards.",
         },
         {
-          label: 'Digital Twin', title: 'Your plant, live on screen',
-          body: "Your <strong>Plant View</strong> is a live digital twin of Hindalco Mahaan — raw water tank, PDMS pumping, the DM plant, CHP, filtration — with real flow rates animating on the diagram. Watch water move through your plant from your desk.",
-          voice: "And here is our favourite part — your plant view. It's a live digital twin of Hindalco Mahaan: the raw water tank, the pumping station, the D M plant, C H P, the filtration lines — with real flow rates animating right on the diagram. You can watch water move through your plant, live, from your desk.",
-        },
-        {
-          label: 'Data Input', title: 'Daily lab readings, one page',
-          body: "Lab chemistry that has no sensor — alkalinity, chlorides, hardness, <strong>pH at Joint 6 CT CPP</strong> — goes in on the <strong>Data Input</strong> page, once a day. Each entry keeps its last value and feeds the same dashboards. That's your complete setup — reach out any time to extend it.",
-          voice: "Finally, the readings that come from your lab rather than a sensor — alkalinity, chlorides, hardness, the p H at joint six C T C P P — go in on the Data Input page, once a day. Each entry keeps its last value and feeds the very same dashboards. And that's your complete setup: summary, analytics, a living twin, and daily lab entry. Reach out any time you'd like us to extend it.",
+          label: 'Wrap', title: 'That’s your complete setup',
+          body: "Four pages, one pattern: <strong>Summary</strong> for the daily glance, <strong>Analytics</strong> for the accounting, <strong>Plant View</strong> to see it live, <strong>Data Input</strong> for the lab. The full training inside covers every screen — and reach out any time to extend your setup.",
+          voice: "And that's your complete setup. Summary for the daily glance, Detailed Analytics for the accounting, Plant View to see it live, and Data Input for the lab. The full training inside covers every screen in your language — and reach out any time you'd like us to extend it.",
         },
       ],
     },
     hi: {
-      title: 'आपका <em>हिंडाल्को महान</em><br>डैशबोर्ड।',
-      subtitle: 'आपके प्लांट के लिए तैयार किए गए सारांश पृष्ठ की एक झलक — जलाशय से पीने योग्य पानी तक, आपका पूरा जल संतुलन एक नज़र में।',
+      title: 'आपका <em>हिंडाल्को महान</em><br>सेटअप।',
+      subtitle: 'आपके प्लांट के लिए तैयार हर चीज़ का तेज़ दौरा — कैसे घूमें, कैसे पढ़ें, और हर फ़ीचर कहाँ है।',
       chapter: 'व्यक्तिगत डेमो · हिंडाल्को महान',
       steps: [
         {
-          label: 'प्लांट सारांश', title: 'एक नज़र में आपका जल संतुलन',
-          body: "आपका सारांश पृष्ठ <strong>प्लांट सारांश</strong> से खुलता है। पहली रीडिंग है <strong>जलाशय से खींचा गया कच्चा पानी</strong> — पिछले 24 घंटों में 31,660 KL। हर विजेट <strong>हिंडाल्को महान</strong> से टैग है और हर मिनट अपडेट होता है।",
-          voice: "स्वागत है — यह वह डैशबोर्ड है जो हमने हिंडाल्को महान के लिए तैयार किया है। यह आपके प्लांट सारांश से खुलता है, आपका पूरा जल संतुलन एक ही दृश्य में। पहली रीडिंग है जलाशय से खींचा गया कच्चा पानी — पिछले चौबीस घंटों में लगभग इकतीस हज़ार छह सौ किलोलीटर। यहाँ हर विजेट हिंडाल्को महान से टैग है और हर मिनट ताज़ा होता है।",
+          label: 'नेविगेशन', title: 'डैशबोर्ड में घूमना',
+          body: "<strong>पेज सिलेक्टर</strong> (ऊपर-बाएँ) आपके डैशबोर्ड बदलता है — <strong>समरी, डिटेल्ड एनालिटिक्स, MBR STP, प्लांट व्यू</strong>। उसके बगल में <strong>ग्रैन्युलैरिटी</strong> और <strong>समय सीमा</strong> पेज के हर विजेट को एक साथ चलाते हैं। ऊपर-दाएँ: <strong>रिफ्रेश</strong> और <strong>डाउनलोड</strong>।",
+          voice: "स्वागत है — यह है हिंडाल्को महान के लिए तैयार हर चीज़, और उसमें घूमने का तरीका। ऊपर बाएँ, पेज सिलेक्टर आपके डैशबोर्ड बदलता है: समरी, डिटेल्ड एनालिटिक्स, एम बी आर एस टी पी, और प्लांट व्यू। उसके बगल में, ग्रैन्युलैरिटी और समय सीमा पेज के हर विजेट को एक साथ चलाते हैं। और ऊपर दाएँ — ताज़ा डेटा के लिए रिफ्रेश, निर्यात के लिए डाउनलोड।",
         },
         {
-          label: 'पीटी प्लांट तक', title: 'उपचार में कच्चा पानी',
-          body: "इसके बाद, <strong>पीटी प्लांट तक कच्चे पानी की खपत</strong> — 31,657 KL। इसे जलाशय की रीडिंग के बगल में पढ़ने से आप एक नज़र में पुष्टि कर सकते हैं कि जो खींचा गया वही उपचार तक पहुँचा।",
-          voice: "इसके ठीक बगल में है पीटी प्लांट तक कच्चे पानी की खपत — इकतीस हज़ार छह सौ सत्तावन किलोलीटर। इसे जलाशय की रीडिंग के बगल में पढ़ने से आप एक नज़र में पुष्टि कर सकते हैं कि जो खींचा गया वही वास्तव में उपचार तक पहुँचा।",
+          label: 'पढ़ना', title: 'कोई भी विजेट — तीन सेकंड में',
+          body: "हर कार्ड एक जैसे काम करता है: <strong>शीर्षक</strong> बताता है कौन सी रीडिंग, <strong>बड़ा नंबर</strong> चुनी हुई समय सीमा का मान है, और <strong>नीचे का %</strong> पिछली अवधि से तुलना — लाल नीचे, हरा ऊपर। एक कार्ड सीखा, सब सीख लिए।",
+          voice: "हर पेज का हर कार्ड एक ही तरह काम करता है। शीर्षक बताता है कौन सी रीडिंग है। बड़ा नंबर आपकी चुनी समय सीमा का मान है। और नीचे का प्रतिशत पिछली अवधि से तुलना करता है — लाल यानी नीचे, हरा यानी ऊपर। यहाँ, सीपीपी जल खपत: तीस हज़ार किलोलीटर, पैंतालीस प्रतिशत नीचे। एक कार्ड सीखा, तो सब सीख लिए।",
         },
         {
-          label: 'सीपीपी और धातु', title: 'सबसे अधिक माँग कहाँ है',
-          body: "<strong>सीपीपी जल खपत</strong> 30,220 KL पर है — आपकी सबसे बड़ी खपत। डैशबोर्ड कैप्टिव पावर प्लांट और धातु की माँग को एक साथ समूहित करता है ताकि आप देख सकें कि आपका पानी कहाँ जा रहा है।",
-          voice: "आपका कैप्टिव पावर प्लांट सबसे बड़ी खपत है — सीपीपी जल खपत तीस हज़ार दो सौ किलोलीटर पर। डैशबोर्ड पावर प्लांट और धातु की माँग को एक साथ समूहित करता है, ताकि आप ठीक-ठीक देख सकें कि आपका पानी वास्तव में कहाँ जा रहा है।",
+          label: 'समरी', title: 'समरी पेज — जल संतुलन',
+          body: "आपका <strong>समरी पेज</strong> रोज़ का दृश्य है: <strong>प्लांट समरी</strong> (जलाशय, पीटी प्लांट, सीपीपी, धातु), फिर <strong>क्लैरिफाइड वाटर</strong> (उत्पादन, सीटी मेक-अप, सर्विस वाटर) और <strong>पोटेबल वाटर</strong> (स्मेल्टर, सीपीपी, कॉलोनी)। एक स्क्रॉल = पूरा संतुलन।",
+          voice: "आपका समरी पेज रोज़ का दृश्य है। ऊपर प्लांट समरी — जलाशय से खींचा पानी, पीटी प्लांट, सीपीपी और धातु। फिर क्लैरिफाइड वाटर: उत्पादन, सीटी मेक-अप, सर्विस वाटर। और स्मेल्टर, सीपीपी व कॉलोनी का पोटेबल वाटर। एक स्क्रॉल में आपने पूरा जल संतुलन पढ़ लिया, जलाशय से नल तक।",
         },
         {
-          label: 'स्पष्ट किया जल', title: 'सिर्फ़ संख्या नहीं, रुझान पढ़ें',
-          body: "<strong>सीटी मेक-अप (ताज़ा पानी)</strong> 28,529 KL है। नीचे का आँकड़ा देखें — पिछली अवधि की तुलना में <strong>+7.4%</strong>। यह छोटा सा अंक बताता है कि रीडिंग बढ़ रही है या घट रही है, बिना चार्ट देखे।",
-          voice: "अब सीटी मेक-अप ताज़ा पानी देखें — अट्ठाईस हज़ार किलोलीटर। नीचे का छोटा आँकड़ा देखें? पिछली अवधि की तुलना में प्लस सात दशमलव चार प्रतिशत। यह एक अंक बताता है कि कोई रीडिंग बढ़ रही है या घट रही है, बिना आपको चार्ट का अध्ययन किए।",
-          tip: { type: 'tipLabel', text: 'हरा यानी पिछली अवधि से ऊपर, लाल यानी नीचे — कुछ बदला है इसका सबसे तेज़ संकेत।' },
+          label: 'एनालिटिक्स', title: 'डिटेल्ड एनालिटिक्स — स्वचालित लेखा',
+          body: "<strong>डिटेल्ड एनालिटिक्स</strong> पेज गहराई में जाता है: <strong>कच्चा → क्लैरिफाइड → पीटी क्वालिटी → वाष्पीकरण हानि → डीएम वाटर</strong>, खंड-दर-खंड। सबसे अच्छी बात — यह <strong>विचलन</strong> और <strong>बेहिसाब हानि व रिसाव %</strong> (−1.27%) हर दिन अपने-आप निकालता है।",
+          voice: "जब गहराई में जाना हो, डिटेल्ड एनालिटिक्स पर जाएँ। यह पूरी शृंखला चलता है — कच्चा पानी, क्लैरिफाइड, पीटी क्वालिटी, वाष्पीकरण हानि, डीएम वाटर — खंड-दर-खंड। और नीचे, यह आपका जल लेखा खुद करता है: विचलन और बेहिसाब हानि व रिसाव का प्रतिशत, माइनस एक दशमलव दो सात प्रतिशत, हर दिन अपने-आप।",
         },
         {
-          label: 'पीने योग्य', title: 'आख़िरी लीटर तक',
-          body: "<strong>कुल पीने योग्य पानी</strong> — स्मेल्टर, सीपीपी और कॉलोनी में 1,314 KL। जलाशय से पीने योग्य पानी तक, आपका पूरा संतुलन एक पृष्ठ पर। और यह तो सिर्फ़ सारांश है — आगे और भी है।",
-          voice: "कुल पीने योग्य पानी — स्मेल्टर, सीपीपी और कॉलोनी में लगभग तेरह सौ किलोलीटर। जलाशय से लेकर पीने योग्य पानी तक, आपका पूरा जल संतुलन इसी एक पृष्ठ पर रहता है। और यह तो सिर्फ़ सारांश पृष्ठ है — आइए दिखाएँ कि हमने आपके लिए और क्या तैयार किया है।",
+          label: 'प्लांट व्यू', title: 'आपका लाइव डिजिटल ट्विन',
+          body: "<strong>प्लांट व्यू</strong> हिंडाल्को महान का लाइव डिजिटल ट्विन है — कच्चे पानी की टंकी, पंपिंग, डीएम प्लांट, सीएचपी, फिल्ट्रेशन — आरेख पर <strong>असली प्रवाह दरें चलती</strong> हुईं। अपनी डेस्क से पानी को प्लांट में बहते देखें।",
+          voice: "प्लांट व्यू हमारा पसंदीदा है — हिंडाल्को महान का लाइव डिजिटल ट्विन। कच्चे पानी की टंकी, पंपिंग, डीएम प्लांट, सीएचपी, फिल्ट्रेशन लाइनें — आरेख पर असली प्रवाह दरें चलती हुईं। आप अपनी डेस्क से, लाइव, पानी को अपने प्लांट में बहते देखते हैं।",
         },
         {
-          label: 'एनालिटिक्स', title: 'जल लेखा, स्वचालित',
-          body: "आपका <strong>विस्तृत एनालिटिक्स</strong> पृष्ठ पूरा संतुलन खुद मिलाता है — हर खंड, साथ में परिकलित <strong>विचलन</strong> और <strong>अस्पष्ट हानि व रिसाव %</strong>। −1.27% पर, आपका जल-लेखा लगभग लीटर तक मिलता है — हर दिन अपने-आप जाँचा हुआ।",
-          voice: "सारांश से आगे, आपका विस्तृत एनालिटिक्स पृष्ठ आपके लिए जल लेखा करता है। यह हर खंड का मिलान करता है — कच्चा पानी, स्पष्ट किया पानी, डीएम पानी — और विचलन तथा अस्पष्ट हानि और रिसाव का प्रतिशत निकालता है। आपका माइनस एक दशमलव दो सात प्रतिशत है — आपका जल-लेखा लगभग लीटर तक मिलता है, और सिस्टम इसे हर दिन अपने-आप जाँचता है।",
+          label: 'डेटा इनपुट', title: 'दैनिक लैब रीडिंग',
+          body: "जिनका सेंसर नहीं — क्षारीयता, क्लोराइड, कठोरता, pH — वे <strong>डेटा इनपुट</strong> पर दिन में एक बार दर्ज होती हैं। <strong>खोजें या फ़िल्टर करें</strong>, मान लिखें, हो गया; हर पंक्ति <strong>पिछला मान</strong> रखती है और उन्हीं डैशबोर्ड में जाती है।",
+          voice: "और जो रीडिंग सेंसर से नहीं, लैब से आती हैं — क्षारीयता, क्लोराइड, कठोरता, पीएच — वे डेटा इनपुट पेज पर दिन में एक बार दर्ज होती हैं। खोजें या फ़िल्टर करें, मान लिखें, हो गया। हर पंक्ति अपना पिछला मान याद रखती है, और सब कुछ उन्हीं डैशबोर्ड में जाता है।",
         },
         {
-          label: 'डिजिटल ट्विन', title: 'आपका प्लांट, स्क्रीन पर लाइव',
-          body: "आपका <strong>प्लांट व्यू</strong> हिंडाल्को महान का लाइव डिजिटल ट्विन है — कच्चे पानी की टंकी, पीडीएमएस पंपिंग, डीएम प्लांट, सीएचपी, फिल्ट्रेशन — आरेख पर असली प्रवाह दरों के साथ। अपनी डेस्क से पानी को प्लांट में बहते देखें।",
-          voice: "और यह हमारा पसंदीदा हिस्सा — आपका प्लांट व्यू। यह हिंडाल्को महान का लाइव डिजिटल ट्विन है: कच्चे पानी की टंकी, पंपिंग स्टेशन, डीएम प्लांट, सीएचपी, फिल्ट्रेशन लाइनें — आरेख पर असली प्रवाह दरें चलती हुईं। आप अपनी डेस्क से, लाइव, पानी को अपने प्लांट में बहते देख सकते हैं।",
-        },
-        {
-          label: 'डेटा इनपुट', title: 'दैनिक लैब रीडिंग, एक पृष्ठ',
-          body: "जिस लैब केमिस्ट्री का कोई सेंसर नहीं — क्षारीयता, क्लोराइड, कठोरता, <strong>जॉइंट 6 सीटी सीपीपी का pH</strong> — वह <strong>डेटा इनपुट</strong> पृष्ठ पर दिन में एक बार दर्ज होती है। हर प्रविष्टि अपना पिछला मान रखती है और उन्हीं डैशबोर्ड में जाती है। यही है आपका पूरा सेटअप — बढ़ाने के लिए कभी भी संपर्क करें।",
-          voice: "अंत में, जो रीडिंग सेंसर से नहीं बल्कि आपकी लैब से आती हैं — क्षारीयता, क्लोराइड, कठोरता, जॉइंट छह सीटी सीपीपी का पी एच — वे डेटा इनपुट पृष्ठ पर दिन में एक बार दर्ज होती हैं। हर प्रविष्टि अपना पिछला मान रखती है और उन्हीं डैशबोर्ड में जाती है। और यही है आपका पूरा सेटअप: सारांश, एनालिटिक्स, एक जीवंत ट्विन, और दैनिक लैब प्रविष्टि। इसे बढ़ाने के लिए कभी भी संपर्क करें।",
+          label: 'सारांश', title: 'यही है आपका पूरा सेटअप',
+          body: "चार पेज, एक पैटर्न: <strong>समरी</strong> रोज़ की नज़र के लिए, <strong>एनालिटिक्स</strong> लेखे के लिए, <strong>प्लांट व्यू</strong> लाइव देखने के लिए, <strong>डेटा इनपुट</strong> लैब के लिए। अंदर की पूरी ट्रेनिंग हर स्क्रीन सिखाती है — और सेटअप बढ़ाने के लिए कभी भी संपर्क करें।",
+          voice: "और यही है आपका पूरा सेटअप। रोज़ की नज़र के लिए समरी, लेखे के लिए डिटेल्ड एनालिटिक्स, लाइव देखने के लिए प्लांट व्यू, और लैब के लिए डेटा इनपुट। अंदर की पूरी ट्रेनिंग हर स्क्रीन आपकी भाषा में सिखाती है — और इसे बढ़ाने के लिए कभी भी संपर्क करें।",
         },
       ],
     },
     ta: {
-      title: 'உங்கள் <em>ஹிண்டால்கோ மஹான்</em><br>டாஷ்போர்டு.',
-      subtitle: 'உங்கள் ஆலைக்காக அமைத்த சுருக்கப் பக்கத்தின் விரைவுச் சுற்று — நீர்த்தேக்கம் முதல் குடிநீர் வரை, உங்கள் முழு நீர் சமநிலை ஒரே பார்வையில்.',
+      title: 'உங்கள் <em>ஹிண்டால்கோ மஹான்</em><br>அமைப்பு.',
+      subtitle: 'உங்கள் ஆலைக்காக அமைத்த அனைத்தின் விரைவுச் சுற்று — எப்படி நகர்வது, எப்படிப் படிப்பது, ஒவ்வொரு அம்சமும் எங்கே உள்ளது.',
       chapter: 'தனிப்பயன் டெமோ · ஹிண்டால்கோ மஹான்',
       steps: [
         {
-          label: 'ஆலை சுருக்கம்', title: 'ஒரே பார்வையில் உங்கள் நீர் சமநிலை',
-          body: "உங்கள் சுருக்கப் பக்கம் <strong>ஆலை சுருக்கத்துடன்</strong> தொடங்குகிறது. முதல் அளவீடு <strong>நீர்த்தேக்கத்திலிருந்து எடுக்கப்பட்ட மூல நீர்</strong> — கடந்த 24 மணிநேரத்தில் 31,660 KL. ஒவ்வொரு விட்ஜெட்டும் <strong>ஹிண்டால்கோ மஹான்</strong> எனக் குறிக்கப்பட்டு ஒவ்வொரு நிமிடமும் புதுப்பிக்கிறது.",
-          voice: "வரவேற்கிறேன் — இது ஹிண்டால்கோ மஹானுக்காக நாங்கள் அமைத்த டாஷ்போர்டு. இது உங்கள் ஆலை சுருக்கத்துடன் தொடங்குகிறது, உங்கள் முழு நீர் சமநிலையும் ஒரே காட்சியில். முதல் அளவீடு நீர்த்தேக்கத்திலிருந்து எடுக்கப்பட்ட மூல நீர் — கடந்த இருபத்து நான்கு மணிநேரத்தில் சுமார் முப்பத்தோராயிரத்து அறுநூறு கிலோலிட்டர். இங்கே ஒவ்வொரு விட்ஜெட்டும் ஹிண்டால்கோ மஹானுக்குக் குறிக்கப்பட்டு ஒவ்வொரு நிமிடமும் புதுப்பிக்கிறது.",
+          label: 'வழிசெலுத்தல்', title: 'டாஷ்போர்டில் நகர்தல்',
+          body: "<strong>பக்கத் தேர்வி</strong> (மேல்-இடது) உங்கள் டாஷ்போர்டுகளை மாற்றுகிறது — <strong>சுருக்கம், விரிவான அனலிட்டிக்ஸ், MBR STP, பிளாண்ட் வியூ</strong>. அதன் அருகில், <strong>நுணுக்கம்</strong> மற்றும் <strong>கால வரம்பு</strong> பக்கத்தின் ஒவ்வொரு விட்ஜெட்டையும் ஒரே நேரத்தில் இயக்குகின்றன. மேல்-வலது: <strong>ரிஃப்ரெஷ்</strong> & <strong>டவுன்லோட்</strong>.",
+          voice: "வரவேற்கிறேன் — இதோ ஹிண்டால்கோ மஹானுக்காக அமைத்த அனைத்தும், அதில் நகரும் வழியும். மேல் இடதில், பக்கத் தேர்வி உங்கள் டாஷ்போர்டுகளை மாற்றுகிறது: சுருக்கம், விரிவான அனலிட்டிக்ஸ், எம் பி ஆர் எஸ் டி பி, பிளாண்ட் வியூ. அதன் அருகில், நுணுக்கமும் கால வரம்பும் பக்கத்தின் ஒவ்வொரு விட்ஜெட்டையும் ஒரே நேரத்தில் இயக்குகின்றன. மேல் வலதில் — புதிய தரவுக்கு ரிஃப்ரெஷ், ஏற்றுமதிக்கு டவுன்லோட்.",
         },
         {
-          label: 'பிடி ஆலைக்கு', title: 'சுத்திகரிப்புக்கு மூல நீர்',
-          body: "அடுத்து, <strong>பிடி ஆலைக்கு மூல நீர் நுகர்வு</strong> — 31,657 KL. இதை நீர்த்தேக்க அளவீட்டின் அருகில் படிப்பது, நீங்கள் எடுப்பதே சுத்திகரிப்பை அடைகிறது என ஒரே பார்வையில் உறுதிசெய்ய உதவுகிறது.",
-          voice: "அதற்கு அருகிலேயே பிடி ஆலைக்கு மூல நீர் நுகர்வு — முப்பத்தோராயிரத்து அறுநூற்று ஐம்பத்தேழு கிலோலிட்டர். இதை நீர்த்தேக்க அளவீட்டின் அருகில் படிப்பது, நீங்கள் எடுப்பதே உண்மையில் சுத்திகரிப்பை அடைகிறதா என ஒரே பார்வையில் உறுதிசெய்ய உதவுகிறது.",
+          label: 'படித்தல்', title: 'எந்த விட்ஜெட்டும் — மூன்று நொடியில்',
+          body: "ஒவ்வொரு கார்டும் ஒரே மாதிரி: <strong>தலைப்பு</strong> எந்த அளவீடு என்று சொல்கிறது, <strong>பெரிய எண்</strong> தேர்ந்த கால வரம்பின் மதிப்பு, <strong>கீழே %</strong> முந்தைய காலத்துடன் ஒப்பீடு — சிவப்பு கீழே, பச்சை மேலே. ஒரு கார்டு கற்றால், எல்லாம் கற்றது போலவே.",
+          voice: "ஒவ்வொரு பக்கத்திலும் ஒவ்வொரு கார்டும் ஒரே மாதிரி வேலை செய்கிறது. தலைப்பு எந்த அளவீடு என்று சொல்கிறது. பெரிய எண் நீங்கள் தேர்ந்த கால வரம்பின் மதிப்பு. கீழே உள்ள சதவீதம் முந்தைய காலத்துடன் ஒப்பிடுகிறது — சிவப்பு கீழே, பச்சை மேலே. இங்கே, சிபிபி நீர் நுகர்வு: முப்பதாயிரம் கிலோலிட்டர், நாற்பத்தைந்து சதவீதம் கீழே. ஒரு கார்டு கற்றால், எல்லாம் கற்றுவிட்டீர்கள்.",
         },
         {
-          label: 'சிபிபி & உலோகம்', title: 'அதிக தேவை எங்கே',
-          body: "<strong>சிபிபி நீர் நுகர்வு</strong> 30,220 KL — உங்கள் மிகப்பெரிய எடுப்பு. டாஷ்போர்டு கேப்டிவ் பவர் பிளांட் மற்றும் உலோகத் தேவையை ஒன்றாகத் தொகுக்கிறது, உங்கள் நீர் எங்கே செல்கிறது எனப் பார்க்க.",
-          voice: "உங்கள் கேப்டிவ் பவர் பிளांட்தான் மிகப்பெரிய எடுப்பு — சிபிபி நீர் நுகர்வு முப்பதாயிரத்து இருநூறு கிலோலிட்டர். டாஷ்போர்டு பவர் பிளांட் மற்றும் உலோகத் தேவையை ஒன்றாகத் தொகுக்கிறது, உங்கள் நீர் உண்மையில் எங்கே செல்கிறது என நீங்கள் பார்க்கலாம்.",
+          label: 'சுருக்கம்', title: 'சுருக்கப் பக்கம் — நீர் சமநிலை',
+          body: "உங்கள் <strong>சுருக்கப் பக்கம்</strong> தினசரி காட்சி: <strong>ஆலை சுருக்கம்</strong> (நீர்த்தேக்கம், பிடி ஆலை, சிபிபி, உலோகம்), பின் <strong>தெளிவுபடுத்தப்பட்ட நீர்</strong> (உற்பத்தி, சிடி மேக்-அப், சேவை நீர்) மற்றும் <strong>குடிநீர்</strong> (ஸ்மெல்டர், சிபிபி, காலனி). ஒரே ஸ்க்ரோலில் = முழு சமநிலை.",
+          voice: "உங்கள் சுருக்கப் பக்கம் தினசரி காட்சி. மேலே ஆலை சுருக்கம் — நீர்த்தேக்க எடுப்பு, பிடி ஆலை, சிபிபி, உலோகம். பின் தெளிவுபடுத்தப்பட்ட நீர்: உற்பத்தி, சிடி மேக்-அப், சேவை நீர். ஸ்மெல்டர், சிபிபி, காலனியின் குடிநீர். ஒரே ஸ்க்ரோலில் உங்கள் முழு நீர் சமநிலையையும் படித்துவிட்டீர்கள், நீர்த்தேக்கத்திலிருந்து குழாய் வரை.",
         },
         {
-          label: 'தெளிவுபடுத்தப்பட்ட', title: 'எண் மட்டுமல்ல, போக்கைப் படியுங்கள்',
-          body: "<strong>சிடி மேக்-அப் (புதிய நீர்)</strong> 28,529 KL. கீழே உள்ள எண்ணைக் கவனியுங்கள் — முந்தைய காலத்துடன் ஒப்பிடுகையில் <strong>+7.4%</strong>. அந்தச் சிறிய எண் ஒரு அளவீடு ஏறுகிறதா இறங்குகிறதா எனச் சொல்கிறது, விளக்கப்படம் இல்லாமல்.",
-          voice: "இப்போது சிடி மேக்-அப் புதிய நீரைப் பாருங்கள் — இருபத்தெட்டாயிரம் கிலோலிட்டர். கீழே உள்ள சிறிய எண்ணைப் பார்த்தீர்களா? முந்தைய காலத்துடன் ஒப்பிடுகையில் கூட்டல் ஏழு புள்ளி நான்கு சதவீதம். அந்த ஒரு எண் ஒரு அளவீடு ஏறுகிறதா இறங்குகிறதா எனச் சொல்கிறது, நீங்கள் விளக்கப்படத்தைப் படிக்காமலேயே.",
-          tip: { type: 'tipLabel', text: 'பச்சை என்றால் முந்தைய காலத்தை விட அதிகம், சிவப்பு என்றால் குறைவு — ஏதோ மாறியதற்கான வேகமான சமிக்ஞை.' },
+          label: 'அனலிட்டிக்ஸ்', title: 'விரிவான அனலிட்டிக்ஸ் — தானியங்கி கணக்கு',
+          body: "<strong>விரிவான அனலிட்டிக்ஸ்</strong> பக்கம் ஆழமாகச் செல்கிறது: <strong>மூலம் → தெளிவு → பிடி தரம் → ஆவியாதல் இழப்பு → டிஎம் நீர்</strong>, பிரிவு-பிரிவாக. சிறப்பாக, அது <strong>விலகல்</strong> மற்றும் <strong>கணக்கில் வராத இழப்பு %</strong> (−1.27%) ஐ தினமும் தானாகக் கணக்கிடுகிறது.",
+          voice: "ஆழமாகச் செல்ல வேண்டுமெனில், விரிவான அனலிட்டிக்ஸுக்கு மாறுங்கள். முழுச் சங்கிலியையும் நடக்கிறது — மூல நீர், தெளிவு, பிடி தரம், ஆவியாதல் இழப்பு, டிஎம் நீர் — பிரிவு-பிரிவாக. கீழே, உங்கள் நீர் கணக்கை அதுவே செய்கிறது: விலகலும், கணக்கில் வராத இழப்பு-கசிவு சதவீதமும் — மைனஸ் ஒன்று புள்ளி இரண்டு ஏழு — தினமும் தானாக.",
         },
         {
-          label: 'குடிநீர்', title: 'கடைசி லிட்டர் வரை',
-          body: "<strong>மொத்த குடிநீர்</strong> — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் 1,314 KL. நீர்த்தேக்கம் முதல் குடிநீர் வரை, உங்கள் முழு சமநிலையும் ஒரே பக்கத்தில். இது சுருக்கம் மட்டுமே — இன்னும் இருக்கிறது.",
-          voice: "மொத்த குடிநீர் — ஸ்மெல்டர், சிபிபி மற்றும் காலனி முழுவதும் சுமார் ஆயிரத்து முந்நூறு கிலோலிட்டர். நீர்த்தேக்கத்திலிருந்து குடிநீர் வரை, உங்கள் முழு நீர் சமநிலையும் இந்த ஒரே பக்கத்தில் இருக்கிறது. இது சுருக்கப் பக்கம் மட்டுமே — உங்களுக்காக நாங்கள் வேறு என்ன அமைத்திருக்கிறோம் என்பதைக் காட்டுகிறேன்.",
+          label: 'பிளாண்ட் வியூ', title: 'உங்கள் நேரடி டிஜிட்டல் ட்வின்',
+          body: "<strong>பிளாண்ட் வியூ</strong> ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின் — மூல நீர் தொட்டி, பம்பிங், டிஎம் ஆலை, சிஎச்பி, வடிகட்டல் — வரைபடத்தில் <strong>உண்மையான ஓட்ட விகிதங்கள்</strong> அசைகின்றன. மேசையிலிருந்தே ஆலையில் நீர் ஓடுவதைப் பாருங்கள்.",
+          voice: "பிளாண்ட் வியூ எங்களின் விருப்பம் — ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின். மூல நீர் தொட்டி, பம்பிங், டிஎம் ஆலை, சிஎச்பி, வடிகட்டல் வரிசைகள் — வரைபடத்திலேயே உண்மையான ஓட்ட விகிதங்கள் அசைகின்றன. உங்கள் மேசையிலிருந்தே, நேரலையில், ஆலையில் நீர் ஓடுவதைப் பார்க்கிறீர்கள்.",
         },
         {
-          label: 'அனலிட்டிக்ஸ்', title: 'நீர் கணக்கு, தானியங்கி',
-          body: "உங்கள் <strong>விரிவான அனலிட்டிக்ஸ்</strong> பக்கம் முழு சமநிலையையும் தானே சரிபார்க்கிறது — ஒவ்வொரு பிரிவும், கணக்கிடப்பட்ட <strong>விலகல்</strong> மற்றும் <strong>கணக்கில் வராத இழப்பு & கசிவு %</strong> உடன். −1.27% — உங்கள் நீர்க் கணக்கு கிட்டத்தட்ட லிட்டர் அளவுக்குச் சரியாக உள்ளது, தினமும் தானாகச் சரிபார்க்கப்படுகிறது.",
-          voice: "சுருக்கத்திற்கு அப்பால், உங்கள் விரிவான அனலிட்டிக்ஸ் பக்கம் உங்களுக்காக நீர் கணக்கைச் செய்கிறது. ஒவ்வொரு பிரிவையும் சரிபார்க்கிறது — மூல நீர், தெளிவுபடுத்தப்பட்ட நீர், டி எம் நீர் — விலகலையும், கணக்கில் வராத இழப்பு மற்றும் கசிவின் சதவீதத்தையும் கணக்கிடுகிறது. உங்களுடையது மைனஸ் ஒன்று புள்ளி இரண்டு ஏழு சதவீதம் — உங்கள் நீர்க் கணக்கு கிட்டத்தட்ட லிட்டர் அளவுக்குச் சரியாக உள்ளது, சிஸ்டம் அதை ஒவ்வொரு நாளும் தானாகச் சரிபார்க்கிறது.",
+          label: 'தரவு உள்ளீடு', title: 'தினசரி ஆய்வக அளவீடுகள்',
+          body: "சென்சார் இல்லாதவை — காரத்தன்மை, குளோரைடு, கடினத்தன்மை, pH — <strong>தரவு உள்ளீட்டில்</strong> தினம் ஒருமுறை. <strong>தேடுங்கள் அல்லது வடிகட்டுங்கள்</strong>, மதிப்பை உள்ளிடுங்கள், முடிந்தது; ஒவ்வொரு வரிசையும் <strong>கடைசி மதிப்பை</strong> வைத்திருக்கும், பதிவுகள் அதே டாஷ்போர்டுகளுக்குச் செல்லும்.",
+          voice: "சென்சாரிலிருந்து அல்லாமல் ஆய்வகத்திலிருந்து வரும் அளவீடுகள் — காரத்தன்மை, குளோரைடு, கடினத்தன்மை, பிஎச் — தரவு உள்ளீட்டுப் பக்கத்தில் தினம் ஒருமுறை பதிவாகின்றன. தேடுங்கள் அல்லது வடிகட்டுங்கள், மதிப்பை உள்ளிடுங்கள், முடிந்தது. ஒவ்வொரு வரிசையும் தன் கடைசி மதிப்பை நினைவில் வைத்திருக்கும், நீங்கள் உள்ளிடும் அனைத்தும் அதே டாஷ்போர்டுகளுக்குச் செல்லும்.",
         },
         {
-          label: 'டிஜிட்டல் ட்வின்', title: 'உங்கள் ஆலை, திரையில் நேரலை',
-          body: "உங்கள் <strong>பிளாண்ட் வியூ</strong> ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின் — மூல நீர் தொட்டி, பிடிஎம்எஸ் பம்பிங், டிஎம் ஆலை, சிஎச்பி, வடிகட்டல் — வரைபடத்தில் உண்மையான ஓட்ட விகிதங்கள் அசைகின்றன. உங்கள் மேசையிலிருந்தே ஆலையில் நீர் ஓடுவதைப் பாருங்கள்.",
-          voice: "இதோ எங்களின் விருப்பமான பகுதி — உங்கள் பிளாண்ட் வியூ. இது ஹிண்டால்கோ மஹானின் நேரடி டிஜிட்டல் ட்வின்: மூல நீர் தொட்டி, பம்பிங் நிலையம், டி எம் ஆலை, சி எச் பி, வடிகட்டல் வரிசைகள் — வரைபடத்திலேயே உண்மையான ஓட்ட விகிதங்கள் அசைகின்றன. உங்கள் மேசையிலிருந்தே, நேரலையில், உங்கள் ஆலையில் நீர் ஓடுவதைப் பார்க்கலாம்.",
-        },
-        {
-          label: 'தரவு உள்ளீடு', title: 'தினசரி ஆய்வக அளவீடுகள், ஒரே பக்கம்',
-          body: "சென்சார் இல்லாத ஆய்வக வேதியியல் — காரத்தன்மை, குளோரைடுகள், கடினத்தன்மை, <strong>ஜாயிண்ட் 6 சிடி சிபிபி pH</strong> — <strong>தரவு உள்ளீடு</strong> பக்கத்தில் தினம் ஒருமுறை பதிவாகிறது. ஒவ்வொரு பதிவும் தன் கடைசி மதிப்பை வைத்திருந்து அதே டாஷ்போர்டுகளுக்குச் செல்கிறது. இதுதான் உங்கள் முழு அமைப்பு — விரிவாக்க எப்போதும் தொடர்பு கொள்ளுங்கள்.",
-          voice: "இறுதியாக, சென்சாரிலிருந்து அல்லாமல் உங்கள் ஆய்வகத்திலிருந்து வரும் அளவீடுகள் — காரத்தன்மை, குளோரைடுகள், கடினத்தன்மை, ஜாயிண்ட் ஆறு சிடி சிபிபியின் பி எச் — தரவு உள்ளீடு பக்கத்தில் தினம் ஒருமுறை பதிவாகின்றன. ஒவ்வொரு பதிவும் தன் கடைசி மதிப்பை வைத்திருந்து, அதே டாஷ்போர்டுகளுக்குச் செல்கிறது. இதுதான் உங்கள் முழு அமைப்பு: சுருக்கம், அனலிட்டிக்ஸ், ஒரு உயிருள்ள ட்வின், தினசரி ஆய்வகப் பதிவு. விரிவாக்க விரும்பினால் எப்போதும் தொடர்பு கொள்ளுங்கள்.",
+          label: 'நிறைவு', title: 'இதுதான் உங்கள் முழு அமைப்பு',
+          body: "நான்கு பக்கங்கள், ஒரே முறை: தினசரிப் பார்வைக்கு <strong>சுருக்கம்</strong>, கணக்குக்கு <strong>அனலிட்டிக்ஸ்</strong>, நேரலையில் காண <strong>பிளாண்ட் வியூ</strong>, ஆய்வகத்திற்கு <strong>தரவு உள்ளீடு</strong>. உள்ளே உள்ள முழு பயிற்சி ஒவ்வொரு திரையையும் கற்பிக்கிறது — விரிவாக்க எப்போதும் தொடர்பு கொள்ளுங்கள்.",
+          voice: "இதுதான் உங்கள் முழு அமைப்பு. தினசரிப் பார்வைக்கு சுருக்கம், கணக்குக்கு விரிவான அனலிட்டிக்ஸ், நேரலையில் காண பிளாண்ட் வியூ, ஆய்வகத்திற்கு தரவு உள்ளீடு. உள்ளே உள்ள முழு பயிற்சி ஒவ்வொரு திரையையும் உங்கள் மொழியில் கற்பிக்கிறது — விரிவாக்க விரும்பினால் எப்போதும் தொடர்பு கொள்ளுங்கள்.",
         },
       ],
     },
     mr: {
-      title: 'तुमचा <em>हिंडाल्को महान</em><br>डॅशबोर्ड.',
-      subtitle: 'तुमच्या प्लांटसाठी तयार केलेल्या सारांश पानाची झलक — जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण जल संतुलन एका नजरेत.',
+      title: 'तुमचा <em>हिंडाल्को महान</em><br>सेटअप.',
+      subtitle: 'तुमच्या प्लांटसाठी तयार केलेल्या प्रत्येक गोष्टीचा जलद दौरा — कसे फिरावे, कसे वाचावे, आणि प्रत्येक फीचर कुठे आहे.',
       chapter: 'वैयक्तिक डेमो · हिंडाल्को महान',
       steps: [
         {
-          label: 'प्लांट सारांश', title: 'एका नजरेत तुमचे जल संतुलन',
-          body: "तुमचे सारांश पान <strong>प्लांट सारांशाने</strong> सुरू होते. पहिले रीडिंग आहे <strong>जलाशयातून काढलेले कच्चे पाणी</strong> — मागील 24 तासांत 31,660 KL. प्रत्येक विजेट <strong>हिंडाल्को महान</strong> ने टॅग केलेले आहे आणि दर मिनिटाला अपडेट होते.",
-          voice: "स्वागत आहे — हा तो डॅशबोर्ड आहे जो आम्ही हिंडाल्को महानसाठी तयार केला आहे. तो तुमच्या प्लांट सारांशाने सुरू होतो, तुमचे संपूर्ण जल संतुलन एकाच दृश्यात. पहिले रीडिंग आहे जलाशयातून काढलेले कच्चे पाणी — मागील चोवीस तासांत सुमारे एकतीस हजार सहाशे किलोलीटर. इथे प्रत्येक विजेट हिंडाल्को महानने टॅग केलेले आहे आणि दर मिनिटाला ताजे होते.",
+          label: 'नेव्हिगेशन', title: 'डॅशबोर्डमध्ये फिरणे',
+          body: "<strong>पेज सिलेक्टर</strong> (वर-डावीकडे) तुमचे डॅशबोर्ड बदलतो — <strong>समरी, डिटेल्ड अ‍ॅनालिटिक्स, MBR STP, प्लांट व्ह्यू</strong>. त्याच्या शेजारी <strong>ग्रॅन्युलॅरिटी</strong> आणि <strong>वेळ श्रेणी</strong> पानावरील प्रत्येक विजेट एकाच वेळी चालवतात. वर-उजवीकडे: <strong>रिफ्रेश</strong> व <strong>डाउनलोड</strong>.",
+          voice: "स्वागत आहे — हे आहे हिंडाल्को महानसाठी तयार केलेले सर्व काही, आणि त्यात फिरण्याची पद्धत. वर डावीकडे, पेज सिलेक्टर तुमचे डॅशबोर्ड बदलतो: समरी, डिटेल्ड अ‍ॅनालिटिक्स, एमबीआर एसटीपी, आणि प्लांट व्ह्यू. त्याच्या शेजारी, ग्रॅन्युलॅरिटी आणि वेळ श्रेणी पानावरील प्रत्येक विजेट एकाच वेळी चालवतात. आणि वर उजवीकडे — ताज्या डेटासाठी रिफ्रेश, निर्यातीसाठी डाउनलोड.",
         },
         {
-          label: 'पीटी प्लांटकडे', title: 'उपचारात कच्चे पाणी',
-          body: "त्यानंतर, <strong>पीटी प्लांटकडे कच्च्या पाण्याचा वापर</strong> — 31,657 KL. हे जलाशयाच्या रीडिंगशेजारी वाचल्याने तुम्ही एका नजरेत खात्री करू शकता की जे काढले तेच उपचारापर्यंत पोहोचले.",
-          voice: "त्याच्या अगदी शेजारी आहे पीटी प्लांटकडे कच्च्या पाण्याचा वापर — एकतीस हजार सहाशे सत्तावन्न किलोलीटर. हे जलाशयाच्या रीडिंगशेजारी वाचल्याने तुम्ही एका नजरेत खात्री करू शकता की जे काढले तेच खरोखर उपचारापर्यंत पोहोचले.",
+          label: 'वाचन', title: 'कोणतेही विजेट — तीन सेकंदांत',
+          body: "प्रत्येक कार्ड सारखेच: <strong>शीर्षक</strong> कोणते रीडिंग ते सांगते, <strong>मोठा आकडा</strong> निवडलेल्या वेळ श्रेणीचे मूल्य, आणि <strong>खालचा %</strong> मागील कालावधीशी तुलना — लाल खाली, हिरवा वर. एक कार्ड शिकलात, की सर्व शिकलात.",
+          voice: "प्रत्येक पानावरचे प्रत्येक कार्ड एकाच पद्धतीने काम करते. शीर्षक कोणते रीडिंग ते सांगते. मोठा आकडा तुम्ही निवडलेल्या वेळ श्रेणीचे मूल्य आहे. आणि खालची टक्केवारी मागील कालावधीशी तुलना करते — लाल म्हणजे खाली, हिरवा म्हणजे वर. इथे, सीपीपी पाणी वापर: तीस हजार किलोलीटर, पंचेचाळीस टक्के खाली. एक कार्ड शिकलात, की सर्व शिकलात.",
         },
         {
-          label: 'सीपीपी व धातू', title: 'सर्वाधिक मागणी कुठे',
-          body: "<strong>सीपीपी पाणी वापर</strong> 30,220 KL वर आहे — तुमचा सर्वात मोठा वापर. डॅशबोर्ड कॅप्टिव्ह पॉवर प्लांट आणि धातूची मागणी एकत्र गटात ठेवतो, जेणेकरून तुमचे पाणी कुठे जात आहे ते दिसेल.",
-          voice: "तुमचा कॅप्टिव्ह पॉवर प्लांट सर्वात मोठा वापर आहे — सीपीपी पाणी वापर तीस हजार दोनशे किलोलीटरवर. डॅशबोर्ड पॉवर प्लांट आणि धातूची मागणी एकत्र गटात ठेवतो, जेणेकरून तुमचे पाणी खरोखर कुठे जात आहे ते तुम्ही पाहू शकता.",
+          label: 'समरी', title: 'समरी पेज — जल संतुलन',
+          body: "तुमचे <strong>समरी पेज</strong> रोजचे दृश्य: <strong>प्लांट समरी</strong> (जलाशय, पीटी प्लांट, सीपीपी, धातू), मग <strong>क्लॅरिफाइड वॉटर</strong> (उत्पादन, सीटी मेक-अप, सर्व्हिस वॉटर) आणि <strong>पोटेबल वॉटर</strong> (स्मेल्टर, सीपीपी, कॉलनी). एक स्क्रोल = संपूर्ण संतुलन.",
+          voice: "तुमचे समरी पेज रोजचे दृश्य आहे. वर प्लांट समरी — जलाशयातून घेतलेले पाणी, पीटी प्लांट, सीपीपी आणि धातू. मग क्लॅरिफाइड वॉटर: उत्पादन, सीटी मेक-अप, सर्व्हिस वॉटर. आणि स्मेल्टर, सीपीपी व कॉलनीचे पोटेबल वॉटर. एका स्क्रोलमध्ये तुम्ही संपूर्ण जल संतुलन वाचले, जलाशयापासून नळापर्यंत.",
         },
         {
-          label: 'स्पष्ट केलेले', title: 'फक्त आकडा नव्हे, कल वाचा',
-          body: "<strong>सीटी मेक-अप (ताजे पाणी)</strong> 28,529 KL आहे. खालचा आकडा पाहा — मागील कालावधीच्या तुलनेत <strong>+7.4%</strong>. तो छोटा आकडा सांगतो की रीडिंग वाढत आहे की कमी होत आहे, आलेख न पाहता.",
-          voice: "आता सीटी मेक-अप ताजे पाणी पाहा — अठ्ठावीस हजार किलोलीटर. खालचा छोटा आकडा पाहिला का? मागील कालावधीच्या तुलनेत अधिक सात पूर्णांक चार टक्के. तो एक आकडा सांगतो की एखादे रीडिंग वाढत आहे की कमी होत आहे, तुम्हाला आलेखाचा अभ्यास न करता.",
-          tip: { type: 'tipLabel', text: 'हिरवा म्हणजे मागील कालावधीपेक्षा वर, लाल म्हणजे खाली — काहीतरी बदलल्याचा सर्वात जलद संकेत.' },
+          label: 'अ‍ॅनालिटिक्स', title: 'डिटेल्ड अ‍ॅनालिटिक्स — स्वयंचलित लेखा',
+          body: "<strong>डिटेल्ड अ‍ॅनालिटिक्स</strong> पान खोलात जाते: <strong>कच्चे → क्लॅरिफाइड → पीटी गुणवत्ता → बाष्पीभवन तोटा → डीएम वॉटर</strong>, विभाग-दर-विभाग. सर्वात चांगले — ते <strong>विचलन</strong> आणि <strong>बेहिशेबी तोटा व गळती %</strong> (−1.27%) दररोज आपोआप काढते.",
+          voice: "खोलात जायचे असेल तेव्हा डिटेल्ड अ‍ॅनालिटिक्सवर जा. ते संपूर्ण साखळी चालते — कच्चे पाणी, क्लॅरिफाइड, पीटी गुणवत्ता, बाष्पीभवन तोटा, डीएम वॉटर — विभाग-दर-विभाग. आणि खाली, ते तुमचा जल लेखा स्वतः करते: विचलन आणि बेहिशेबी तोटा व गळतीची टक्केवारी, उणे एक पूर्णांक दोन सात टक्के, दररोज आपोआप.",
         },
         {
-          label: 'पिण्यायोग्य', title: 'शेवटच्या लिटरपर्यंत',
-          body: "<strong>एकूण पिण्यायोग्य पाणी</strong> — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये 1,314 KL. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण संतुलन एकाच पानावर. आणि हा तर फक्त सारांश आहे — अजून बरेच आहे.",
-          voice: "एकूण पिण्यायोग्य पाणी — स्मेल्टर, सीपीपी आणि कॉलनीमध्ये सुमारे तेराशे किलोलीटर. जलाशयापासून पिण्यायोग्य पाण्यापर्यंत, तुमचे संपूर्ण जल संतुलन याच एका पानावर राहते. आणि हे तर फक्त सारांश पान आहे — तुमच्यासाठी आम्ही आणखी काय तयार केले आहे ते दाखवतो.",
+          label: 'प्लांट व्ह्यू', title: 'तुमचा लाइव्ह डिजिटल ट्विन',
+          body: "<strong>प्लांट व्ह्यू</strong> हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन — कच्च्या पाण्याची टाकी, पंपिंग, डीएम प्लांट, सीएचपी, गाळण — आकृतीवर <strong>खरे प्रवाह दर</strong> हलताना. डेस्कवरूनच पाणी प्लांटमधून वाहताना पाहा.",
+          voice: "प्लांट व्ह्यू आमचा आवडता — हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन. कच्च्या पाण्याची टाकी, पंपिंग, डीएम प्लांट, सीएचपी, गाळण रेषा — आकृतीवरच खरे प्रवाह दर हलताना. तुम्ही डेस्कवरूनच, लाइव्ह, पाणी तुमच्या प्लांटमधून वाहताना पाहता.",
         },
         {
-          label: 'अ‍ॅनालिटिक्स', title: 'जल लेखा, स्वयंचलित',
-          body: "तुमचे <strong>तपशीलवार अ‍ॅनालिटिक्स</strong> पान संपूर्ण संतुलन स्वतः जुळवते — प्रत्येक विभाग, शिवाय गणना केलेले <strong>विचलन</strong> आणि <strong>बेहिशेबी तोटा व गळती %</strong>. −1.27% वर, तुमचा जल-हिशेब जवळजवळ लिटरपर्यंत जुळतो — दररोज आपोआप तपासलेला.",
-          voice: "सारांशाच्या पुढे, तुमचे तपशीलवार अ‍ॅनालिटिक्स पान तुमच्यासाठी जल लेखा करते. ते प्रत्येक विभाग जुळवते — कच्चे पाणी, स्पष्ट केलेले पाणी, डीएम पाणी — आणि विचलन तसेच बेहिशेबी तोटा आणि गळतीची टक्केवारी काढते. तुमची उणे एक पूर्णांक दोन सात टक्के आहे — तुमचा जल-हिशेब जवळजवळ लिटरपर्यंत जुळतो, आणि सिस्टीम ते दररोज आपोआप तपासते.",
+          label: 'डेटा इनपुट', title: 'दैनिक लॅब रीडिंग',
+          body: "ज्यांना सेन्सर नाही — क्षारता, क्लोराइड्स, कठीणता, pH — त्या <strong>डेटा इनपुटवर</strong> दिवसातून एकदा. <strong>शोधा किंवा फिल्टर करा</strong>, मूल्य टाका, झाले; प्रत्येक ओळ <strong>शेवटचे मूल्य</strong> ठेवते आणि नोंदी त्याच डॅशबोर्डमध्ये जातात.",
+          voice: "आणि ज्या रीडिंग सेन्सरकडून नव्हे तर लॅबकडून येतात — क्षारता, क्लोराइड्स, कठीणता, पीएच — त्या डेटा इनपुट पानावर दिवसातून एकदा नोंदवल्या जातात. शोधा किंवा फिल्टर करा, मूल्य टाका, झाले. प्रत्येक ओळ आपले शेवटचे मूल्य लक्षात ठेवते, आणि तुम्ही नोंदवलेले सर्व त्याच डॅशबोर्डमध्ये जाते.",
         },
         {
-          label: 'डिजिटल ट्विन', title: 'तुमचा प्लांट, स्क्रीनवर लाइव्ह',
-          body: "तुमचा <strong>प्लांट व्ह्यू</strong> हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन आहे — कच्च्या पाण्याची टाकी, पीडीएमएस पंपिंग, डीएम प्लांट, सीएचपी, गाळण — आकृतीवर खऱ्या प्रवाह दरांसह. तुमच्या डेस्कवरूनच पाणी प्लांटमधून वाहताना पाहा.",
-          voice: "आणि हा आमचा आवडता भाग — तुमचा प्लांट व्ह्यू. हा हिंडाल्को महानचा लाइव्ह डिजिटल ट्विन आहे: कच्च्या पाण्याची टाकी, पंपिंग स्टेशन, डीएम प्लांट, सीएचपी, गाळण रेषा — आकृतीवरच खरे प्रवाह दर हलताना. तुम्ही तुमच्या डेस्कवरूनच, लाइव्ह, पाणी तुमच्या प्लांटमधून वाहताना पाहू शकता.",
-        },
-        {
-          label: 'डेटा इनपुट', title: 'दैनिक लॅब रीडिंग, एक पान',
-          body: "ज्या लॅब रसायनशास्त्राला सेन्सर नाही — क्षारता, क्लोराइड्स, कठीणता, <strong>जॉइंट 6 सीटी सीपीपीचे pH</strong> — ते <strong>डेटा इनपुट</strong> पानावर दिवसातून एकदा नोंदवले जाते. प्रत्येक नोंद आपले शेवटचे मूल्य ठेवते आणि त्याच डॅशबोर्डमध्ये जाते. हाच तुमचा संपूर्ण सेटअप — वाढवण्यासाठी कधीही संपर्क करा.",
-          voice: "शेवटी, ज्या रीडिंग सेन्सरकडून नव्हे तर तुमच्या लॅबकडून येतात — क्षारता, क्लोराइड्स, कठीणता, जॉइंट सहा सीटी सीपीपीचे पीएच — त्या डेटा इनपुट पानावर दिवसातून एकदा नोंदवल्या जातात. प्रत्येक नोंद आपले शेवटचे मूल्य ठेवते आणि त्याच डॅशबोर्डमध्ये जाते. आणि हाच तुमचा संपूर्ण सेटअप: सारांश, अ‍ॅनालिटिक्स, एक जिवंत ट्विन, आणि दैनिक लॅब नोंद. वाढवायचे असल्यास कधीही संपर्क करा.",
+          label: 'सारांश', title: 'हाच तुमचा संपूर्ण सेटअप',
+          body: "चार पाने, एक पॅटर्न: रोजच्या नजरेसाठी <strong>समरी</strong>, लेख्यासाठी <strong>अ‍ॅनालिटिक्स</strong>, लाइव्ह पाहण्यासाठी <strong>प्लांट व्ह्यू</strong>, लॅबसाठी <strong>डेटा इनपुट</strong>. आतले संपूर्ण प्रशिक्षण प्रत्येक स्क्रीन शिकवते — सेटअप वाढवण्यासाठी कधीही संपर्क करा.",
+          voice: "आणि हाच तुमचा संपूर्ण सेटअप. रोजच्या नजरेसाठी समरी, लेख्यासाठी डिटेल्ड अ‍ॅनालिटिक्स, लाइव्ह पाहण्यासाठी प्लांट व्ह्यू, आणि लॅबसाठी डेटा इनपुट. आतले संपूर्ण प्रशिक्षण प्रत्येक स्क्रीन तुमच्या भाषेत शिकवते — आणि सेटअप वाढवायचा असल्यास कधीही संपर्क करा.",
         },
       ],
     },

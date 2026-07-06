@@ -31,9 +31,23 @@ the notes field — before authoring.
 Then author the lesson, following the existing patterns:
 - **A demo** (`kind: demo`): create a lesson file under a hidden module so it is
   reachable by URL but never listed in anyone's nav. Use `module-demos` (register
-  it in `catalog.ts` once; do NOT add it to any role's home list). Author with
-  live widgets / detail screenshots like `lesson-01-reading`. Route =
+  it in `catalog.ts` once; do NOT add it to any role's home list). Route =
   `internal/module-demos/<lessonId>`.
+
+  **Demo style (Mihir's feedback — follow strictly):**
+  - **Cover EVERYTHING in the context.** Every page/feature that appears in the
+    recordings or documents gets covered. Nothing the uploader provided is skipped.
+  - **Pace by page/section, NOT one widget per step.** One step per dashboard
+    page or feature area; sweep several widgets in one breath. At most ONE quick
+    interactive widget step to teach "how to read any card" (title → value →
+    period %). Voices ≈ 2–3 brisk sentences; total demo ≈ 2–3 minutes.
+  - **Teach navigation know-how first**: page selector, granularity + time range
+    driving all widgets, refresh/download — as step 1, then a wrap step mapping
+    which page serves which job.
+  - **Use REAL frames from the recordings as screenshots** (`mode: 'detail'`,
+    copy chosen frames to `public/screenshots/<lessonId>/`, 1280px wide) so the
+    client sees their own screens; reserve interactive widget recreations for the
+    read-a-widget step. Reference model: `demo-hindalco`.
 - **A lesson** (`kind: content`, already admin-approved): add it to the right
   existing module (or a new module) in `catalog.ts`, set `lessonNumber`, author
   the steps in all 4 languages.
