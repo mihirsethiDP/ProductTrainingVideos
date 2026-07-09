@@ -228,7 +228,7 @@ export default function Admin() {
                         <button className="lesson-cta" onClick={() => review(j.id, 'rejected', rejectReason)}>
                           Confirm reject
                         </button>
-                        <button className="au-toggle" onClick={() => { setRejectingId(null); setRejectReason(''); }}>
+                        <button className="au-toggle" onClick={() => { setRejectingId(null); setRejectReason(''); setReviewError(null); }}>
                           Cancel
                         </button>
                       </div>
@@ -236,7 +236,7 @@ export default function Admin() {
                   ) : (
                     <div className="studio-review">
                       <button className="lesson-cta" onClick={() => review(j.id, 'approved')}>Approve</button>
-                      <button className="au-toggle" onClick={() => setRejectingId(j.id)}>Reject</button>
+                      <button className="au-toggle" onClick={() => { setRejectingId(j.id); setReviewError(null); }}>Reject</button>
                     </div>
                   )}
                 </div>

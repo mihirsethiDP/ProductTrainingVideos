@@ -19,21 +19,29 @@ export default function LanguageSelector() {
   // On mobile the selector can wrap to anywhere in the header row, so a fixed
   // left/right anchor can push the menu off either edge. When open, measure and
   // nudge the menu horizontally so it stays fully within the viewport. Desktop
-  // keeps its CSS right-anchor (we clear the inline override).
+  // keeps its CSS right-anchor (we clear the inline override). Re-run on resize
+  // so crossing the 700px breakpoint while open doesn't strand a stale inline
+  // left over the desktop right-anchor.
   useLayoutEffect(() => {
     const el = dropRef.current;
     if (!el) return;
-    if (!open || window.innerWidth > 700) {
-      el.style.left = '';
-      return;
-    }
-    el.style.left = '0px';
-    const margin = 12;
-    const rect = el.getBoundingClientRect();
-    let shift = 0;
-    if (rect.right > window.innerWidth - margin) shift = window.innerWidth - margin - rect.right;
-    if (rect.left + shift < margin) shift = margin - rect.left;
-    el.style.left = `${shift}px`;
+    const clamp = () => {
+      if (!open || window.innerWidth > 700) {
+        el.style.left = '';
+        return;
+      }
+      el.style.left = '0px';
+      const margin = 12;
+      const rect = el.getBoundingClientRect();
+      let shift = 0;
+      if (rect.right > window.innerWidth - margin) shift = window.innerWidth - margin - rect.right;
+      if (rect.left + shift < margin) shift = margin - rect.left;
+      el.style.left = `${shift}px`;
+    };
+    clamp();
+    if (!open) return;
+    window.addEventListener('resize', clamp);
+    return () => window.removeEventListener('resize', clamp);
   }, [open]);
 
   return (
