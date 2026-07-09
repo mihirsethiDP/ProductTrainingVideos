@@ -629,15 +629,21 @@ button { font-family: var(--sans); }
 .sc-btn svg { width: 16px; height: 16px; }
 .sc-btn:disabled { opacity: 0.4; cursor: default; }
 .sc-play {
-  width: 58px; height: 58px; flex-shrink: 0; background: var(--accent); color: var(--brand);
-  box-shadow: 0 4px 16px rgba(212, 160, 23, 0.6), 0 0 0 5px rgba(212, 160, 23, 0.2);
+  width: 64px; height: 64px; flex-shrink: 0; background: var(--accent); color: var(--brand);
+  box-shadow: 0 4px 16px rgba(212, 160, 23, 0.6), 0 0 0 5px rgba(212, 160, 23, 0.22);
   transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
 }
+/* not playing yet → breathe, so the eye lands on it immediately */
+@keyframes play-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(212, 160, 23, 0.6), 0 0 0 5px rgba(212, 160, 23, 0.22); }
+  50% { box-shadow: 0 4px 22px rgba(212, 160, 23, 0.8), 0 0 0 13px rgba(212, 160, 23, 0.09); }
+}
+.sc-play.idle { animation: play-pulse 1.8s ease-in-out infinite; }
 .sc-play:hover:not(:disabled) {
-  background: #e6b020; transform: scale(1.07);
+  background: #e6b020; transform: scale(1.07); animation: none;
   box-shadow: 0 6px 20px rgba(212, 160, 23, 0.7), 0 0 0 6px rgba(212, 160, 23, 0.26);
 }
-.sc-play svg { width: 27px; height: 27px; }
+.sc-play svg { width: 30px; height: 30px; }
 .sc-status { font-size: 11px; display: flex; align-items: center; gap: 6px; opacity: 0.85; margin-left: 6px; white-space: nowrap; }
 .sc-dot { width: 7px; height: 7px; border-radius: 50%; background: #9aa7b8; }
 .sc-status.on .sc-dot { background: var(--leaf-soft); box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25); animation: rnw-ring 1.4s infinite; }
@@ -1883,13 +1889,30 @@ button { font-family: var(--sans); }
   .stage-frame { padding: 12px; min-height: 280px; }
   .stage-controls { width: calc(100% + 24px); margin: 14px -12px -12px; }
 
-  /* player control bar: transport on its own centered row, settings
-     wrap below, voice picker gets its own full-width row */
-  .sc-row { padding: 10px; gap: 10px; }
+  /* compact header: on phones the brand + links + chips were wrapping into
+     a ~156px three-row jumble at the top of every page */
+  .header { padding-bottom: 12px; margin-bottom: 16px; gap: 8px; align-items: center; }
+  .brand-logo-img { height: 32px; }
+  .brand-text { font-size: 11px; letter-spacing: 0.14em; }
+  .header-right { width: 100%; gap: 6px; justify-content: flex-start; }
+  .header-meta { text-align: left; font-size: 10px; }
+  .tour-button { padding: 5px 9px; font-size: 11px; }
+  .auth-chip { padding: 3px 5px 3px 9px; gap: 6px; }
+  .auth-chip-name { max-width: 80px; font-size: 11px; }
+  .auth-chip-out { padding: 4px 9px; font-size: 10px; }
+  .lang-selector { padding: 4px 7px; }
+
+  /* player control bar: two tight rows — transport, then settings. The
+     status line is desktop-only; it cost a whole row here. */
+  .sc-row { padding: 8px 10px 10px; gap: 8px; }
   .sc-left, .sc-right { width: 100%; justify-content: center; }
-  .sc-status { margin-left: 0; flex: 1 1 100%; justify-content: center; }
-  .sc-voice { flex: 1 1 100%; max-width: none; padding: 9px 10px; }
-  .sc-speed-btn { padding: 6px 11px; }
+  .sc-left { gap: 12px; }
+  .sc-status { display: none; }
+  .sc-right { gap: 6px; }
+  .sc-speed-btn { padding: 5px 7px; font-size: 10px; }
+  .sc-toggle { padding: 6px 9px; }
+  .sc-toggle-label { display: none; } /* auto-advance & voice become icon-only */
+  .sc-voice-btn { padding: 5px 10px; font-size: 12px; }
 
   /* internal Read / Configure toggle stretches full width */
   .track-toggle { display: flex; width: 100%; }

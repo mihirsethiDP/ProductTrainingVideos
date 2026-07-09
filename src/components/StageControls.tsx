@@ -35,7 +35,7 @@ export default function StageControls(props: StageControlsProps) {
           <button className="sc-btn sc-icon" onClick={props.onPrev} disabled={!props.canPrev} title={t('prev')} aria-label={t('prev')}>
             <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="18,5 8,12 18,19" /><rect x="5" y="5" width="2.4" height="14" /></svg>
           </button>
-          <button className="sc-btn sc-play" onClick={props.onPlayPause} title={t('playPause')} aria-label={t('playPause')}>
+          <button className={`sc-btn sc-play${props.isPlaying ? '' : ' idle'}`} onClick={props.onPlayPause} title={t('playPause')} aria-label={t('playPause')}>
             {props.isPlaying ? (
               <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
             ) : (
@@ -77,7 +77,7 @@ export default function StageControls(props: StageControlsProps) {
             aria-checked={props.autoAdvance}
             title={t('autoAdvance')}
           >
-            ⏭ {t('autoAdvance')}
+            ⏭ <span className="sc-toggle-label">{t('autoAdvance')}</span>
           </button>
           <div className="sc-voice-toggle" role="group" aria-label={t('voiceLabel')}>
             <button
@@ -86,7 +86,7 @@ export default function StageControls(props: StageControlsProps) {
               aria-pressed={props.gender === 'f'}
               title={t('voiceFemale')}
             >
-              ♀ {t('voiceFemale')}
+              ♀ <span className="sc-toggle-label">{t('voiceFemale')}</span>
             </button>
             <button
               className={`sc-voice-btn${props.gender === 'm' ? ' active' : ''}`}
@@ -94,7 +94,7 @@ export default function StageControls(props: StageControlsProps) {
               aria-pressed={props.gender === 'm'}
               title={t('voiceMale')}
             >
-              ♂ {t('voiceMale')}
+              ♂ <span className="sc-toggle-label">{t('voiceMale')}</span>
             </button>
           </div>
         </div>
