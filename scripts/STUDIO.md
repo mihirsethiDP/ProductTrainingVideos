@@ -90,3 +90,13 @@ node scripts/studio.mjs fail <jobId> "couldn't read the recording — re-upload 
   admin has approved it (Admin page → approval queue).
 - `done`'s route path is stored in `result_lesson_id`; the Studio renders it as
   an **Open** link, so admins can view the finished demo from the job list.
+- **Rejections carry a reason** (`reviewer_note`): the admin types it in the
+  approval queue; the CSM sees it under the "Rejected" badge and can "Revise &
+  resubmit" (the form re-populates for a fresh upload). Demos never gate on
+  approval, so a CSM can always ship a personalized demo without waiting.
+- **Approval bottleneck:** lesson content needs *an* admin online to approve it.
+  If a company's only admin is unavailable, those uploads sit "Awaiting
+  approval". Mitigations: keep **more than one admin** so there's a backup
+  approver, or (future) wire an edge-function email that pings admins when a job
+  enters `pending`. Until then, the CSM's Studio shows the pending state plainly
+  so they know it's blocked on review, not on generation.

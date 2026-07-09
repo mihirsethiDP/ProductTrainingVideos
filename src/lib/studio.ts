@@ -26,6 +26,7 @@ export interface GenerationJob {
   approval_status: ApprovalStatus;
   result_lesson_id: string | null;
   notes: string | null;
+  reviewer_note: string | null; // admin's reason when a lesson upload is rejected
   created_at: string;
 }
 
@@ -34,24 +35,66 @@ const BUCKET = 'uploads';
 // under the storage per-object cap (free tier = 50 MB). 45 MB leaves headroom.
 const CHUNK_BYTES = 45 * 1024 * 1024;
 
+// Formats the generator can actually read. Anything else is rejected up front
+// instead of uploading fine and then silently failing during generation.
+const ACCEPTED_EXT = [
+  'mp4', 'mov', 'webm', 'mkv', 'avi', 'm4v', // video
+  'mp3', 'wav', 'm4a', 'aac', 'ogg', 'opus', // audio
+  'png', 'jpg', 'jpeg', 'gif', 'webp', 'heic', // images
+  'pdf', 'doc', 'docx', 'txt', 'md', 'rtf', 'csv', 'xls', 'xlsx', 'ppt', 'pptx', // docs
+];
+
 const slug = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'file';
 
-/** Upload one file (chunking if needed) at `path`; returns the part count. */
-async function uploadOne(path: string, file: File): Promise<{ parts: number; error: string | null }> {
+/** Reject unsupported files (and absurdly large ones) before any upload. */
+export function validateFiles(files: File[]): string | null {
+  const bad = files.filter((f) => {
+    const type = f.type || '';
+    if (type.startsWith('video/') || type.startsWith('audio/') || type.startsWith('image/')) return false;
+    const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+    return !ACCEPTED_EXT.includes(ext);
+  });
+  if (bad.length) {
+    return `Unsupported file type: ${bad.map((f) => f.name).join(', ')}. Accepted: video, audio, images, PDF, Word, text, CSV/Excel.`;
+  }
+  const huge = files.find((f) => f.size > 2 * 1024 * 1024 * 1024); // 2 GB
+  if (huge) return `${huge.name} is over 2 GB — please trim or compress the recording first.`;
+  return null;
+}
+
+interface UploadHooks {
+  onChunk?: (partIndex: number, parts: number) => void;
+  shouldCancel?: () => boolean;
+}
+
+/** Upload one file (chunking if needed) at `path`; returns the part count and
+ *  every object path it actually wrote (so a partial failure can be cleaned up). */
+async function uploadOne(
+  path: string,
+  file: File,
+  hooks: UploadHooks,
+): Promise<{ parts: number; error: string | null; paths: string[]; cancelled?: boolean }> {
   const size = file.size;
   const parts = size <= CHUNK_BYTES ? 1 : Math.ceil(size / CHUNK_BYTES);
+  const paths: string[] = [];
   if (parts === 1) {
+    if (hooks.shouldCancel?.()) return { parts, error: null, paths, cancelled: true };
     const up = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
-    return { parts, error: up.error?.message ?? null };
+    if (!up.error) paths.push(path);
+    return { parts, error: up.error?.message ?? null, paths };
   }
   // raw byte-slices — reassembling them in order reproduces the file exactly
   for (let i = 0; i < parts; i++) {
+    if (hooks.shouldCancel?.()) return { parts, error: null, paths, cancelled: true };
+    hooks.onChunk?.(i, parts);
     const blob = file.slice(i * CHUNK_BYTES, Math.min(size, (i + 1) * CHUNK_BYTES));
-    const up = await supabase.storage.from(BUCKET).upload(`${path}.part${i}`, blob, { upsert: false });
-    if (up.error) return { parts, error: `part ${i + 1}/${parts}: ${up.error.message}` };
+    const p = `${path}.part${i}`;
+    const up = await supabase.storage.from(BUCKET).upload(p, blob, { upsert: false });
+    if (up.error) return { parts, error: `part ${i + 1}/${parts}: ${up.error.message}`, paths };
+    paths.push(p);
   }
-  return { parts, error: null };
+  return { parts, error: null, paths };
 }
 
 /**
@@ -70,18 +113,39 @@ export async function submitJob(opts: {
   contentMode?: ContentMode; // content: enhance an existing module or start a new one
   targetModule?: string; // module id when contentMode = 'enhance'
   onProgress?: (message: string) => void;
-}): Promise<{ error: string | null }> {
+  shouldCancel?: () => boolean; // polled between files/chunks so a stuck upload can be aborted
+}): Promise<{ error: string | null; cancelled?: boolean }> {
   if (opts.files.length === 0) return { error: 'No files selected.' };
+  const typeError = validateFiles(opts.files);
+  if (typeError) return { error: typeError };
   const folder = `${opts.kind}/${opts.stamp}-${slug(opts.title)}`;
 
+  // every object we write, so a partial failure / cancel doesn't strand orphans
+  const written: string[] = [];
+  const cleanup = async () => {
+    if (written.length) await supabase.storage.from(BUCKET).remove(written);
+  };
+
   const manifest: JobFile[] = [];
+  const total = opts.files.length;
   for (let i = 0; i < opts.files.length; i++) {
     const f = opts.files[i];
     const name = `${i}-${slug(f.name)}`;
-    opts.onProgress?.(`Uploading ${i + 1} of ${opts.files.length} — ${f.name}…`);
-    const { parts, error } = await uploadOne(`${folder}/${name}`, f);
-    if (error) return { error: `${f.name}: ${error}` };
-    manifest.push({ name, parts });
+    opts.onProgress?.(`Uploading ${i + 1} of ${total} — ${f.name}…`);
+    const res = await uploadOne(`${folder}/${name}`, f, {
+      onChunk: (ci, parts) => opts.onProgress?.(`Uploading ${i + 1} of ${total} — ${f.name} (part ${ci + 1}/${parts})…`),
+      shouldCancel: opts.shouldCancel,
+    });
+    written.push(...res.paths);
+    if (res.cancelled) {
+      await cleanup();
+      return { error: null, cancelled: true };
+    }
+    if (res.error) {
+      await cleanup();
+      return { error: `${f.name}: ${res.error}` };
+    }
+    manifest.push({ name, parts: res.parts });
   }
 
   const { data: who } = await supabase.auth.getUser();
@@ -96,23 +160,35 @@ export async function submitJob(opts: {
     notes: opts.notes?.trim() || null,
     created_by: who.user?.id ?? null,
   });
-  return { error: ins.error?.message ?? null };
+  if (ins.error) {
+    await cleanup(); // don't leave uploaded files with no job row pointing at them
+    return { error: ins.error.message };
+  }
+  return { error: null };
 }
 
 export async function listJobs(): Promise<GenerationJob[]> {
   const { data } = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,parts,files,demo_style,content_mode,target_module,status,approval_status,result_lesson_id,notes,created_at')
+    .select('id,kind,title,storage_path,parts,files,demo_style,content_mode,target_module,status,approval_status,result_lesson_id,notes,reviewer_note,created_at')
     .order('created_at', { ascending: false });
   return (data as GenerationJob[]) ?? [];
 }
 
-/** Admin approves / rejects a CSM's lesson-content upload. */
-export async function reviewJob(id: string, decision: 'approved' | 'rejected'): Promise<{ error: string | null }> {
+/** Admin approves / rejects a CSM's lesson-content upload. A rejection carries a
+ *  reason so the CSM knows what to fix (stored separately from their own notes). */
+export async function reviewJob(
+  id: string,
+  decision: 'approved' | 'rejected',
+  reason?: string,
+): Promise<{ error: string | null }> {
   const { data: who } = await supabase.auth.getUser();
-  const { error } = await supabase
-    .from('generation_jobs')
-    .update({ approval_status: decision, approved_by: who.user?.id ?? null, reviewed_at: new Date().toISOString() })
-    .eq('id', id);
+  const patch: Record<string, unknown> = {
+    approval_status: decision,
+    approved_by: who.user?.id ?? null,
+    reviewed_at: new Date().toISOString(),
+  };
+  if (decision === 'rejected') patch.reviewer_note = reason?.trim() || null;
+  const { error } = await supabase.from('generation_jobs').update(patch).eq('id', id);
   return { error: error?.message ?? null };
 }

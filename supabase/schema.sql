@@ -178,6 +178,9 @@ alter table public.generation_jobs add column if not exists target_module text; 
 alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';
 alter table public.generation_jobs add column if not exists approved_by uuid references auth.users (id);
 alter table public.generation_jobs add column if not exists reviewed_at timestamptz;
+-- the admin's reason when a lesson upload is rejected (kept separate from the
+-- uploader's own `notes`, which are the AI instruction layer)
+alter table public.generation_jobs add column if not exists reviewer_note text;
 alter table public.generation_jobs drop constraint if exists generation_jobs_approval_status_check;
 alter table public.generation_jobs add constraint generation_jobs_approval_status_check
   check (approval_status in ('not_required', 'pending', 'approved', 'rejected'));

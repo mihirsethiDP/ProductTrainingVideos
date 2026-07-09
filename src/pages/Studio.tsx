@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { MODULES } from '../data/catalog';
-import { listJobs, submitJob, type ContentMode, type DemoStyle, type GenerationJob, type JobKind } from '../lib/studio';
+import { listJobs, submitJob, validateFiles, type ContentMode, type DemoStyle, type GenerationJob, type JobKind } from '../lib/studio';
 
 // real modules only — the hidden holders (demos/shorts) aren't valid targets
 const TARGET_MODULES = MODULES.filter((m) => m.roles.length > 0);
@@ -35,6 +35,8 @@ export default function Studio() {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const cancelRef = useRef(false); // set true to abort an in-flight upload
 
   const refresh = useCallback(async () => {
     setJobs(await listJobs());
@@ -44,14 +46,26 @@ export default function Studio() {
     if (canCreate) refresh();
   }, [canCreate, refresh]);
 
+  // while anything is still queued/processing, poll so "Generating…" advances to
+  // "Ready" (or "Failed") without a manual reload
+  const hasActive = jobs.some((j) => j.status === 'queued' || j.status === 'processing');
+  useEffect(() => {
+    if (!canCreate || !hasActive) return;
+    const id = window.setInterval(refresh, 20000);
+    return () => window.clearInterval(id);
+  }, [canCreate, hasActive, refresh]);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
     const files = Array.from(fileRef.current?.files ?? []);
     if (files.length === 0) return setMsg({ ok: false, text: 'Choose at least one file to upload.' });
     if (!title.trim()) return setMsg({ ok: false, text: 'Give it a title.' });
+    const typeError = validateFiles(files);
+    if (typeError) return setMsg({ ok: false, text: typeError });
+    cancelRef.current = false;
     setBusy(true);
-    const { error } = await submitJob({
+    const { error, cancelled } = await submitJob({
       kind,
       title,
       notes,
@@ -61,14 +75,31 @@ export default function Studio() {
       contentMode,
       targetModule,
       onProgress: (text) => setMsg({ ok: true, text }),
+      shouldCancel: () => cancelRef.current,
     });
     setBusy(false);
+    if (cancelled) return setMsg({ ok: false, text: 'Upload cancelled — nothing was queued.' });
     if (error) return setMsg({ ok: false, text: error });
     setMsg({ ok: true, text: 'Uploaded & queued. It will appear below as it’s generated.' });
     setTitle('');
     setNotes('');
     if (fileRef.current) fileRef.current.value = '';
     refresh();
+  }
+
+  // pull a rejected upload's details back into the form so the CSM can fix and
+  // re-upload (a rejected job is otherwise a permanent dead end — CSMs can't edit it)
+  function reviseResubmit(job: GenerationJob) {
+    setKind(job.kind);
+    setTitle(job.title);
+    setNotes(job.notes ?? '');
+    if (job.kind === 'demo') setDemoStyle(job.demo_style);
+    else {
+      setContentMode(job.content_mode ?? 'enhance');
+      if (job.target_module) setTargetModule(job.target_module);
+    }
+    setMsg({ ok: true, text: 'Loaded the rejected upload — adjust it, attach the files again, and re-upload.' });
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   if (loading) return null;
@@ -90,7 +121,7 @@ export default function Studio() {
           </p>
         </div>
 
-        <form className="admin-invite" onSubmit={onSubmit}>
+        <form ref={formRef} className="admin-invite" onSubmit={onSubmit}>
           <div className="ai-title">New upload</div>
 
           <div className="studio-kind">
@@ -176,9 +207,16 @@ export default function Studio() {
             </label>
           </div>
 
-          <button type="submit" className="lesson-cta" disabled={busy}>
-            {busy ? 'Uploading…' : 'Upload & queue'}
-          </button>
+          <div className="studio-submit-row">
+            <button type="submit" className="lesson-cta" disabled={busy}>
+              {busy ? 'Uploading…' : 'Upload & queue'}
+            </button>
+            {busy && (
+              <button type="button" className="au-toggle" onClick={() => { cancelRef.current = true; }}>
+                Cancel upload
+              </button>
+            )}
+          </div>
           {msg && <div className={`ai-msg${msg.ok ? '' : ' err'}`}>{msg.text}</div>}
           <div className="ai-hint">
             Files are stored privately in Supabase. Large recordings are split into chunks automatically and reassembled
@@ -187,6 +225,10 @@ export default function Studio() {
           </div>
         </form>
 
+        <div className="studio-jobs-head">
+          <span className="studio-jobs-title">Your uploads</span>
+          <button type="button" className="au-toggle" onClick={refresh}>↻ Refresh</button>
+        </div>
         <div className="admin-users">
           <div className="au-head studio-head">
             <span>Upload</span>
@@ -213,6 +255,17 @@ export default function Studio() {
                   <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
                 )}
                 {j.status === 'failed' && j.notes && <div className="studio-err">{j.notes}</div>}
+                {j.approval_status === 'pending' && (
+                  <div className="studio-hint-sm">A DigitalPaani admin will review this before it’s generated.</div>
+                )}
+                {j.approval_status === 'rejected' && (
+                  <div className="studio-reject">
+                    {j.reviewer_note && <div className="studio-err">Reason: {j.reviewer_note}</div>}
+                    <button type="button" className="au-toggle" onClick={() => reviseResubmit(j)}>
+                      Revise &amp; resubmit
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

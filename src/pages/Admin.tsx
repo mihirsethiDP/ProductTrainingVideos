@@ -42,6 +42,8 @@ export default function Admin() {
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const load = useCallback(async () => {
     setFetching(true);
@@ -56,8 +58,10 @@ export default function Admin() {
     setFetching(false);
   }, []);
 
-  async function review(id: string, decision: 'approved' | 'rejected') {
-    await reviewJob(id, decision);
+  async function review(id: string, decision: 'approved' | 'rejected', reason?: string) {
+    await reviewJob(id, decision, reason);
+    setRejectingId(null);
+    setRejectReason('');
     load();
   }
 
@@ -194,10 +198,30 @@ export default function Admin() {
                     {j.notes && <div className="au-email">{j.notes}</div>}
                   </div>
                   <div className="au-email">{new Date(j.created_at).toLocaleDateString()}</div>
-                  <div className="studio-review">
-                    <button className="lesson-cta" onClick={() => review(j.id, 'approved')}>Approve</button>
-                    <button className="au-toggle" onClick={() => review(j.id, 'rejected')}>Reject</button>
-                  </div>
+                  {rejectingId === j.id ? (
+                    <div className="studio-reject-form">
+                      <input
+                        type="text"
+                        placeholder="Reason (shown to the uploader)"
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="studio-review">
+                        <button className="lesson-cta" onClick={() => review(j.id, 'rejected', rejectReason)}>
+                          Confirm reject
+                        </button>
+                        <button className="au-toggle" onClick={() => { setRejectingId(null); setRejectReason(''); }}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="studio-review">
+                      <button className="lesson-cta" onClick={() => review(j.id, 'approved')}>Approve</button>
+                      <button className="au-toggle" onClick={() => setRejectingId(j.id)}>Reject</button>
+                    </div>
+                  )}
                 </div>
               ))}
           </div>

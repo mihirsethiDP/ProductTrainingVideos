@@ -2001,3 +2001,13 @@ button { font-family: var(--sans); }
 .badge.studio-status.failed { background: rgba(200, 60, 60, 0.12); color: #b3413b; }
 .studio-err { font-size: 11px; color: #b3413b; margin-top: 4px; }
 .ai-msg.err { color: #b3413b; }
+.studio-submit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.studio-jobs-head { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 10px; }
+.studio-jobs-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.studio-hint-sm { font-size: 11px; color: var(--ink-soft); margin-top: 5px; }
+.studio-reject { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.studio-reject-form { display: flex; flex-direction: column; gap: 8px; }
+.studio-reject-form input {
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+  font-family: var(--sans); font-size: 13px; background: #fff; color: var(--ink);
+}
