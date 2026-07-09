@@ -367,10 +367,10 @@ export const MODULES: ModuleDef[] = [
       mr: 'अंतर्गत साधने आणि ऑनबोर्डिंग',
     },
     description: {
-      en: 'Building dashboards for clients, widget configuration, the Customer Hub, and supporting users in the field.',
-      hi: 'क्लाइंट के लिए डैशबोर्ड बनाना, विजेट कॉन्फ़िगरेशन, कस्टमर हब, और फील्ड में सहायता।',
-      ta: 'வாடிக்கையாளர்களுக்கான டாஷ்போர்டுகள், விட்ஜெட் அமைப்பு, வாடிக்கையாளர் மையம், கள ஆதரவு.',
-      mr: 'क्लायंटसाठी डॅशबोर्ड तयार करणे, विजेट कॉन्फिगरेशन, कस्टमर हब, आणि फील्ड सपोर्ट.',
+      en: 'Building & configuring client dashboards. Until these lessons ship, open any Data & Widgets lesson and switch to the ⚙ Configure track for step-by-step widget setup (also linked from each widget lesson below); see M10 for triggers & alerts.',
+      hi: 'क्लाइंट डैशबोर्ड बनाना और कॉन्फ़िगर करना। जब तक ये पाठ आते हैं, कोई भी डेटा और विजेट पाठ खोलें और चरण-दर-चरण विजेट सेटअप के लिए ⚙ कॉन्फ़िगर ट्रैक पर जाएँ (नीचे हर विजेट पाठ से भी लिंक); ट्रिगर और अलर्ट के लिए M10 देखें।',
+      ta: 'வாடிக்கையாளர் டாஷ்போர்டுகளை உருவாக்குதல் & அமைத்தல். இந்தப் பாடங்கள் வரும் வரை, எந்த Data & Widgets பாடத்தையும் திறந்து படிப்படியான விட்ஜெட் அமைப்பிற்கு ⚙ Configure தடத்திற்கு மாறவும் (கீழே ஒவ்வொரு விட்ஜெட் பாடத்திலிருந்தும் இணைக்கப்பட்டுள்ளது); டிரிக்கர்கள் & எச்சரிக்கைகளுக்கு M10 ஐப் பார்க்கவும்.',
+      mr: 'क्लायंट डॅशबोर्ड तयार करणे आणि कॉन्फिगर करणे. हे धडे येईपर्यंत, कोणताही Data & Widgets धडा उघडा आणि टप्प्याटप्प्याने विजेट सेटअपसाठी ⚙ Configure ट्रॅकवर जा (खालील प्रत्येक विजेट धड्यातूनही लिंक केलेले); ट्रिगर आणि अलर्टसाठी M10 पाहा.',
     },
     lessons: [
       { id: 'lesson-building-dashboards', comingSoon: true },

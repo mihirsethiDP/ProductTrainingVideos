@@ -94,10 +94,10 @@ export default function RoleHome() {
               <div className="module-desc">{mod.description[lang]}</div>
             </div>
             <div className="lesson-list">
-              {mod.lessons.map((ref, idx) => {
+              {mod.lessons.filter((r) => !r.internalOnly).map((ref, idx) => {
                 // configuration tracks are reached via the Read ⇄ Configure toggle
-                // inside the widget's lesson, so they don't get their own row.
-                if (ref.internalOnly) return null;
+                // (and the Configure deep-link below), so they get no row of their
+                // own — filtering them out keeps the visible lesson numbering right.
                 const lesson = getLesson(ref.id);
                 if (!lesson || ref.comingSoon) {
                   return (
@@ -128,6 +128,10 @@ export default function RoleHome() {
                     ? t('resumeLesson')
                     : t('startLesson');
                 const open = () => navigate(`/${roleId}/${mod.id}/${lesson.id}`);
+                // internal users get a discoverable deep-link to this widget's
+                // configuration track (otherwise it's hidden behind an in-lesson toggle)
+                const configId = `${lesson.id}-config`;
+                const hasConfig = roleId === 'internal' && !!getLesson(configId);
                 return (
                   <div className="lesson-row playable" key={ref.id} onClick={open}>
                     <div className="lesson-thumb">
@@ -145,8 +149,19 @@ export default function RoleHome() {
                         {content.steps.length} {t('stepWord').toLowerCase()}s
                       </div>
                     </div>
-                    <span className="tag-chip">{lessonTag}{ref.internalOnly ? '·C' : ''}</span>
-                    {ref.internalOnly && <span className="badge config">⚙ {t('configRowBadge')}</span>}
+                    <span className="tag-chip">{lessonTag}</span>
+                    {hasConfig && (
+                      <button
+                        className="badge config"
+                        title={t('trackConfigure')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/${roleId}/${mod.id}/${configId}`);
+                        }}
+                      >
+                        ⚙ {t('trackConfigure')}
+                      </button>
+                    )}
                     {progress?.completed ? (
                       <span className="badge done">✓ {t('completedBadge')}</span>
                     ) : progress ? (

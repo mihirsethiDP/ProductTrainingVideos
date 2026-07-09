@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { modulesForRole } from '../data/catalog';
 import type { RoleId } from '../data/types';
+import { moduleLessons } from '../lib/completion';
 import { saveRole } from '../lib/progress';
 
 const ROLE_CARDS: { id: RoleId; icon: string; nameKey: string; descKey: string }[] = [
@@ -35,7 +36,9 @@ export default function RoleSelect() {
         <div className="role-grid" data-tour="paths">
           {ROLE_CARDS.map((card) => {
             const modules = modulesForRole(card.id);
-            const lessonCount = modules.reduce((n, m) => n + m.lessons.length, 0);
+            // count only real, role-visible lessons — not coming-soon or hidden
+            // config rows — so the card matches the actual course (and RoleHome)
+            const lessonCount = modules.reduce((n, m) => n + moduleLessons(m, card.id).length, 0);
             return (
               <button
                 key={card.id}

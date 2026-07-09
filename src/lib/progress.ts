@@ -40,8 +40,13 @@ function write(store: Store) {
   }
 }
 
+const VALID_LANGS: LangCode[] = ['en', 'hi', 'ta', 'mr'];
+
 export function getSavedLang(): LangCode | undefined {
-  return read().lang;
+  const saved = read().lang;
+  // guard against a stale/foreign code (e.g. a removed language) — an unknown
+  // value would otherwise index into an undefined string table and white-screen
+  return saved && VALID_LANGS.includes(saved) ? saved : undefined;
 }
 
 export function saveLang(lang: LangCode) {

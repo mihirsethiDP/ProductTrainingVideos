@@ -243,6 +243,7 @@ button { font-family: var(--sans); }
 .au-lesson-pct { font-family: var(--mono); }
 .au-lesson-pct.done { color: var(--leaf); }
 .au-empty { padding: 24px; text-align: center; color: var(--ink-soft); font-size: 13px; }
+.au-empty.au-error { color: #b3413b; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
 
 /* ===== GUIDED TOUR ===== */
 .tour-button {
@@ -376,7 +377,8 @@ button { font-family: var(--sans); }
 .badge.done { background: rgba(45, 134, 89, 0.12); color: var(--leaf); }
 .badge.progress { background: rgba(212, 160, 23, 0.14); color: #a37c10; }
 .badge.soon { background: var(--paper-warm); color: var(--ink-soft); }
-.badge.config { background: rgba(25, 52, 88, 0.10); color: var(--brand); }
+.badge.config { background: rgba(25, 52, 88, 0.10); color: var(--brand); border: none; cursor: pointer; }
+button.badge.config:hover { background: rgba(25, 52, 88, 0.18); }
 .lesson-cta {
   padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
   font-size: 12px; font-weight: 600; background: var(--ink); color: var(--paper);

@@ -41,17 +41,23 @@ export default function Admin() {
   const [inviteTraining, setInviteTraining] = useState<TrainingRole>('operator');
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
   const load = useCallback(async () => {
     setFetching(true);
-    const [{ data: p }, { data: lp }, jb] = await Promise.all([
+    const [{ data: p, error: pErr }, { data: lp, error: lpErr }, jb] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
       listJobs(),
     ]);
+    // distinguish a real load failure from a genuinely empty org — otherwise a
+    // network/RLS error reads as "no users yet"
+    setLoadError(!!pErr || !!lpErr);
+    if (pErr) console.error('Admin load — profiles:', pErr.message);
+    if (lpErr) console.error('Admin load — progress:', lpErr.message);
     setUsers((p as Profile[]) ?? []);
     setProgress((lp as ProgRow[]) ?? []);
     setJobs(jb);
@@ -236,7 +242,13 @@ export default function Admin() {
             <span>{t('adminStatus')}</span>
           </div>
           {fetching && <div className="au-empty">…</div>}
-          {!fetching && users.length === 0 && <div className="au-empty">{t('adminNoUsers')}</div>}
+          {!fetching && loadError && (
+            <div className="au-empty au-error">
+              {t('adminLoadError')}{' '}
+              <button className="au-toggle" onClick={load}>{t('adminRetry')}</button>
+            </div>
+          )}
+          {!fetching && !loadError && users.length === 0 && <div className="au-empty">{t('adminNoUsers')}</div>}
           {users.map((u) => {
             const o = userOverall(u.id);
             const rows = byUser.get(u.id);

@@ -225,12 +225,14 @@ export default function LessonPage() {
   const stepData = content.steps[safeStep];
   const layout = lesson.layouts[safeStep];
   const isLast = safeStep === totalSteps - 1;
-  const lessonTag = lessonTagFor(module, lesson.lessonNumber);
-  const stepTag = stepTagFor(lessonTag, safeStep);
 
   // Read ⇄ Configure track toggle (internal only): widget lessons in M2 have a
   // paired "<id>-config" configuration helper.
   const isConfig = lessonId!.endsWith('-config');
+  // the config track shares its base lesson's number, so mark it with a ·C
+  // suffix — otherwise both tracks show the identical tag (e.g. M2.L1)
+  const lessonTag = `${lessonTagFor(module, lesson.lessonNumber)}${isConfig ? '·C' : ''}`;
+  const stepTag = stepTagFor(lessonTag, safeStep);
   const baseId = isConfig ? lessonId!.replace(/-config$/, '') : lessonId!;
   const configId = `${baseId}-config`;
   const hasConfig = !!getLesson(configId);

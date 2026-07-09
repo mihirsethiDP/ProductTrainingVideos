@@ -114,10 +114,25 @@ drop policy if exists invites_admin on public.invites;
 create policy invites_admin on public.invites
   for all using (public.is_admin()) with check (public.is_admin());
 
--- lesson_progress: a user reads/writes their own; admins read everyone's
+-- am I an *active* account? (a deactivated user's session token stays valid
+-- until sign-out completes; this stops it authorizing data reads/writes)
+create or replace function public.is_active()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and active = true
+  );
+$$;
+
+-- lesson_progress: an *active* user reads/writes their own; admins read everyone's
 drop policy if exists lp_own on public.lesson_progress;
 create policy lp_own on public.lesson_progress
-  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+  for all using (user_id = auth.uid() and public.is_active())
+  with check (user_id = auth.uid() and public.is_active());
 
 drop policy if exists lp_admin_read on public.lesson_progress;
 create policy lp_admin_read on public.lesson_progress

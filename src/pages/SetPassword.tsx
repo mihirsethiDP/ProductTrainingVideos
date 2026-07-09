@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { supabase } from '../lib/supabase';
+import { AUTH_LINK_ERROR, AUTH_LINK_TYPE, supabase } from '../lib/supabase';
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
 
@@ -40,7 +40,13 @@ export default function SetPassword() {
     window.setTimeout(() => navigate('/', { replace: true }), 1800);
   }
 
+  // only reset/invite email links belong on this screen
+  const fromAuthLink = AUTH_LINK_TYPE === 'recovery' || AUTH_LINK_TYPE === 'invite';
+
   if (loading) return null;
+  // a normal, already-signed-in visit (not via a reset/invite link, no link
+  // error) has no business setting a password here — send them home
+  if (session && !fromAuthLink && !AUTH_LINK_ERROR && !done) return <Navigate to="/" replace />;
 
   return (
     <div className="page">
@@ -50,7 +56,7 @@ export default function SetPassword() {
             <img src={LOGO_SRC} alt="DigitalPaani" />
           </Link>
 
-          {!session ? (
+          {AUTH_LINK_ERROR || !session ? (
             <>
               <div className="auth-notice">{t('authLinkExpired')}</div>
               <div className="auth-foot">

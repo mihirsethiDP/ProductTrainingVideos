@@ -24,7 +24,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<LanguageContextValue>(() => {
     const meta = LANGUAGE_LIST.find((l) => l.code === lang) ?? LANGUAGE_LIST[0];
-    const strings = UI[lang];
+    // an unknown/corrupt code must degrade to English, never crash on UI[lang]
+    const strings = UI[lang] ?? UI.en;
     return {
       lang,
       meta,
