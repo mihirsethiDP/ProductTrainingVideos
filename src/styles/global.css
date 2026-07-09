@@ -1889,6 +1889,13 @@ button { font-family: var(--sans); }
   .stage-frame { padding: 12px; min-height: 280px; }
   .stage-controls { width: calc(100% + 24px); margin: 14px -12px -12px; }
 
+  /* wide widgets (tables, graphs, data input …) were squeezed to the phone's
+     width and clipped their right side. Give them their natural width and let
+     the stage pan horizontally — the guide cursor scrolls with the content. */
+  .widget-stage-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: flex-start; }
+  .widget-stage { margin-inline: auto; }
+  .widget-stage.widget-stage-wide { min-width: 620px; }
+
   /* compact header: on phones the brand + links + chips were wrapping into
      a ~156px three-row jumble at the top of every page */
   .header { padding-bottom: 12px; margin-bottom: 16px; gap: 8px; align-items: center; }
