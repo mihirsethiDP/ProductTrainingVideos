@@ -45,6 +45,7 @@ export default function Admin() {
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [reviewError, setReviewError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setFetching(true);
@@ -54,8 +55,11 @@ export default function Admin() {
       listJobs(),
     ]);
     // distinguish a real load failure from a genuinely empty org — otherwise a
-    // network/RLS error reads as "no users yet"
-    setLoadError(!!pErr || !!lpErr);
+    // network/RLS error reads as "no users yet". Gate the "couldn't load users"
+    // banner on the PROFILES error only: a progress-only failure still renders
+    // the correct user list (just with 0% rings), so a banner there would be a
+    // self-contradiction ("couldn't load" atop a populated table).
+    setLoadError(!!pErr);
     if (pErr) console.error('Admin load — profiles:', pErr.message);
     if (lpErr) console.error('Admin load — progress:', lpErr.message);
     setUsers((p as Profile[]) ?? []);
@@ -65,7 +69,13 @@ export default function Admin() {
   }, []);
 
   async function review(id: string, decision: 'approved' | 'rejected', reason?: string) {
-    await reviewJob(id, decision, reason);
+    const { error } = await reviewJob(id, decision, reason);
+    if (error) {
+      // keep the form + typed reason so the admin can retry, and say why
+      setReviewError(error);
+      return;
+    }
+    setReviewError(null);
     setRejectingId(null);
     setRejectReason('');
     load();
@@ -195,6 +205,7 @@ export default function Admin() {
               <span>Uploaded</span>
               <span>Decision</span>
             </div>
+            {reviewError && <div className="ai-msg err" style={{ margin: '10px 20px' }}>{reviewError}</div>}
             {jobs
               .filter((j) => j.approval_status === 'pending')
               .map((j) => (

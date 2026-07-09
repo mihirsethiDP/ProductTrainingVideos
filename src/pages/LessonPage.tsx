@@ -305,7 +305,11 @@ export default function LessonPage() {
     (paused
       ? t('statusPaused')
       : speaking
-        ? narrationFellBack
+        ? // only the true "no localized voice at all, using English" case warrants
+          // the fallback notice: this step ran on Web Speech (narrationFellBack)
+          // AND there is no native voice for the language (voicePick.fellBack).
+          // A step on Web Speech WITH a native voice is just normal narration.
+          narrationFellBack && voicePick.fellBack
           ? t('statusFallback')
           : `${t('statusSpeaking')} · ${t('stepWord')} ${step + 1}`
         : t('statusReady'));
@@ -395,8 +399,12 @@ export default function LessonPage() {
                 setGender(g);
                 genderRef.current = g;
                 if (speaking) {
-                  stopAll();
-                  setTimeout(() => speakStep(stepRef.current), 200);
+                  const at = stepRef.current;
+                  stopAll(); // clears any pending timer + cancels narration
+                  speakTimerRef.current = window.setTimeout(() => {
+                    speakTimerRef.current = null;
+                    if (stepRef.current === at) speakStep(at);
+                  }, 200);
                 }
               }}
               rate={rate}

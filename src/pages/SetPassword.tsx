@@ -44,9 +44,11 @@ export default function SetPassword() {
   const fromAuthLink = AUTH_LINK_TYPE === 'recovery' || AUTH_LINK_TYPE === 'invite';
 
   if (loading) return null;
-  // a normal, already-signed-in visit (not via a reset/invite link, no link
-  // error) has no business setting a password here — send them home
-  if (session && !fromAuthLink && !AUTH_LINK_ERROR && !done) return <Navigate to="/" replace />;
+  // a signed-in visitor who did NOT arrive via a reset/invite link has no
+  // business here — send them home. (We intentionally don't gate this on
+  // AUTH_LINK_ERROR: after someone signs in following an expired link, that
+  // stale module-constant error must not strand them on the "expired" screen.)
+  if (session && !fromAuthLink && !done) return <Navigate to="/" replace />;
 
   return (
     <div className="page">

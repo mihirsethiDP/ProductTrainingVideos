@@ -61,9 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     // last-resort guard: never leave the app stuck on the '…' spinner if
-    // getSession (or the profile fetch) hangs on a bad network.
+    // getSession (or the profile fetch) hangs on a bad network. If we fire, the
+    // .finally below hasn't run — meaning loadProfile never settled and the
+    // profile is UNVALIDATED. Do NOT expose gated content behind a
+    // possibly-deactivated profile: drop to a clean logged-out state (the
+    // Supabase token stays in storage, so a reload/sign-in retries).
     const failSafe = window.setTimeout(() => {
-      if (!cancelled) setLoading(false);
+      if (cancelled) return;
+      setSession(null);
+      setProfile(null);
+      setLoading(false);
     }, 8000);
     supabase.auth
       .getSession()

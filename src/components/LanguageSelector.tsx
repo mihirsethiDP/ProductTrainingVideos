@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { LANGUAGE_LIST } from '../data/i18n';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -6,6 +6,7 @@ export default function LanguageSelector() {
   const { lang, meta, setLang } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
@@ -14,6 +15,26 @@ export default function LanguageSelector() {
     document.addEventListener('click', close);
     return () => document.removeEventListener('click', close);
   }, []);
+
+  // On mobile the selector can wrap to anywhere in the header row, so a fixed
+  // left/right anchor can push the menu off either edge. When open, measure and
+  // nudge the menu horizontally so it stays fully within the viewport. Desktop
+  // keeps its CSS right-anchor (we clear the inline override).
+  useLayoutEffect(() => {
+    const el = dropRef.current;
+    if (!el) return;
+    if (!open || window.innerWidth > 700) {
+      el.style.left = '';
+      return;
+    }
+    el.style.left = '0px';
+    const margin = 12;
+    const rect = el.getBoundingClientRect();
+    let shift = 0;
+    if (rect.right > window.innerWidth - margin) shift = window.innerWidth - margin - rect.right;
+    if (rect.left + shift < margin) shift = margin - rect.left;
+    el.style.left = `${shift}px`;
+  }, [open]);
 
   return (
     <div className="lang-selector" ref={ref} onClick={() => setOpen((o) => !o)}>
@@ -27,7 +48,7 @@ export default function LanguageSelector() {
         <span>{meta.native}</span>
         <span className="lang-caret">▾</span>
       </div>
-      <div className={`lang-dropdown${open ? ' open' : ''}`}>
+      <div ref={dropRef} className={`lang-dropdown${open ? ' open' : ''}`}>
         {LANGUAGE_LIST.map((l) => (
           <div
             key={l.code}

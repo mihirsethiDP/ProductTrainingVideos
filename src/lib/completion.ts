@@ -12,11 +12,15 @@ export function lessonPercent(lessonId: string): number {
   return Math.min(100, Math.round(((p.lastStep + 1) / total) * 100));
 }
 
-/** Real (non-coming-soon, registered) lessons inside a module, scoped to a
- *  role — internal-only configuration tracks are excluded for other roles. */
-export function moduleLessons(module: ModuleDef, role?: RoleId): string[] {
+/** Real (non-coming-soon, registered) lessons that make up the linear course of
+ *  a module. Configuration (`internalOnly`) tracks are a parallel "how to build
+ *  it" side-track reached via the Read⇄Configure toggle / deep-link — they are
+ *  NEVER part of the countable, linear course for ANY role (including internal),
+ *  so the role-card counts, progress rings, and the rendered lesson list all
+ *  agree. `_role` is kept for call-site compatibility / future role scoping. */
+export function moduleLessons(module: ModuleDef, _role?: RoleId): string[] {
   return module.lessons
-    .filter((l) => !l.comingSoon && getLesson(l.id) && (!l.internalOnly || role === 'internal'))
+    .filter((l) => !l.comingSoon && getLesson(l.id) && !l.internalOnly)
     .map((l) => l.id);
 }
 

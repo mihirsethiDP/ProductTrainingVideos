@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import RoleSelect from './pages/RoleSelect';
 import RoleHome from './pages/RoleHome';
@@ -27,9 +27,15 @@ function AuthLinkRedirect() {
   const { loading } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  // bounce to set-password AT MOST ONCE. AUTH_LINK_TYPE/ERROR are module
+  // constants that live for the whole tab, so re-bouncing every time pathname
+  // changes would trap a user who lands via an expired link and then signs in
+  // (the /set-password ⇄ / redirect loop).
+  const bounced = useRef(false);
   useEffect(() => {
-    if (loading) return;
+    if (loading || bounced.current) return;
     if ((AUTH_LINK_TYPE === 'recovery' || AUTH_LINK_TYPE === 'invite' || AUTH_LINK_ERROR) && pathname !== '/set-password') {
+      bounced.current = true;
       navigate('/set-password', { replace: true });
     }
   }, [loading, navigate, pathname]);
