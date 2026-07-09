@@ -41,7 +41,7 @@ export default function Header({ meta }: { meta?: ReactNode }) {
           </Link>
         )}
         {session ? (
-          <div className="auth-chip">
+          <div className="auth-chip" data-tour="account">
             <span className="auth-chip-name">{profile?.full_name || profile?.email?.split('@')[0] || t('authAccount')}</span>
             <button className="auth-chip-out" onClick={() => { void signOut(); navigate('/'); }}>{t('authSignOut')}</button>
           </div>

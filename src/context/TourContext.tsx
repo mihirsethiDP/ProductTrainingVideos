@@ -1,13 +1,22 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import Tour, { type TourStep } from '../components/Tour';
 
-// Steps target elements by data-tour attribute (present on the home hub).
+// One master list; each page shows the steps whose target exists on it.
+// Path-picker steps appear on RoleSelect, module/lesson steps on RoleHome.
 const HOME_STEPS: TourStep[] = [
   { selector: '[data-tour="brand"]', titleKey: 'tourWelcomeT', bodyKey: 'tourWelcomeB' },
-  { selector: '[data-tour="language"]', titleKey: 'tourLangT', bodyKey: 'tourLangB' },
+  // — role select (choose your path) —
+  { selector: '[data-tour="paths"]', titleKey: 'tourPathsT', bodyKey: 'tourPathsB' },
+  { selector: '[data-tour="path-operator"]', titleKey: 'tourOperatorT', bodyKey: 'tourOperatorB' },
+  { selector: '[data-tour="path-supervisor"]', titleKey: 'tourSupervisorT', bodyKey: 'tourSupervisorB' },
+  { selector: '[data-tour="path-internal"]', titleKey: 'tourInternalT', bodyKey: 'tourInternalB' },
+  // — role home (modules & lessons) —
   { selector: '[data-tour="progress-summary"]', titleKey: 'tourProgressT', bodyKey: 'tourProgressB' },
   { selector: '.module-card', titleKey: 'tourModulesT', bodyKey: 'tourModulesB' },
   { selector: '.lesson-row.playable', titleKey: 'tourLessonsT', bodyKey: 'tourLessonsB' },
+  // — shared chrome —
+  { selector: '[data-tour="account"]', titleKey: 'tourAccountT', bodyKey: 'tourAccountB' },
+  { selector: '[data-tour="language"]', titleKey: 'tourLangT', bodyKey: 'tourLangB' },
   { selector: '[data-tour="tour-button"]', titleKey: 'tourRelaunchT', bodyKey: 'tourRelaunchB' },
 ];
 
@@ -35,6 +44,12 @@ export function TourProvider({ children }: { children: ReactNode }) {
     if (available.length) setSteps(available);
   }, [resolve]);
 
+  // never replace the steps of a tour that's already open — swapping the array
+  // under a running Tour strands its step index past the new length (crash)
+  const setIfClosed = useCallback((available: TourStep[]) => {
+    setSteps((prev) => prev ?? (available.length ? available : null));
+  }, []);
+
   const maybeStartFirstVisit = useCallback(() => {
     let seen = false;
     try {
@@ -44,11 +59,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
     }
     if (seen) return;
     // wait a beat for the home content to render before measuring targets
-    window.setTimeout(() => {
-      const available = resolve();
-      if (available.length) setSteps(available);
-    }, 600);
-  }, [resolve]);
+    window.setTimeout(() => setIfClosed(resolve()), 600);
+  }, [resolve, setIfClosed]);
 
   const close = useCallback(() => {
     setSteps(null);

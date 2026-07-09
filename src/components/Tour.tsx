@@ -22,8 +22,10 @@ export default function Tour({ steps, onClose }: { steps: TourStep[]; onClose: (
   const [i, setI] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
 
-  const step = steps[i];
-  const isLast = i === steps.length - 1;
+  // clamp — the steps array can shrink (e.g. re-resolved on navigation)
+  const idx = Math.min(i, steps.length - 1);
+  const step = steps[idx];
+  const isLast = idx === steps.length - 1;
 
   // scroll the target into view, then measure it (and re-measure on resize/scroll)
   useLayoutEffect(() => {
@@ -79,17 +81,17 @@ export default function Tour({ steps, onClose }: { steps: TourStep[]; onClose: (
       )}
 
       <div className="tour-tip" style={{ top: tipTop, left: tipLeft, width: tipW }}>
-        <div className="tour-tip-step">{t('tourStep')} {i + 1} / {steps.length}</div>
+        <div className="tour-tip-step">{t('tourStep')} {idx + 1} / {steps.length}</div>
         <div className="tour-tip-title">{t(step.titleKey)}</div>
         <div className="tour-tip-body">{t(step.bodyKey)}</div>
         <div className="tour-tip-actions">
           <button className="tour-skip" onClick={onClose}>{t('tourSkip')}</button>
           <div className="tour-nav">
-            {i > 0 && <button className="tour-btn ghost" onClick={() => setI(i - 1)}>{t('prev')}</button>}
+            {idx > 0 && <button className="tour-btn ghost" onClick={() => setI(idx - 1)}>{t('prev')}</button>}
             {isLast ? (
               <button className="tour-btn" onClick={onClose}>{t('tourDone')}</button>
             ) : (
-              <button className="tour-btn" onClick={() => setI(i + 1)}>{t('tourNext')}</button>
+              <button className="tour-btn" onClick={() => setI(idx + 1)}>{t('tourNext')}</button>
             )}
           </div>
         </div>

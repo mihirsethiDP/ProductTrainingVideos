@@ -32,7 +32,7 @@ export default function RoleSelect() {
         </div>
 
         <div className="eyebrow" style={{ padding: '0 8px' }}>{t('whoAreYou')}</div>
-        <div className="role-grid">
+        <div className="role-grid" data-tour="paths">
           {ROLE_CARDS.map((card) => {
             const modules = modulesForRole(card.id);
             const lessonCount = modules.reduce((n, m) => n + m.lessons.length, 0);
@@ -40,6 +40,7 @@ export default function RoleSelect() {
               <button
                 key={card.id}
                 className="role-card"
+                data-tour={`path-${card.id}`}
                 onClick={() => {
                   saveRole(card.id);
                   navigate(`/${card.id}`);
