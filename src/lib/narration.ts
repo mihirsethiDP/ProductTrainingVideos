@@ -26,6 +26,10 @@ export interface NarrationOpts {
   onStart?: () => void;
   onEnd?: () => void;
   onError?: () => void;
+  /** autoplay was blocked (no prior user gesture) — distinct from a decode/network failure */
+  onBlocked?: () => void;
+  /** which engine actually drove this step: a pre-generated clip, or the Web Speech fallback */
+  onEngine?: (engine: 'audio' | 'speech') => void;
   onProgress?: (progress: number, charIndex: number) => void;
 }
 
@@ -36,6 +40,11 @@ const clipUrl = (o: Pick<NarrationOpts, 'lessonId' | 'step' | 'lang' | 'gender'>
 let audioEl: HTMLAudioElement | null = null;
 let raf: number | null = null;
 let usingFallback = false;
+// bumped every time playback is (re)started or cancelled. A playNarration call
+// captures the value at entry; if it changes while the call is awaiting its
+// fetch, the call bails instead of starting stale audio over the top of a
+// newer step (that race was the rapid-navigation double-audio / desync bug).
+let generation = 0;
 
 const stopRaf = () => {
   if (raf !== null) {
@@ -43,6 +52,19 @@ const stopRaf = () => {
     raf = null;
   }
 };
+
+/** Stop whatever is playing right now, WITHOUT invalidating in-flight calls. */
+function stopCurrent(): void {
+  stopRaf();
+  if (audioEl) {
+    audioEl.pause();
+    audioEl.onplay = audioEl.onended = audioEl.onerror = null;
+    audioEl.src = '';
+    audioEl = null;
+  }
+  cancelSpeech();
+  usingFallback = false;
+}
 
 /** Has a pre-generated clip for this step (so the gender toggle is meaningful)? */
 export async function hasGeneratedAudio(o: Pick<NarrationOpts, 'lessonId' | 'step' | 'lang' | 'gender'>): Promise<boolean> {
@@ -55,26 +77,30 @@ export async function hasGeneratedAudio(o: Pick<NarrationOpts, 'lessonId' | 'ste
 }
 
 export async function playNarration(o: NarrationOpts): Promise<void> {
-  cancelNarration();
+  const myGen = ++generation; // claim this generation and supersede any prior call
+  stopCurrent();
 
   let timing: Timing | null = null;
   try {
     const res = await fetch(clipUrl(o, 'json'));
+    if (myGen !== generation) return; // a newer step started while we were fetching
     if (res.ok) timing = (await res.json()) as Timing;
   } catch {
     /* offline or 404 — fall back below */
   }
+  if (myGen !== generation) return; // superseded during the await
 
   const fallback = () => {
     usingFallback = true;
+    o.onEngine?.('speech');
     webSpeak(o.text, {
       voice: o.voice,
       lang: o.langCode,
       rate: o.rate,
-      onStart: o.onStart,
-      onEnd: o.onEnd,
-      onError: o.onError,
-      onProgress: o.onProgress,
+      onStart: () => { if (myGen === generation) o.onStart?.(); },
+      onEnd: () => { if (myGen === generation) o.onEnd?.(); },
+      onError: () => { if (myGen === generation) o.onError?.(); },
+      onProgress: (p, ci) => { if (myGen === generation) o.onProgress?.(p, ci); },
     });
   };
 
@@ -84,6 +110,7 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
   }
 
   usingFallback = false;
+  o.onEngine?.('audio');
   const total = o.text.length;
   const words = timing.words;
   // elapsed audio time -> character index in the narration text (interpolated
@@ -114,11 +141,13 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
   };
 
   audio.onplay = () => {
+    if (myGen !== generation) return;
     o.onStart?.();
     stopRaf();
     raf = requestAnimationFrame(tick);
   };
   audio.onended = () => {
+    if (myGen !== generation) return;
     stopRaf();
     o.onProgress?.(1, total);
     o.onEnd?.();
@@ -127,7 +156,7 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
     stopRaf();
     // a device that can't decode WebM/Opus (e.g. very old iOS) — use the
     // browser's own voice instead of leaving the learner with silence
-    if (audioEl === audio) {
+    if (audioEl === audio && myGen === generation) {
       audioEl = null;
       fallback();
     }
@@ -136,8 +165,9 @@ export async function playNarration(o: NarrationOpts): Promise<void> {
   try {
     await audio.play();
   } catch {
-    // autoplay blocked (no prior gesture) — surface as an error so the UI resets
-    o.onError?.();
+    // autoplay blocked (no prior gesture) — prompt the learner to press play,
+    // distinct from a genuine decode/network failure
+    if (myGen === generation) o.onBlocked?.();
   }
 }
 
@@ -167,13 +197,6 @@ export function setNarrationRate(rate: number): void {
 }
 
 export function cancelNarration(): void {
-  stopRaf();
-  if (audioEl) {
-    audioEl.pause();
-    audioEl.onplay = audioEl.onended = audioEl.onerror = null;
-    audioEl.src = '';
-    audioEl = null;
-  }
-  cancelSpeech();
-  usingFallback = false;
+  generation++; // invalidate any in-flight playNarration so it won't start audio
+  stopCurrent();
 }

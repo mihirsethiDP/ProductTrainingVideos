@@ -6,7 +6,8 @@ import StageControls from '../components/StageControls';
 import Stage from '../components/Stage';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
+import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES, modulesForRole } from '../data/catalog';
+import { moduleLessons } from '../lib/completion';
 import type { RoleId } from '../data/types';
 import { onVoicesChanged, pickVoiceForLanguage } from '../lib/tts';
 import {
@@ -43,6 +44,7 @@ export default function LessonPage() {
   const [progress, setProgress] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
+  const [narrationFellBack, setNarrationFellBack] = useState(false); // this step is on the Web-Speech fallback
   const [voiceTick, setVoiceTick] = useState(0); // re-render when system voices load
   // the sticky bottom nav only floats once the on-video controls scroll away,
   // so it never overlaps the player's own play/voice controls
@@ -57,6 +59,17 @@ export default function LessonPage() {
   rateRef.current = rate;
   const stepRef = useRef(step);
   stepRef.current = step;
+
+  // the single pending "speak this step" / "auto-advance" timer. Tracked so a
+  // navigation (or leaving the lesson) cancels it — otherwise a stale timer
+  // fires speakStep for the wrong step, or keeps audio going after unmount.
+  const speakTimerRef = useRef<number | null>(null);
+  const clearSpeakTimer = useCallback(() => {
+    if (speakTimerRef.current !== null) {
+      window.clearTimeout(speakTimerRef.current);
+      speakTimerRef.current = null;
+    }
+  }, []);
 
   const content = lesson?.content[lang];
   const totalSteps = content?.steps.length ?? 0;
@@ -95,6 +108,7 @@ export default function LessonPage() {
       setProgress(0);
       setCharIndex(0);
       setStatusOverride(null);
+      setNarrationFellBack(false);
       if (lesson.layouts[index]?.mode === 'showcase') setPlayKey((k) => k + 1);
       void playNarration({
         lessonId: lesson.id,
@@ -105,6 +119,7 @@ export default function LessonPage() {
         voice: currentVoice ?? null,
         langCode: meta.langCode,
         rate: rateRef.current,
+        onEngine: (engine) => setNarrationFellBack(engine === 'speech'),
         onStart: () => {
           setSpeaking(true);
           setPaused(false);
@@ -118,7 +133,9 @@ export default function LessonPage() {
           setPaused(false);
           if (autoAdvanceRef.current && stepRef.current === index) {
             if (index < lesson.layouts.length - 1) {
-              setTimeout(() => {
+              clearSpeakTimer();
+              speakTimerRef.current = window.setTimeout(() => {
+                speakTimerRef.current = null;
                 // user may have navigated during the pause
                 if (stepRef.current === index) {
                   setStep(index + 1);
@@ -130,21 +147,28 @@ export default function LessonPage() {
             }
           }
         },
+        onBlocked: () => {
+          // autoplay was blocked (no gesture yet) — invite the tap, don't error
+          setSpeaking(false);
+          setPaused(false);
+          setStatusOverride(t('statusPressPlay'));
+        },
         onError: () => {
           setSpeaking(false);
           setPaused(false);
-          setStatusOverride('Voice unavailable');
+          setStatusOverride(t('voiceUnavailable'));
         },
       });
     },
-    [lesson, lang, currentVoice, meta.langCode, t],
+    [lesson, lang, currentVoice, meta.langCode, t, clearSpeakTimer],
   );
 
   const stopAll = useCallback(() => {
+    clearSpeakTimer();
     cancelNarration();
     setSpeaking(false);
     setPaused(false);
-  }, []);
+  }, [clearSpeakTimer]);
 
   // stop speech on unmount / language change
   useEffect(() => stopAll, [stopAll]);
@@ -216,13 +240,41 @@ export default function LessonPage() {
     if (target !== lessonId) navigate(`/${role}/${moduleId}/${target}`);
   };
 
+  // the real, role-visible lesson that comes after this one — next within the
+  // module, else the first lesson of the next module in this role's order. Demo
+  // and shorts modules (roles: []) stand alone, so they have no "next".
+  const nextLesson = (() => {
+    const roleId = role as RoleId;
+    if (module.roles.length === 0) return null;
+    const within = moduleLessons(module, roleId);
+    const idx = within.indexOf(lesson.id);
+    if (idx >= 0 && idx < within.length - 1) {
+      return { moduleId: module.id, id: within[idx + 1] };
+    }
+    const roleModules = modulesForRole(roleId);
+    const mIdx = roleModules.findIndex((m) => m.id === module.id);
+    for (let i = mIdx + 1; i < roleModules.length; i++) {
+      const ls = moduleLessons(roleModules[i], roleId);
+      if (ls.length) return { moduleId: roleModules[i].id, id: ls[0] };
+    }
+    return null;
+  })();
+  const nextLessonTitle = nextLesson
+    ? (getLesson(nextLesson.id)?.content[lang].title ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    : '';
+
   function goTo(index: number, andSpeak: boolean) {
-    stopAll();
+    stopAll(); // also clears any pending speak/advance timer
     setProgress(0);
     setCharIndex(0);
     setStatusOverride(null);
     setStep(index);
-    if (andSpeak) setTimeout(() => speakStep(index), 300);
+    if (andSpeak) {
+      speakTimerRef.current = window.setTimeout(() => {
+        speakTimerRef.current = null;
+        if (stepRef.current === index) speakStep(index);
+      }, 300);
+    }
   }
 
   function goPrev() {
@@ -251,10 +303,10 @@ export default function LessonPage() {
     (paused
       ? t('statusPaused')
       : speaking
-        ? `${t('statusSpeaking')} · ${t('stepWord')} ${step + 1}`
-        : voicePick.fellBack
+        ? narrationFellBack
           ? t('statusFallback')
-          : t('statusReady'));
+          : `${t('statusSpeaking')} · ${t('stepWord')} ${step + 1}`
+        : t('statusReady'));
 
   return (
     <div className="page">
@@ -319,6 +371,7 @@ export default function LessonPage() {
           caption={layout.caption}
           playKey={playKey}
           speaking={speaking && !paused}
+          paused={paused}
           progress={progress}
           charIndex={charIndex}
           subtitleText={stepData.voice}
@@ -327,6 +380,7 @@ export default function LessonPage() {
             <StageControls
               speaking={speaking && !paused}
               isPlaying={speaking && !paused}
+              isLast={isLast}
               statusText={statusText}
               progress={progress}
               onPlayPause={handlePlayPause}
@@ -394,13 +448,27 @@ export default function LessonPage() {
 
         {isLast && (
           <div className="next-lesson-banner">
-            <div>
-              <div className="nl-eyebrow">{t('upNextLabel')}</div>
-              <div className="nl-title">{t('comingSoonHint')}</div>
-            </div>
-            <Link to={`/${role}`}>
-              <button className="lesson-cta">{t('backToPath').replace('← ', '')} →</button>
-            </Link>
+            {nextLesson ? (
+              <>
+                <div>
+                  <div className="nl-eyebrow">{t('upNextLabel')}</div>
+                  <div className="nl-title" dangerouslySetInnerHTML={{ __html: nextLessonTitle }} />
+                </div>
+                <Link to={`/${role}/${nextLesson.moduleId}/${nextLesson.id}`}>
+                  <button className="lesson-cta">{t('nextLesson')} →</button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <div>
+                  <div className="nl-eyebrow">{t('upNextLabel')}</div>
+                  <div className="nl-title">{t('comingSoonHint')}</div>
+                </div>
+                <Link to={`/${role}`}>
+                  <button className="lesson-cta">{t('backToPath').replace('← ', '')} →</button>
+                </Link>
+              </>
+            )}
           </div>
         )}
 

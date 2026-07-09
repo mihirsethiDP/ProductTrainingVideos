@@ -13,6 +13,8 @@ interface StageProps {
   /** key that changes every time playback (re)starts, to restart the showcase tour */
   playKey: number;
   speaking: boolean;
+  /** narration is paused (not stopped) — keep the frozen subtitle on screen */
+  paused?: boolean;
   progress: number; // 0..1 narration progress
   charIndex: number;
   subtitleText: string;
@@ -85,7 +87,7 @@ function Showcase({ lesson, playKey }: { lesson: Lesson; playKey: number }) {
 }
 
 export default function Stage(props: StageProps) {
-  const { lesson, layout, caption, speaking, progress, charIndex, subtitleText, subtitlesOn } = props;
+  const { lesson, layout, caption, speaking, paused, progress, charIndex, subtitleText, subtitlesOn } = props;
   const [transitioning, setTransitioning] = useState(false);
   const lastSrcRef = useRef<string | undefined>(undefined);
 
@@ -104,7 +106,9 @@ export default function Stage(props: StageProps) {
     lastSrcRef.current = src;
   }, [src]);
 
-  const showSubs = subtitlesOn && speaking;
+  // keep the subtitle bar on screen while paused (frozen at the current word),
+  // so pausing to read doesn't make the caption vanish
+  const showSubs = subtitlesOn && (speaking || !!paused);
 
   return (
     <div className="stage-wrap">
