@@ -9,6 +9,9 @@ export interface JobFile {
   parts: number; // 1 = whole object; >1 = byte-chunks name.part0..partN-1
 }
 
+export type DemoStyle = 'overview' | 'detailed';
+export type ContentMode = 'enhance' | 'new';
+
 export interface GenerationJob {
   id: string;
   kind: JobKind;
@@ -16,6 +19,9 @@ export interface GenerationJob {
   storage_path: string;
   parts: number;
   files: JobFile[];
+  demo_style: DemoStyle;
+  content_mode: ContentMode | null;
+  target_module: string | null;
   status: JobStatus;
   approval_status: ApprovalStatus;
   result_lesson_id: string | null;
@@ -60,6 +66,9 @@ export async function submitJob(opts: {
   notes?: string;
   files: File[];
   stamp: number; // pass Date.now() from the caller
+  demoStyle?: DemoStyle; // demos: overview (~2-3 min) or detailed deep-dive
+  contentMode?: ContentMode; // content: enhance an existing module or start a new one
+  targetModule?: string; // module id when contentMode = 'enhance'
   onProgress?: (message: string) => void;
 }): Promise<{ error: string | null }> {
   if (opts.files.length === 0) return { error: 'No files selected.' };
@@ -81,6 +90,9 @@ export async function submitJob(opts: {
     title: opts.title.trim(),
     storage_path: folder,
     files: manifest,
+    demo_style: opts.kind === 'demo' ? (opts.demoStyle ?? 'overview') : 'overview',
+    content_mode: opts.kind === 'content' ? (opts.contentMode ?? 'enhance') : null,
+    target_module: opts.kind === 'content' && opts.contentMode !== 'new' ? (opts.targetModule ?? null) : null,
     notes: opts.notes?.trim() || null,
     created_by: who.user?.id ?? null,
   });
@@ -90,7 +102,7 @@ export async function submitJob(opts: {
 export async function listJobs(): Promise<GenerationJob[]> {
   const { data } = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,parts,files,status,approval_status,result_lesson_id,notes,created_at')
+    .select('id,kind,title,storage_path,parts,files,demo_style,content_mode,target_module,status,approval_status,result_lesson_id,notes,created_at')
     .order('created_at', { ascending: false });
   return (data as GenerationJob[]) ?? [];
 }

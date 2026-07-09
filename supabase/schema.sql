@@ -152,6 +152,17 @@ alter table public.generation_jobs add column if not exists parts integer not nu
 -- it. Empty array = legacy single-file job (storage_path + parts).
 alter table public.generation_jobs add column if not exists files jsonb not null default '[]'::jsonb;
 
+-- demo jobs: how deep the generated demo should go
+alter table public.generation_jobs add column if not exists demo_style text not null default 'overview';
+alter table public.generation_jobs drop constraint if exists generation_jobs_demo_style_check;
+alter table public.generation_jobs add constraint generation_jobs_demo_style_check
+  check (demo_style in ('overview', 'detailed'));
+
+-- content jobs: enhance an existing module, or start a new one
+alter table public.generation_jobs add column if not exists content_mode text
+  check (content_mode in ('enhance', 'new'));
+alter table public.generation_jobs add column if not exists target_module text; -- module id when content_mode='enhance'
+
 -- approval workflow: personalized demos publish straight away; lesson/module
 -- content uploaded by a CSM waits for an admin's approval first.
 alter table public.generation_jobs add column if not exists approval_status text not null default 'not_required';

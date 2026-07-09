@@ -3,7 +3,11 @@ import { Link, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
-import { listJobs, submitJob, type GenerationJob, type JobKind } from '../lib/studio';
+import { MODULES } from '../data/catalog';
+import { listJobs, submitJob, type ContentMode, type DemoStyle, type GenerationJob, type JobKind } from '../lib/studio';
+
+// real modules only — the hidden holders (demos/shorts) aren't valid targets
+const TARGET_MODULES = MODULES.filter((m) => m.roles.length > 0);
 
 const STATUS_LABEL: Record<GenerationJob['status'], string> = {
   queued: 'Queued',
@@ -22,6 +26,9 @@ export default function Studio() {
   const { isAdmin, canCreate, loading } = useAuth();
 
   const [kind, setKind] = useState<JobKind>('demo');
+  const [demoStyle, setDemoStyle] = useState<DemoStyle>('overview');
+  const [contentMode, setContentMode] = useState<ContentMode>('enhance');
+  const [targetModule, setTargetModule] = useState<string>(TARGET_MODULES[0]?.id ?? '');
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
@@ -50,6 +57,9 @@ export default function Studio() {
       notes,
       files,
       stamp: Date.now(),
+      demoStyle,
+      contentMode,
+      targetModule,
       onProgress: (text) => setMsg({ ok: true, text }),
     });
     setBusy(false);
@@ -92,6 +102,47 @@ export default function Studio() {
             </button>
           </div>
 
+          {kind === 'demo' ? (
+            <div className="studio-sub">
+              <span className="studio-sub-label">Demo depth</span>
+              <div className="studio-kind">
+                <button type="button" className={`track-seg${demoStyle === 'overview' ? ' active' : ''}`} onClick={() => setDemoStyle('overview')}>
+                  ⚡ Overview · ~2–3 min
+                </button>
+                <button type="button" className={`track-seg${demoStyle === 'detailed' ? ' active' : ''}`} onClick={() => setDemoStyle('detailed')}>
+                  🔎 Detailed deep-dive
+                </button>
+              </div>
+              <div className="studio-sub-hint">
+                {demoStyle === 'overview'
+                  ? 'A brisk page-by-page tour — navigation first, one step per feature area.'
+                  : 'A longer walkthrough that opens up each page and its key widgets in depth.'}
+              </div>
+            </div>
+          ) : (
+            <div className="studio-sub">
+              <span className="studio-sub-label">This content is…</span>
+              <div className="studio-kind">
+                <button type="button" className={`track-seg${contentMode === 'enhance' ? ' active' : ''}`} onClick={() => setContentMode('enhance')}>
+                  ➕ For an existing module
+                </button>
+                <button type="button" className={`track-seg${contentMode === 'new' ? ' active' : ''}`} onClick={() => setContentMode('new')}>
+                  🆕 A new module
+                </button>
+              </div>
+              {contentMode === 'enhance' && (
+                <label className="studio-field" style={{ marginTop: 10 }}>
+                  <span>Which module does it enhance?</span>
+                  <select value={targetModule} onChange={(e) => setTargetModule(e.target.value)}>
+                    {TARGET_MODULES.map((m) => (
+                      <option key={m.id} value={m.id}>{m.tag} · {m.name.en}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          )}
+
           <div className="studio-fields">
             <label className="studio-field">
               <span>Title</span>
@@ -115,10 +166,10 @@ export default function Studio() {
             </label>
 
             <label className="studio-field">
-              <span>Notes for the generator (optional)</span>
+              <span>Notes (optional) — AI weaves these into the right sections</span>
               <textarea
-                rows={2}
-                placeholder="Anything specific to highlight, the client’s focus areas, tone…"
+                rows={3}
+                placeholder="Write freely: focus areas, client priorities, things to emphasise or skip, tone… Each note is matched to the product modules it concerns and shapes that part of the walkthrough."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />

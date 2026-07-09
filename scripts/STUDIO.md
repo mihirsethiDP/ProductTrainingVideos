@@ -37,20 +37,39 @@ Then author the lesson, following the existing patterns:
   **Demo style (Mihir's feedback — follow strictly):**
   - **Cover EVERYTHING in the context.** Every page/feature that appears in the
     recordings or documents gets covered. Nothing the uploader provided is skipped.
-  - **Pace by page/section, NOT one widget per step.** One step per dashboard
-    page or feature area; sweep several widgets in one breath. At most ONE quick
-    interactive widget step to teach "how to read any card" (title → value →
-    period %). Voices ≈ 2–3 brisk sentences; total demo ≈ 2–3 minutes.
+  - **Honor `job.demo_style`:**
+    - `overview` (default): brisk page-by-page tour — one step per dashboard page
+      or feature area, sweep several widgets in one breath, voices ≈ 2–3 short
+      sentences, total ≈ 2–3 minutes.
+    - `detailed`: a deeper walkthrough — 2–4 steps per page, opening up that
+      page's key widgets/sections individually (interactive widget recreations
+      welcome here), voices can run 3–4 sentences, total ≈ 5–8 minutes. Still no
+      monotonous one-widget-per-step crawl across identical cards.
+  - **The notes field is an AI instruction layer, not a caption.** Parse the
+    uploader's notes into individual intents and MAP each one onto the product
+    module/page of the demo it concerns — e.g. "they care most about compliance"
+    → expand and lead with the quality/analytics steps; "skip inventory" → omit
+    it; "operator audience, keep it simple" → adjust tone and depth of every
+    step. Where a note conflicts with the default style, the note wins.
   - **Teach navigation know-how first**: page selector, granularity + time range
     driving all widgets, refresh/download — as step 1, then a wrap step mapping
     which page serves which job.
   - **Use REAL frames from the recordings as screenshots** (`mode: 'detail'`,
     copy chosen frames to `public/screenshots/<lessonId>/`, 1280px wide) so the
-    client sees their own screens; reserve interactive widget recreations for the
-    read-a-widget step. Reference model: `demo-hindalco`.
-- **A lesson** (`kind: content`, already admin-approved): add it to the right
-  existing module (or a new module) in `catalog.ts`, set `lessonNumber`, author
-  the steps in all 4 languages.
+    client sees their own screens; in `overview` reserve interactive widget
+    recreations for the read-a-widget step. Reference model: `demo-hindalco`.
+- **A lesson** (`kind: content`, already admin-approved): honor `job.content_mode`:
+  - `enhance` — add the lesson(s) to `job.target_module` in `catalog.ts`: next
+    `lessonNumber` in that module, matching its tag scheme and tone. If the
+    upload clearly revises an existing lesson rather than adding one, update
+    that lesson instead and say so in the commit message.
+  - `new` — create a brand-new module: next module number, a fitting tag (M12…),
+    name/description in 4 languages, sensible `roles` for the audience, then the
+    lesson(s) inside it. Remember to refresh the two persona shorts afterwards
+    (standing rule: they must reflect current capabilities).
+  General lessons stay generic (no client-specific data), all 4 languages.
+  The notes field works the same as for demos: parse it and apply each intent
+  to the parts of the content it concerns.
 
 Generate its audio and deploy:
 ```

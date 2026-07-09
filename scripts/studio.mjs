@@ -41,7 +41,7 @@ const [cmd, arg1, arg2] = process.argv.slice(2);
 async function list() {
   const { data, error } = await db
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,status,approval_status,notes,created_at')
+    .select('id,kind,title,storage_path,demo_style,content_mode,target_module,status,approval_status,notes,created_at')
     .eq('status', 'queued')
     .order('created_at', { ascending: true });
   if (error) throw error;
@@ -51,7 +51,10 @@ async function list() {
   );
   if (!ready.length) return console.log('No jobs ready to generate.');
   for (const j of ready) {
-    console.log(`\n• ${j.id}\n  ${j.kind.toUpperCase()} — ${j.title}\n  file: ${j.storage_path}${j.notes ? `\n  notes: ${j.notes}` : ''}`);
+    const shape = j.kind === 'demo'
+      ? `style: ${j.demo_style ?? 'overview'}`
+      : `mode: ${j.content_mode ?? 'enhance'}${j.target_module ? ` → ${j.target_module}` : ''}`;
+    console.log(`\n• ${j.id}\n  ${j.kind.toUpperCase()} — ${j.title}\n  ${shape}\n  file: ${j.storage_path}${j.notes ? `\n  notes: ${j.notes}` : ''}`);
   }
   console.log(`\n${ready.length} ready. Next: node scripts/studio.mjs pickup <jobId>`);
 }
@@ -102,6 +105,7 @@ async function pickup(id) {
   }
   await updateJob(id, { status: 'processing' });
 
+  console.log(`  shape:  ${job.kind === 'demo' ? 'demo_style=' + (job.demo_style ?? 'overview') : 'content_mode=' + (job.content_mode ?? 'enhance') + (job.target_module ? ' target=' + job.target_module : '')}`);
   console.log(`  notes:  ${job.notes ?? '—'}`);
   console.log('\nRead every file (frames for videos; PDFs/docs/text directly), author the');
   console.log(`lesson, then: node scripts/studio.mjs done ${id} <routePath>`);
