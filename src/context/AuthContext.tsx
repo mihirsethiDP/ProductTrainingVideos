@@ -52,7 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session) loadProfile(data.session.user.id).finally(() => setLoading(false));
       else setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      // reset-link opened: make sure the user lands on the set-password screen
+      if (event === 'PASSWORD_RECOVERY' && !window.location.hash.includes('set-password')) {
+        window.location.hash = '#/set-password';
+      }
       setSession(s);
       if (s) {
         loadProfile(s.user.id);

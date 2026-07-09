@@ -11,6 +11,28 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true },
 });
 
+/**
+ * Email links from Supabase (password reset, invites, confirmations) land on
+ * the site root with the token + a `type=` marker in the URL fragment. The
+ * hash router immediately rewrites that fragment, so we capture the marker
+ * HERE, at module load, before React ever renders. The app uses it to route
+ * the user to the set-password screen instead of dumping them on the homepage.
+ */
+export type AuthLinkType = 'recovery' | 'invite' | 'signup' | null;
+const bootHash = typeof window !== 'undefined' ? window.location.hash : '';
+export const AUTH_LINK_TYPE: AuthLinkType = /[#&]type=recovery/.test(bootHash)
+  ? 'recovery'
+  : /[#&]type=invite/.test(bootHash)
+    ? 'invite'
+    : /[#&]type=(signup|email)/.test(bootHash)
+      ? 'signup'
+      : null;
+/** e.g. an expired/used link: #error=access_denied&error_code=otp_expired */
+export const AUTH_LINK_ERROR: string | null = (() => {
+  const m = bootHash.match(/error_description=([^&]+)/);
+  return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : null;
+})();
+
 export type AppRole = 'admin' | 'csm' | 'user';
 export type TrainingRole = 'operator' | 'supervisor' | 'internal';
 
