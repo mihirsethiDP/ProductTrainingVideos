@@ -168,11 +168,17 @@ export async function submitJob(opts: {
 }
 
 export async function listJobs(): Promise<GenerationJob[]> {
-  const { data } = await supabase
+  const base = 'id,kind,title,storage_path,parts,files,demo_style,content_mode,target_module,status,approval_status,result_lesson_id,notes,created_at';
+  // reviewer_note is a newer column; if this deploy lands before the schema
+  // migration runs, selecting it 400s and would blank the whole list — so fall
+  // back to the column set without it rather than breaking the page.
+  const first = await supabase
     .from('generation_jobs')
-    .select('id,kind,title,storage_path,parts,files,demo_style,content_mode,target_module,status,approval_status,result_lesson_id,notes,reviewer_note,created_at')
+    .select(`${base},reviewer_note`)
     .order('created_at', { ascending: false });
-  return (data as GenerationJob[]) ?? [];
+  if (!first.error) return (first.data as GenerationJob[]) ?? [];
+  const fallback = await supabase.from('generation_jobs').select(base).order('created_at', { ascending: false });
+  return (fallback.data as GenerationJob[]) ?? [];
 }
 
 /** Admin approves / rejects a CSM's lesson-content upload. A rejection carries a
