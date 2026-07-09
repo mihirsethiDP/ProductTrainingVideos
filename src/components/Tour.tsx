@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 export interface TourStep {
@@ -18,9 +18,11 @@ function measure(selector: string): Rect | null {
 }
 
 export default function Tour({ steps, onClose }: { steps: TourStep[]; onClose: () => void }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [i, setI] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
+  const [tipH, setTipH] = useState(200); // measured tooltip height (localized copy varies)
 
   // clamp — the steps array can shrink (e.g. re-resolved on navigation)
   const idx = Math.min(i, steps.length - 1);
@@ -58,14 +60,21 @@ export default function Tour({ steps, onClose }: { steps: TourStep[]; onClose: (
     ? { top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2 }
     : null;
 
-  // position the tooltip: below the hole if room, otherwise above; clamp horizontally
+  // measure the tooltip's real height so long localized steps don't overflow the
+  // bottom of short/narrow viewports (was hard-coded at 220)
+  useLayoutEffect(() => {
+    if (tipRef.current) setTipH(tipRef.current.offsetHeight);
+  }, [idx, rect, lang]);
+
+  // position the tooltip: below the hole if room, otherwise above; clamp both axes
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
   const tipW = Math.min(340, vw - 32);
-  let tipTop = hole ? hole.top + hole.height + 14 : vh / 2 - 80;
+  let tipTop = hole ? hole.top + hole.height + 14 : vh / 2 - tipH / 2;
   let tipLeft = hole ? hole.left + hole.width / 2 - tipW / 2 : vw / 2 - tipW / 2;
-  const belowOverflow = hole ? tipTop + 220 > vh : false;
-  if (belowOverflow && hole) tipTop = Math.max(16, hole.top - 200);
+  const belowOverflow = hole ? tipTop + tipH > vh - 16 : false;
+  if (belowOverflow && hole) tipTop = hole.top - tipH - 14; // flip above the hole
+  tipTop = Math.max(16, Math.min(tipTop, vh - tipH - 16)); // never spill past either edge
   tipLeft = Math.max(16, Math.min(tipLeft, vw - tipW - 16));
 
   return (
@@ -80,7 +89,11 @@ export default function Tour({ steps, onClose }: { steps: TourStep[]; onClose: (
         <div className="tour-scrim-full" />
       )}
 
-      <div className="tour-tip" style={{ top: tipTop, left: tipLeft, width: tipW }}>
+      <div
+        ref={tipRef}
+        className="tour-tip"
+        style={{ top: tipTop, left: tipLeft, width: tipW, maxHeight: vh - 32, overflowY: 'auto' }}
+      >
         <div className="tour-tip-step">{t('tourStep')} {idx + 1} / {steps.length}</div>
         <div className="tour-tip-title">{t(step.titleKey)}</div>
         <div className="tour-tip-body">{t(step.bodyKey)}</div>

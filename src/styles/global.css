@@ -1387,7 +1387,7 @@ button { font-family: var(--sans); }
 .tsk-field-label { font-size: 9px; color: var(--ink-soft); letter-spacing: 0.04em; }
 .tsk-field-val { font-size: 12.5px; color: var(--ink); display: flex; justify-content: space-between; }
 .tsk-field-val.ph { color: #9aa7b8; }
-.tsk-scroll { overflow: hidden; border-top: 1px solid var(--line); }
+.tsk-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-top: 1px solid var(--line); }
 .tsk-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .tsk-table th { text-align: left; padding: 10px 12px; color: var(--ink-soft); border-bottom: 1px solid var(--line); font-weight: 600; white-space: nowrap; }
 .tsk-table td { padding: 12px; border-bottom: 1px solid #eef2f7; vertical-align: top; }
@@ -1468,7 +1468,7 @@ button { font-family: var(--sans); }
 .ev-search { border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; color: var(--ink-soft); font-size: 12.5px; }
 .ev-field { border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; color: var(--ink); font-size: 12.5px; display: flex; align-items: center; gap: 8px; position: relative; }
 .ev-field-label { font-size: 9px; color: var(--ink-soft); position: absolute; top: -7px; left: 10px; background: #fff; padding: 0 4px; }
-.ev-scroll { border-top: 1px solid var(--line); overflow: hidden; }
+.ev-scroll { border-top: 1px solid var(--line); overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .ev-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .ev-table th { text-align: left; padding: 12px; color: var(--ink-soft); border-bottom: 1px solid var(--line); font-weight: 600; }
 .ev-table td { padding: 14px 12px; border-bottom: 1px solid #eef2f7; vertical-align: top; }
@@ -1840,6 +1840,7 @@ button { font-family: var(--sans); }
 }
 .step-pips { display: flex; gap: 8px; align-items: center; }
 .pip {
+  position: relative;
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--line); cursor: pointer; transition: all 0.3s;
   border: none; padding: 0;
@@ -1930,7 +1931,29 @@ button { font-family: var(--sans); }
   /* keep the sticky nav to a single compact row so it doesn't eat the screen */
   .player-controls { padding: 9px 12px; bottom: 8px; gap: 8px; flex-wrap: nowrap; }
   .player-controls .btn { padding: 9px 14px; font-size: 12px; }
-  .step-pips { gap: 6px; overflow: hidden; flex-shrink: 1; }
+  .step-pips { gap: 2px; overflow: hidden; flex-shrink: 1; }
+
+  /* step pips are only an 8px dot — far below a tappable target on touch. Turn
+     each into a ~26×30px transparent tap area with the small dot centred inside
+     (a clip-safe alternative to an overflowing ::before hit zone). */
+  .pip { width: 26px; height: 30px; background: transparent; display: inline-flex; align-items: center; justify-content: center; }
+  .pip::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: all 0.3s; }
+  .pip.active { width: 34px; background: transparent; }
+  .pip.active::after { width: 20px; height: 8px; border-radius: 4px; background: var(--accent); }
+  .pip:hover:not(.active)::after { background: var(--ink-soft); }
+
+  /* admin & studio tables (users, jobs, approval queue) share the au-head/au-row
+     grid; on phones let the table pan horizontally instead of crushing every
+     column, matching the widget tables */
+  .admin-users { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .au-head, .au-row { min-width: 580px; }
+
+  /* language menu: anchor to the left of the selector (which sits on the left of
+     the header on mobile) so it can't open off the left edge */
+  .lang-dropdown { right: auto; left: 0; max-width: calc(100vw - 24px); }
+
+  /* player speed buttons were ~24px tall — bump to a comfortable ~32px tap size */
+  .sc-speed-btn { padding: 8px 9px; font-size: 11px; min-height: 32px; }
 }
 
 @media (max-width: 480px) {
@@ -1939,8 +1962,8 @@ button { font-family: var(--sans); }
   .lesson-title { font-size: 28px; }
   .lesson-subtitle { font-size: 15px; }
   .narration { padding: 16px; }
-  .sc-toggle { padding: 6px 10px; font-size: 10px; }
-  .sc-speed-btn { padding: 5px 9px; font-size: 10px; }
+  .sc-toggle { padding: 8px 10px; font-size: 10px; min-height: 32px; }
+  .sc-speed-btn { padding: 8px 8px; font-size: 10px; min-height: 32px; }
   .module-head { padding: 18px 16px 14px; }
   .module-name { font-size: 20px; }
 }
