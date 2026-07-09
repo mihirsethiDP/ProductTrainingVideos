@@ -42,18 +42,25 @@ Deno.serve(async (req) => {
   }
 
   // 3) read input
-  let payload: { email?: string; role?: string; redirectTo?: string };
+  let payload: { email?: string; role?: string; training_role?: string; redirectTo?: string };
   try {
     payload = await req.json();
   } catch {
     return json(400, { error: 'Invalid body' });
   }
   const email = (payload.email ?? '').trim().toLowerCase();
-  const role = payload.role === 'admin' ? 'admin' : 'user';
   if (!email) return json(400, { error: 'Email required' });
+  // keep the whole role set (admin/csm/user) — the old code silently downgraded
+  // every csm invite to a plain user.
+  const role = ['admin', 'csm', 'user'].includes(payload.role ?? '') ? payload.role! : 'user';
+  // the training path only locks plain users; staff (admin/csm) roam all modules
+  const training_role =
+    role === 'user' && ['operator', 'supervisor', 'internal'].includes(payload.training_role ?? '')
+      ? payload.training_role!
+      : null;
 
-  // 4) pre-authorize the role so the signup trigger applies it, then email
-  await admin.from('invites').insert({ email, role, created_by: callerId });
+  // 4) pre-authorize the role + path so the signup trigger applies them, then email
+  await admin.from('invites').insert({ email, role, training_role, created_by: callerId });
   const { error } = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: payload.redirectTo });
   if (error) return json(400, { error: error.message });
 

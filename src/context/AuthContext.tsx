@@ -34,24 +34,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = useCallback(async (userId: string) => {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    setProfile((data as Profile) ?? null);
-    if (data && !(data as Profile).active) {
-      // a deactivated account is signed straight back out
+    const prof = (data as Profile) ?? null;
+    if (prof && !prof.active) {
+      // a deactivated (or un-invited) account is signed straight back out —
+      // do this BEFORE exposing any profile so gated content never flashes
       await supabase.auth.signOut();
       setProfile(null);
+      setProgressSyncUser(null);
       return;
     }
+    setProfile(prof);
     setProgressSyncUser(userId);
-    await pullRemoteProgress(userId); // mirror cloud progress into the local store
-    await pushLocalProgress(userId); // and upload anything that only lived locally
+    // progress sync must never gate first paint: a slow/failed Supabase call
+    // here used to hang the whole app on the loading spinner. Run it in the
+    // background — the local store already works without it.
+    void (async () => {
+      try {
+        await pullRemoteProgress(userId); // mirror cloud progress into the local store
+        await pushLocalProgress(userId); // and upload anything that only lived locally
+      } catch {
+        /* offline / slow network — keep using the local store */
+      }
+    })();
   }, []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      if (data.session) loadProfile(data.session.user.id).finally(() => setLoading(false));
-      else setLoading(false);
-    });
+    let cancelled = false;
+    // last-resort guard: never leave the app stuck on the '…' spinner if
+    // getSession (or the profile fetch) hangs on a bad network.
+    const failSafe = window.setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 8000);
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (cancelled) return undefined;
+        setSession(data.session);
+        return data.session ? loadProfile(data.session.user.id) : undefined;
+      })
+      .catch(() => {
+        /* couldn't reach auth — fall through to a logged-out app, not a hang */
+      })
+      .finally(() => {
+        if (!cancelled) {
+          window.clearTimeout(failSafe);
+          setLoading(false);
+        }
+      });
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       // reset-link opened: make sure the user lands on the set-password screen
       if (event === 'PASSWORD_RECOVERY' && !window.location.hash.includes('set-password')) {
@@ -65,7 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProgressSyncUser(null);
       }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(failSafe);
+      sub.subscription.unsubscribe();
+    };
   }, [loadProfile]);
 
   // where Supabase should send the user back to after confirming / resetting —

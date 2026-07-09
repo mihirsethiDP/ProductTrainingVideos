@@ -96,9 +96,14 @@ drop policy if exists profiles_select_self on public.profiles;
 create policy profiles_select_self on public.profiles
   for select using (id = auth.uid() or public.is_admin());
 
+-- profiles UPDATE is ADMIN-ONLY (handled by profiles_admin_all below). A plain
+-- user must NOT be able to UPDATE their own row: the old self-update policy had
+-- no WITH CHECK, so any signed-in user could set their own role='admin',
+-- active=true, or clear training_role and escape their locked path. There is no
+-- self-service profile field today; if one is ever added, route it through a
+-- SECURITY DEFINER RPC that whitelists exactly that column instead of reopening
+-- a blanket self-update.
 drop policy if exists profiles_update_self on public.profiles;
-create policy profiles_update_self on public.profiles
-  for update using (id = auth.uid() or public.is_admin());
 
 drop policy if exists profiles_admin_all on public.profiles;
 create policy profiles_admin_all on public.profiles
@@ -118,10 +123,15 @@ drop policy if exists lp_admin_read on public.lesson_progress;
 create policy lp_admin_read on public.lesson_progress
   for select using (public.is_admin());
 
--- ---------- bootstrap your admin account ----------
--- 1) Sign up once through the app with your email.
--- 2) Then run this (replace the email) to make yourself an admin:
---    update public.profiles set role = 'admin' where email = 'you@digitalpaani.com';
+-- ---------- bootstrap your first admin account ----------
+-- Signup is invite-only: an un-invited signup lands inactive (see
+-- handle_new_user below), so the very first admin must be seeded by hand.
+-- 1) Pre-authorize yourself, THEN sign up through the app with that email:
+--      insert into public.invites (email, role) values ('you@digitalpaani.com', 'admin');
+-- 2) (or, if a profile row already exists) promote + activate it directly:
+--      update public.profiles set role = 'admin', active = true
+--      where email = 'you@digitalpaani.com';
+-- After that, invite everyone else from the in-app Admin page.
 
 -- ============================================================
 --  Content Studio — upload recordings/content; Claude turns them
@@ -282,13 +292,18 @@ begin
   order by created_at desc
   limit 1;
 
-  insert into public.profiles (id, email, full_name, role, training_role)
+  -- INVITE-ONLY: a signup with no matching unused invite lands INACTIVE, so it
+  -- can never reach gated content (AuthContext signs inactive accounts straight
+  -- back out). Invited accounts (created via inviteUserByEmail after the invite
+  -- row is written) come in active with the admin-chosen role + training path.
+  insert into public.profiles (id, email, full_name, role, training_role, active)
   values (
     new.id,
     new.email,
     new.raw_user_meta_data ->> 'full_name',
     coalesce(inv.role, 'user'),
-    inv.training_role
+    inv.training_role,
+    inv.id is not null
   );
 
   if inv.id is not null then

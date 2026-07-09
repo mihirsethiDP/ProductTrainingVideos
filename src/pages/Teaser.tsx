@@ -20,8 +20,7 @@ export default function Teaser() {
           <h1 className="teaser-title" dangerouslySetInnerHTML={{ __html: t('teaserHeadline') }} />
           <p className="teaser-sub">{t('teaserSub')}</p>
           <div className="teaser-cta-row">
-            <Link to="/login" className="teaser-cta-primary">{t('authCreate')}</Link>
-            <Link to="/login" className="teaser-cta-secondary">{t('authSignIn')}</Link>
+            <Link to="/login" className="teaser-cta-primary">{t('authSignIn')}</Link>
           </div>
           <div className="teaser-note">🔒 {t('teaserLockNote')}</div>
         </div>

@@ -197,6 +197,8 @@ button { font-family: var(--sans); }
 .auth-tabs { display: flex; gap: 6px; background: var(--paper-warm); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
 .auth-tab { flex: 1; background: none; border: none; padding: 9px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer; }
 .auth-tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px var(--shadow); }
+.auth-heading { text-align: center; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
+.auth-invite-note { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--ink-soft); text-align: center; }
 .auth-form { display: flex; flex-direction: column; gap: 14px; }
 .auth-field { display: flex; flex-direction: column; gap: 5px; }
 .auth-field span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }

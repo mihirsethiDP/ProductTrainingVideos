@@ -3,17 +3,18 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
-type Mode = 'signin' | 'signup' | 'reset';
+// Signup is invite-only: accounts are created by an admin (who emails an invite
+// link) — there is no public "Create account" path here anymore.
+type Mode = 'signin' | 'reset';
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
 
 export default function Login() {
-  const { signIn, signUp, resetPassword } = useAuth();
+  const { signIn, resetPassword } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>('signin');
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -28,11 +29,6 @@ export default function Login() {
     if (mode === 'signin') {
       const { error } = await signIn(email.trim(), password);
       if (error) setError(error);
-      else navigate('/');
-    } else if (mode === 'signup') {
-      const { error, needsConfirm } = await signUp(email.trim(), password, fullName.trim());
-      if (error) setError(error);
-      else if (needsConfirm) setNotice(t('authConfirmEmail'));
       else navigate('/');
     } else {
       const { error } = await resetPassword(email.trim());
@@ -49,27 +45,15 @@ export default function Login() {
           <Link to="/" className="auth-logo">
             <img src={LOGO_SRC} alt="DigitalPaani" />
           </Link>
-          <div className="auth-tabs">
-            <button className={`auth-tab${mode === 'signin' ? ' active' : ''}`} onClick={() => setMode('signin')}>
-              {t('authSignIn')}
-            </button>
-            <button className={`auth-tab${mode === 'signup' ? ' active' : ''}`} onClick={() => setMode('signup')}>
-              {t('authCreate')}
-            </button>
-          </div>
+
+          <div className="auth-heading">{mode === 'signin' ? t('authSignIn') : t('authSendReset')}</div>
 
           <form onSubmit={submit} className="auth-form">
-            {mode === 'signup' && (
-              <label className="auth-field">
-                <span>{t('authName')}</span>
-                <input value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" />
-              </label>
-            )}
             <label className="auth-field">
               <span>{t('authEmail')}</span>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
             </label>
-            {mode !== 'reset' && (
+            {mode === 'signin' && (
               <label className="auth-field">
                 <span>{t('authPassword')}</span>
                 <input
@@ -78,7 +62,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                  autoComplete="current-password"
                 />
               </label>
             )}
@@ -87,7 +71,7 @@ export default function Login() {
             {notice && <div className="auth-notice">{notice}</div>}
 
             <button className="auth-submit" type="submit" disabled={busy}>
-              {busy ? '…' : mode === 'signin' ? t('authSignIn') : mode === 'signup' ? t('authCreate') : t('authSendReset')}
+              {busy ? '…' : mode === 'signin' ? t('authSignIn') : t('authSendReset')}
             </button>
           </form>
 
@@ -98,6 +82,8 @@ export default function Login() {
               <button className="auth-link" onClick={() => setMode('signin')}>{t('authBackToSignIn')}</button>
             )}
           </div>
+
+          <div className="auth-invite-note">{t('authInviteOnly')}</div>
         </div>
       </div>
     </div>
