@@ -3,13 +3,21 @@ import { Link, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
-import { MODULES } from '../data/catalog';
-import { demoVideoUrl } from '../lib/supabase';
+import { MODULES, getLesson } from '../data/catalog';
+import { demoVideoUrl, demoVideoDownloadUrl } from '../lib/supabase';
 import { listJobs, submitJob, validateFiles, type ContentMode, type DemoStyle, type GenerationJob, type JobKind } from '../lib/studio';
 
-/** Demos are kept for 30 days after the upload was created, then purged. */
+/** When a demo is available until. Prefer the lesson's own expiresAt stamp
+ *  (end of local day) — the exact rule the app + share link use — so Studio
+ *  never says "available" while the client's link already reads "expired".
+ *  Falls back to created_at + 30 days for any demo without a stamp. */
 const DEMO_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const demoExpiry = (j: GenerationJob) => new Date(new Date(j.created_at).getTime() + DEMO_TTL_MS);
+function demoExpiry(j: GenerationJob): Date {
+  const lessonId = j.result_lesson_id?.split('/').pop();
+  const stamp = lessonId ? getLesson(lessonId)?.expiresAt : undefined;
+  if (stamp) return new Date(`${stamp}T23:59:59`);
+  return new Date(new Date(j.created_at).getTime() + DEMO_TTL_MS);
+}
 
 /** Share/download/expiry row shown under a finished demo job. */
 function DemoRowExtras({ job }: { job: GenerationJob }) {
@@ -44,7 +52,7 @@ function DemoRowExtras({ job }: { job: GenerationJob }) {
         {copied ? '✓ Link copied!' : '🔗 Copy share link'}
       </button>
       {videoUrl && (
-        <a className="studio-share" href={videoUrl} download>⬇ Video</a>
+        <a className="studio-share" href={demoVideoDownloadUrl(lessonId)} download>⬇ Video</a>
       )}
       <div className="studio-expiry">
         No sign-in needed to watch · available until {demoExpiry(job).toLocaleDateString()}

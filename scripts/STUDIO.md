@@ -58,6 +58,9 @@ Then author the lesson, following the existing patterns:
     copy chosen frames to `public/screenshots/<lessonId>/`, 1280px wide) so the
     client sees their own screens; in `overview` reserve interactive widget
     recreations for the read-a-widget step. Reference model: `demo-hindalco`.
+  - **Stamp the 30-day expiry** in the lesson file — demos are purged 30 days
+    after the job's `created_at` (see Retention below):
+    `expiresAt: '<created_at + 30 days, YYYY-MM-DD>',`
 - **A lesson** (`kind: content`, already admin-approved): honor `job.content_mode`:
   - `enhance` — add the lesson(s) to `job.target_module` in `catalog.ts`: next
     `lessonNumber` in that module, matching its tag scheme and tone. If the
@@ -84,6 +87,29 @@ node scripts/studio.mjs done <jobId> internal/module-demos/<lessonId>
 # or on failure:
 node scripts/studio.mjs fail <jobId> "couldn't read the recording — re-upload at higher resolution"
 ```
+
+**For demos, also render the downloadable MP4** (after the push — it plays the
+built lesson headless and uploads to the public `demo-media` bucket, which is
+what the app's "Download video" buttons point at):
+```
+node scripts/record-demo.mjs <lessonId>        # defaults: --lang=en --gender=f
+```
+
+## Sharing & retention (demos)
+- **Share links are zero-auth**: `…/#/internal/module-demos/<lessonId>` opens
+  for anyone with the link — no sign-in (the route is exempted in App.tsx's
+  LessonGate, like the persona shorts). The Studio row has a "Copy share link"
+  button; demos are unlisted (module-demos never appears in any nav).
+- **30-day retention**: demos live for 30 days after the job's `created_at`.
+  The app shows an "expired" notice past the lesson's `expiresAt` stamp; the
+  hourly task runs `node scripts/cleanup-demos.mjs`, which purges everything
+  (lesson file + catalog entry + audio + screenshots, committed & pushed; the
+  uploads in storage; the MP4 in `demo-media`) and marks the job row Expired.
+  Run with `--dry-run` to preview. If its post-removal `tsc` gate fails it
+  aborts without committing — restore with `git checkout -- .` and fix by hand.
+- **Downloads**: `record-demo.mjs` uploads `<lessonId>.mp4` to the public
+  `demo-media` bucket; the demo page and Studio row show download buttons only
+  when that object exists (HEAD-checked).
 
 ## Notes
 - Demos publish straight through; lesson content only appears in `list` once an

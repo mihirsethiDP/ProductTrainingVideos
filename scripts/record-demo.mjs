@@ -41,6 +41,11 @@ if (!lessonId) {
   console.error('Usage: node scripts/record-demo.mjs <lessonId> [--lang=en] [--gender=f] [--no-upload] [--keep] [--rebuild]');
   process.exit(1);
 }
+// these flow into fs paths, an ffmpeg output path, and a public storage key —
+// validate so a stray/hostile value can't traverse out or inject
+if (!/^[a-z0-9-]+$/.test(lessonId)) { console.error(`Invalid lessonId "${lessonId}" — expected [a-z0-9-].`); process.exit(1); }
+if (!['en', 'hi', 'ta', 'mr'].includes(lang)) { console.error(`Invalid --lang "${lang}".`); process.exit(1); }
+if (!['f', 'm'].includes(gender)) { console.error(`Invalid --gender "${gender}" (f|m).`); process.exit(1); }
 
 const KEY_FILE = path.resolve('scripts/service.local');
 const SERVICE_ROLE =
@@ -82,8 +87,17 @@ const server = spawn(process.execPath, [path.resolve('node_modules/vite/bin/vite
   cwd: process.cwd(),
   stdio: 'ignore',
 });
+// if the server dies (e.g. --strictPort found :4273 already bound because
+// another recording is running), fail loudly instead of silently piggybacking
+// on someone else's server and then losing it mid-recording
+let serverDead = false;
+server.on('exit', (code) => {
+  serverDead = true;
+  if (code) console.error(`preview server exited early (code ${code}) — is :${PORT} already in use by another recording?`);
+});
 const waitForServer = async () => {
   for (let i = 0; i < 60; i++) {
+    if (serverDead) throw new Error(`preview server died before becoming ready — :${PORT} likely in use (another recording?)`);
     const ok = await new Promise((resolve) => {
       const req = http.get({ host: 'localhost', port: PORT, path: '/' }, (res) => { res.resume(); resolve(res.statusCode === 200); });
       req.on('error', () => resolve(false));

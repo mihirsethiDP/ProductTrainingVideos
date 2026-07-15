@@ -66,8 +66,10 @@ export default function LessonFallback({ kind, isDemo }: { kind: 'missing' | 'ex
               <button
                 className="lesson-cta"
                 onClick={() => {
+                  // keep the guard ARMED so the reloaded page doesn't auto-reload
+                  // again — a manual retry is a single fresh fetch, not two
                   try {
-                    sessionStorage.removeItem(refreshKey);
+                    sessionStorage.setItem(refreshKey, '1');
                   } catch {
                     /* ignore */
                   }

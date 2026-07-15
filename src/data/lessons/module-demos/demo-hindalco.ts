@@ -14,7 +14,7 @@ const lesson: Lesson = {
   moduleId: 'module-demos',
   lessonNumber: 1,
   estimatedMinutes: 3,
-  expiresAt: '2026-07-30', // 30 days after generation — purged by cleanup-demos
+  expiresAt: '2026-08-05', // 30 days after the NEWEST job for this demo (the 7/6 rework) — purged by cleanup-demos
   screenshots: {
     nav: `${BASE}/nav.jpg`,
     summary: `${BASE}/summary.jpg`,

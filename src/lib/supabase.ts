@@ -17,6 +17,13 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 export const demoVideoUrl = (lessonId: string) =>
   `${SUPABASE_URL}/storage/v1/object/public/demo-media/${lessonId}.mp4`;
 
+/** Same object, but with Supabase's `?download` param so the response carries
+ *  Content-Disposition: attachment — the plain `download` HTML attribute is
+ *  ignored cross-origin, so without this the browser just plays the MP4 inline
+ *  (navigating the SPA away) instead of saving it. */
+export const demoVideoDownloadUrl = (lessonId: string) =>
+  `${demoVideoUrl(lessonId)}?download=${lessonId}.mp4`;
+
 /**
  * Email links from Supabase (password reset, invites, confirmations) land on
  * the site root with the token + a `type=` marker in the URL fragment. The

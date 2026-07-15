@@ -7,7 +7,7 @@ import Stage from '../components/Stage';
 import LessonFallback from '../components/LessonFallback';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { demoVideoUrl } from '../lib/supabase';
+import { demoVideoUrl, demoVideoDownloadUrl } from '../lib/supabase';
 import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES, modulesForRole } from '../data/catalog';
 import { moduleLessons } from '../lib/completion';
 import type { RoleId } from '../data/types';
@@ -99,11 +99,11 @@ export default function LessonPage() {
   useEffect(() => {
     setDownloadUrl(null);
     if (moduleId !== 'module-demos' || !lessonId) return;
-    const url = demoVideoUrl(lessonId);
     let stale = false;
-    fetch(url, { method: 'HEAD' })
+    // probe the plain object; link the ?download variant (forces attachment)
+    fetch(demoVideoUrl(lessonId), { method: 'HEAD' })
       .then((res) => {
-        if (!stale && res.ok) setDownloadUrl(url);
+        if (!stale && res.ok) setDownloadUrl(demoVideoDownloadUrl(lessonId));
       })
       .catch(() => {
         /* no rendering available */
@@ -240,11 +240,18 @@ export default function LessonPage() {
   // …but a well-formed route whose lesson id isn't in THIS bundle gets a real
   // recovery screen instead of a silent bounce: the tab may simply predate the
   // deploy that shipped the lesson (CSM's "Ready → Open → dumped home" bug).
-  if (!lesson || !content) {
+  // The membership check (lesson exists but not in THIS module) also closes the
+  // zero-auth bypass: module-demos/module-shorts skip the login wall, so without
+  // it a signed-out visitor could watch any gated lesson via
+  // #/…/module-demos/<gated-lesson-id>. A genuinely-missing (just-published)
+  // demo id still lands here and triggers the stale-bundle reload.
+  if (!lesson || !content || lesson.moduleId !== moduleId) {
     return <LessonFallback kind="missing" isDemo={moduleId === 'module-demos'} />;
   }
-  // personalized demos live for 30 days; past that, show a clear notice
-  if (lesson.expiresAt && Date.now() > new Date(lesson.expiresAt).getTime()) {
+  // personalized demos live for 30 days; past that, show a clear notice.
+  // Expire at END of the stamped local day (a bare 'YYYY-MM-DD' would parse as
+  // UTC midnight → the demo would die mid-morning in IST on its last day).
+  if (lesson.expiresAt && Date.now() > new Date(`${lesson.expiresAt}T23:59:59`).getTime()) {
     return <LessonFallback kind="expired" isDemo={moduleId === 'module-demos'} />;
   }
   // invited users are locked to their assigned path. Hidden modules (demos,
