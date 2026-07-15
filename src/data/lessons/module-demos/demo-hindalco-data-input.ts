@@ -19,6 +19,7 @@ const lesson: Lesson = {
   moduleId: 'module-demos',
   lessonNumber: 2,
   estimatedMinutes: 3,
+  expiresAt: '2026-08-14', // 30 days after generation — purged by cleanup-demos
   screenshots: {
     login: `${BASE}/login.jpg`,
     menu: `${BASE}/menu.jpg`,
@@ -28,23 +29,27 @@ const lesson: Lesson = {
     done: `${BASE}/done.jpg`,
   },
   layouts: [
-    // S1 — sign in
+    // S1 — sign in. (Keyframes start at at:0 so the cursor is already at its
+    // opening spot when narration begins — it never glides in from off-screen.)
     {
       mode: 'detail', screenshot: 'login', caption: 'Sign in with your saved account',
       spotlight: { top: '46%', left: '55%', width: '28%', height: '38%' },
       cursor: [
-        { at: 0.15, x: 35, y: 59 },
-        { at: 0.5, x: 67, y: 54 },
-        { at: 0.82, x: 67, y: 81, click: true },
+        { at: 0, x: 35, y: 60 },
+        { at: 0.5, x: 66, y: 54 },
+        { at: 0.85, x: 66, y: 81, click: true },
       ],
     },
-    // S2 — open Data Input from the menu
+    // S2 — open Data Input from the menu. The frame shows the nav drawer open
+    // (Dashboard · Inventory · Insight List · Data Input · ScadaView) with Data
+    // Input highlighted; spotlight + click land on that row.
     {
       mode: 'detail', screenshot: 'menu', caption: 'Open Data Input from the menu',
-      spotlight: { top: '28%', left: '0%', width: '19%', height: '42%' },
+      spotlight: { top: '50%', left: '0%', width: '19%', height: '8%' },
       cursor: [
-        { at: 0.15, x: 20, y: 23, click: true },
-        { at: 0.65, x: 9, y: 54, click: true },
+        { at: 0, x: 20, y: 23 },
+        { at: 0.5, x: 9, y: 34 },
+        { at: 0.85, x: 9, y: 54, click: true },
       ],
     },
     // S3 — the Data Input page + Upload File
@@ -52,8 +57,8 @@ const lesson: Lesson = {
       mode: 'detail', screenshot: 'datainput', caption: 'Your Data Input page',
       spotlight: null,
       cursor: [
-        { at: 0.2, x: 30, y: 60 },
-        { at: 0.55, x: 15, y: 42 },
+        { at: 0, x: 30, y: 56 },
+        { at: 0.5, x: 15, y: 42 },
         { at: 0.85, x: 93, y: 34, click: true },
       ],
     },
@@ -62,8 +67,8 @@ const lesson: Lesson = {
       mode: 'detail', screenshot: 'upload', caption: 'Browse for your MIS file',
       spotlight: { top: '43%', left: '33%', width: '34%', height: '38%' },
       cursor: [
-        { at: 0.3, x: 50, y: 60 },
-        { at: 0.72, x: 50, y: 68, click: true },
+        { at: 0, x: 50, y: 60 },
+        { at: 0.6, x: 50, y: 68, click: true },
       ],
     },
     // S5 — the validation preview
@@ -71,21 +76,20 @@ const lesson: Lesson = {
       mode: 'detail', screenshot: 'preview', caption: 'Review before it saves',
       spotlight: null,
       cursor: [
-        { at: 0.2, x: 78, y: 38 },
-        { at: 0.5, x: 45, y: 55 },
-        { at: 0.75, x: 15, y: 86 },
+        { at: 0, x: 45, y: 45 },
+        { at: 0.4, x: 78, y: 38 },
+        { at: 0.7, x: 13, y: 86 },
         { at: 0.9, x: 85, y: 93 },
       ],
     },
-    // S6 — submit & done
+    // S6 — submit & done (Submit already pressed → success toast on screen)
     {
       mode: 'detail', screenshot: 'done', caption: 'Submit — done in seconds',
       spotlight: null,
       cursor: [
-        { at: 0.15, x: 93, y: 93, click: true },
-        { at: 0.45, x: 82, y: 26 },
-        { at: 0.7, x: 78, y: 34 },
-        { at: 0.92, x: 93, y: 93, click: true },
+        { at: 0, x: 78, y: 34 },
+        { at: 0.4, x: 82, y: 26 },
+        { at: 0.78, x: 93, y: 93, click: true },
       ],
     },
   ],

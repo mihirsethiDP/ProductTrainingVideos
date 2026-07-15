@@ -4,8 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StageControls from '../components/StageControls';
 import Stage from '../components/Stage';
+import LessonFallback from '../components/LessonFallback';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { demoVideoUrl } from '../lib/supabase';
 import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES, modulesForRole } from '../data/catalog';
 import { moduleLessons } from '../lib/completion';
 import type { RoleId } from '../data/types';
@@ -90,6 +92,26 @@ export default function LessonPage() {
     io.observe(el);
     return () => io.disconnect();
   }, [lessonId]);
+
+  // personalized demos may have a downloadable MP4 rendering (public bucket,
+  // works for zero-auth clients too) — show the button only if it exists
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  useEffect(() => {
+    setDownloadUrl(null);
+    if (moduleId !== 'module-demos' || !lessonId) return;
+    const url = demoVideoUrl(lessonId);
+    let stale = false;
+    fetch(url, { method: 'HEAD' })
+      .then((res) => {
+        if (!stale && res.ok) setDownloadUrl(url);
+      })
+      .catch(() => {
+        /* no rendering available */
+      });
+    return () => {
+      stale = true;
+    };
+  }, [moduleId, lessonId]);
 
   const currentVoice = useMemo(() => {
     const wantMale = gender === 'm';
@@ -211,8 +233,19 @@ export default function LessonPage() {
     return () => document.removeEventListener('keydown', onKey);
   });
 
-  if (!lesson || !content || !module || !role || !ROLES.includes(role as RoleId)) {
+  // structurally bad routes (unknown role / no module) still bounce home…
+  if (!module || !role || !ROLES.includes(role as RoleId)) {
     return <Navigate to="/" replace />;
+  }
+  // …but a well-formed route whose lesson id isn't in THIS bundle gets a real
+  // recovery screen instead of a silent bounce: the tab may simply predate the
+  // deploy that shipped the lesson (CSM's "Ready → Open → dumped home" bug).
+  if (!lesson || !content) {
+    return <LessonFallback kind="missing" isDemo={moduleId === 'module-demos'} />;
+  }
+  // personalized demos live for 30 days; past that, show a clear notice
+  if (lesson.expiresAt && Date.now() > new Date(lesson.expiresAt).getTime()) {
+    return <LessonFallback kind="expired" isDemo={moduleId === 'module-demos'} />;
   }
   // invited users are locked to their assigned path. Hidden modules (demos,
   // shorts — roles: []) aren't part of any path, so they stay reachable.
@@ -324,11 +357,15 @@ export default function LessonPage() {
                 <span className="label">{t('moduleWord').toUpperCase()} {String(module.number).padStart(2, '0')}</span>{' '}
                 · {module.name[lang]} <span className="tag-chip">{lessonTag}</span>
               </div>
-              <div style={{ marginTop: 4 }}>
-                <Link to={`/${role}`} className="header-link">
-                  {t('backToPath')}
-                </Link>
-              </div>
+              {/* demos & shorts (roles: []) belong to no path — for clients on a
+                  zero-auth share link, "Back to path" would only hit the sign-in wall */}
+              {module.roles.length > 0 && (
+                <div style={{ marginTop: 4 }}>
+                  <Link to={`/${role}`} className="header-link">
+                    {t('backToPath')}
+                  </Link>
+                </div>
+              )}
             </div>
           }
         />
@@ -337,6 +374,11 @@ export default function LessonPage() {
           <div className="eyebrow">{content.chapter}</div>
           <h1 className="lesson-title" dangerouslySetInnerHTML={{ __html: content.title }} />
           <p className="lesson-subtitle">{content.subtitle}</p>
+          {downloadUrl && (
+            <a className="demo-download" href={downloadUrl} download>
+              ⬇ {t('downloadVideo')}
+            </a>
+          )}
           {showTrackToggle && (
             <div className="track-toggle" role="tablist" aria-label="Track">
               <button
@@ -467,6 +509,25 @@ export default function LessonPage() {
                 <Link to={`/${role}/${nextLesson.moduleId}/${nextLesson.id}`}>
                   <button className="lesson-cta">{t('nextLesson')} →</button>
                 </Link>
+              </>
+            ) : module.roles.length === 0 ? (
+              // demos & shorts: a client on a share link has no "path" to go
+              // back to — offer a replay (and the video download when it exists)
+              <>
+                <div>
+                  <div className="nl-eyebrow">{t('demoComplete')}</div>
+                  <div className="nl-title" dangerouslySetInnerHTML={{ __html: content.title }} />
+                </div>
+                <div className="nl-actions">
+                  {downloadUrl && (
+                    <a className="demo-download" href={downloadUrl} download>
+                      ⬇ {t('downloadVideo')}
+                    </a>
+                  )}
+                  <button className="lesson-cta" onClick={() => goTo(0, true)}>
+                    ↻ {t('watchAgain')}
+                  </button>
+                </div>
               </>
             ) : (
               <>

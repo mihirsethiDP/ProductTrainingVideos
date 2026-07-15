@@ -4,7 +4,54 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { MODULES } from '../data/catalog';
+import { demoVideoUrl } from '../lib/supabase';
 import { listJobs, submitJob, validateFiles, type ContentMode, type DemoStyle, type GenerationJob, type JobKind } from '../lib/studio';
+
+/** Demos are kept for 30 days after the upload was created, then purged. */
+const DEMO_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const demoExpiry = (j: GenerationJob) => new Date(new Date(j.created_at).getTime() + DEMO_TTL_MS);
+
+/** Share/download/expiry row shown under a finished demo job. */
+function DemoRowExtras({ job }: { job: GenerationJob }) {
+  const [copied, setCopied] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const lessonId = job.result_lesson_id?.split('/').pop() ?? '';
+
+  useEffect(() => {
+    if (!lessonId) return;
+    let stale = false;
+    const url = demoVideoUrl(lessonId);
+    fetch(url, { method: 'HEAD' })
+      .then((res) => { if (!stale && res.ok) setVideoUrl(url); })
+      .catch(() => { /* not recorded (yet) */ });
+    return () => { stale = true; };
+  }, [lessonId]);
+
+  const shareLink = `${window.location.origin}${import.meta.env.BASE_URL}#/${job.result_lesson_id}`;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    } catch {
+      window.prompt('Copy the share link:', shareLink); // clipboard blocked — show it instead
+    }
+  };
+
+  return (
+    <>
+      <button type="button" className="studio-share" onClick={copy}>
+        {copied ? '✓ Link copied!' : '🔗 Copy share link'}
+      </button>
+      {videoUrl && (
+        <a className="studio-share" href={videoUrl} download>⬇ Video</a>
+      )}
+      <div className="studio-expiry">
+        No sign-in needed to watch · available until {demoExpiry(job).toLocaleDateString()}
+      </div>
+    </>
+  );
+}
 
 // real modules only — the hidden holders (demos/shorts) aren't valid targets
 const TARGET_MODULES = MODULES.filter((m) => m.roles.length > 0);
@@ -221,7 +268,9 @@ export default function Studio() {
           <div className="ai-hint">
             Files are stored privately in Supabase. Large recordings are split into chunks automatically and reassembled
             during generation. Generation picks new uploads up within ~10 minutes — the job below moves through
-            “Generating…” to “Ready” when the demo or lesson is live.
+            “Generating…” to “Ready” when the demo or lesson is live. Finished demos get a <strong>share link</strong>{' '}
+            your client can open with no sign-in, plus a downloadable video — and are kept for <strong>30 days</strong>,
+            then removed automatically.
           </div>
         </form>
 
@@ -248,11 +297,19 @@ export default function Studio() {
                   <span className="badge studio-status processing">Awaiting approval</span>
                 ) : j.approval_status === 'rejected' ? (
                   <span className="badge studio-status failed">Rejected</span>
+                ) : j.kind === 'demo' && j.status === 'done' && demoExpiry(j).getTime() < Date.now() ? (
+                  <span className="badge studio-status queued">Expired</span>
                 ) : (
                   <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
                 )}
-                {j.status === 'done' && j.result_lesson_id && (
-                  <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
+                {j.status === 'done' && j.result_lesson_id && (j.kind !== 'demo' || demoExpiry(j).getTime() >= Date.now()) && (
+                  <>
+                    <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
+                    {j.kind === 'demo' && <DemoRowExtras job={j} />}
+                  </>
+                )}
+                {j.kind === 'demo' && j.status === 'done' && demoExpiry(j).getTime() < Date.now() && (
+                  <div className="studio-expiry">Demos are kept for 30 days, then removed.</div>
                 )}
                 {j.status === 'failed' && j.notes && <div className="studio-err">{j.notes}</div>}
                 {j.approval_status === 'pending' && (

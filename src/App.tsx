@@ -11,11 +11,13 @@ import Protected from './components/Protected';
 import { useAuth } from './context/AuthContext';
 import { AUTH_LINK_ERROR, AUTH_LINK_TYPE } from './lib/supabase';
 
-/** Lessons are login-gated EXCEPT the forwardable persona shorts, which anyone
- *  with the link can watch. */
+/** Lessons are login-gated EXCEPT the two link-shareable kinds: the forwardable
+ *  persona shorts, and personalized client demos — clients watch those via a
+ *  plain share link with zero sign-in (they're unlisted, reachable only by URL,
+ *  and expire ~30 days after generation). */
 function LessonGate({ children }: { children: ReactNode }) {
   const { moduleId } = useParams();
-  if (moduleId === 'module-shorts') return <>{children}</>;
+  if (moduleId === 'module-shorts' || moduleId === 'module-demos') return <>{children}</>;
   return <Protected>{children}</Protected>;
 }
 

@@ -601,6 +601,9 @@ export interface Lesson {
   screenshots: Record<string, string>; // key -> public URL
   layouts: StepLayout[];
   content: Record<LangCode, LessonLangContent>;
+  /** personalized demos only: ISO date after which the demo shows an
+   *  "expired" notice (they're purged ~30 days after generation) */
+  expiresAt?: string;
 }
 
 export interface LessonRef {

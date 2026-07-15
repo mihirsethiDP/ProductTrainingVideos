@@ -17,13 +17,32 @@ export default function GuideCursor({ keyframes, progress, active }: Props) {
   const [rippleKey, setRippleKey] = useState(0);
   const lastIndexRef = useRef(-1);
 
+  // The last keyframe whose `at` has been passed. Defaults to 0 (not -1) so the
+  // cursor sits at its opening spot the instant narration starts, rather than
+  // gliding in from off-screen once progress crosses the first threshold.
   const currentIndex = useMemo(() => {
-    let idx = -1;
+    if (keyframes.length === 0) return -1;
+    let idx = 0;
     for (let i = 0; i < keyframes.length; i++) {
       if (progress >= keyframes[i].at) idx = i;
     }
     return idx;
   }, [keyframes, progress]);
+
+  // When the step changes, the keyframes array identity changes. Snap the
+  // cursor to the new step's first spot WITHOUT the 1.1s glide — otherwise it
+  // sweeps across the screen from the previous step's last position and can
+  // retarget mid-glide, so it looks "ahead" of the narration.
+  const prevKeyframesRef = useRef(keyframes);
+  const [snap, setSnap] = useState(false);
+  useEffect(() => {
+    if (prevKeyframesRef.current !== keyframes) {
+      prevKeyframesRef.current = keyframes;
+      setSnap(true);
+      const id = requestAnimationFrame(() => setSnap(false));
+      return () => cancelAnimationFrame(id);
+    }
+  }, [keyframes]);
 
   const target = currentIndex >= 0 ? keyframes[currentIndex] : null;
 
@@ -59,7 +78,13 @@ export default function GuideCursor({ keyframes, progress, active }: Props) {
       )}
       <div
         className={`guide-cursor${visible ? ' visible' : ''}`}
-        style={{ left: `${x}%`, top: `${y}%` }}
+        style={{
+          left: `${x}%`,
+          top: `${y}%`,
+          // on a step change, jump straight to the new spot (keep only the
+          // fade); within a step, keep the smooth glide from the stylesheet
+          ...(snap ? { transition: 'opacity 0.4s ease' } : null),
+        }}
       >
         <svg viewBox="0 0 24 24">
           <path

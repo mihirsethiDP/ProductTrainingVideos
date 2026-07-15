@@ -11,6 +11,12 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true },
 });
 
+/** Public (zero-auth) URL of a demo's MP4 rendering in the `demo-media` bucket.
+ *  The recorder script uploads to this exact path; existence is probed with a
+ *  HEAD request before any download button is shown. */
+export const demoVideoUrl = (lessonId: string) =>
+  `${SUPABASE_URL}/storage/v1/object/public/demo-media/${lessonId}.mp4`;
+
 /**
  * Email links from Supabase (password reset, invites, confirmations) land on
  * the site root with the token + a `type=` marker in the URL fragment. The

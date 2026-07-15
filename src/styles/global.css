@@ -2003,6 +2003,26 @@ button.badge.config:hover { background: rgba(25, 52, 88, 0.18); }
 .badge.studio-status.failed { background: rgba(200, 60, 60, 0.12); color: #b3413b; }
 .studio-err { font-size: 11px; color: #b3413b; margin-top: 4px; }
 .ai-msg.err { color: #b3413b; }
+
+/* ===== lesson fallback (missing / expired) + demo share & download ===== */
+.lesson-fallback { max-width: 520px; margin: 60px auto 40px; text-align: center; }
+.lf-icon { font-size: 44px; margin-bottom: 14px; }
+.lf-title { font-family: var(--serif); font-size: 30px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+.lf-body { font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 24px; }
+.lf-actions { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.lf-home { font-size: 13px; color: var(--ink-soft); text-decoration: underline; }
+.demo-download {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 14px; padding: 9px 16px; border-radius: 999px;
+  background: rgba(30, 96, 145, 0.1); border: 1px solid var(--water);
+  color: var(--water-deep); font-size: 13px; font-weight: 600; text-decoration: none;
+}
+.demo-download:hover { background: rgba(30, 96, 145, 0.18); }
+.nl-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.nl-actions .demo-download { margin-top: 0; }
+.studio-share { display: inline-block; margin-top: 6px; margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--water); background: none; border: none; cursor: pointer; padding: 0; }
+.studio-share:hover { color: var(--water-deep); text-decoration: underline; }
+.studio-expiry { font-size: 10.5px; color: var(--ink-soft); margin-top: 4px; }
 .studio-submit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .studio-jobs-head { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 10px; }
 .studio-jobs-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
