@@ -371,6 +371,16 @@ begin
     -- invites recorded in-app (before/without an email send)
     select i.created_at, 'invite_created', i.email, null
     from public.invites i
+    union all
+    -- reliable sign-in recency + account age straight from auth.users.
+    -- auth.audit_log_entries can be sparse on hosted Supabase (login/logout
+    -- events may be missing), but last_sign_in_at is always maintained.
+    select uu.last_sign_in_at, 'signed_in', uu.email, null
+    from auth.users uu
+    where uu.last_sign_in_at is not null
+    union all
+    select uu.created_at, 'account_created', uu.email, null
+    from auth.users uu
   )
   select ev.at, ev.action, ev.email, ev.ip
   from ev

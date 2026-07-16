@@ -26,6 +26,8 @@ interface ActRow {
 
 // friendly label + a tone colour for each raw auth-event action
 const ACT: Record<string, { label: string; tone: string }> = {
+  signed_in: { label: 'Signed in', tone: '#1c8a58' },
+  account_created: { label: 'Account created', tone: '#0a5b67' },
   login: { label: 'Signed in', tone: '#1c8a58' },
   logout: { label: 'Signed out', tone: '#6a7d8d' },
   user_signedup: { label: 'Account created', tone: '#0a5b67' },
