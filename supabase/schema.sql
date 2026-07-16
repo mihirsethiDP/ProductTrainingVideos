@@ -363,7 +363,7 @@ begin
         nullif(a.payload ->> 'actor_username', ''),        -- the actor (self actions: login/logout)
         u.email
       ) as email,
-      host(a.ip_address) as ip
+      nullif(a.ip_address::text, '') as ip  -- ip_address is varchar in this project, not inet
     from auth.audit_log_entries a
     left join auth.users u on u.id = nullif(a.payload ->> 'actor_id', '')::uuid
     where coalesce(a.payload ->> 'action', '') <> 'token_refreshed'
