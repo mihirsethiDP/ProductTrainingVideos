@@ -6,46 +6,51 @@ const BASE = `${import.meta.env.BASE_URL}screenshots/sensor-health-dashboard`;
  * M13 · Sensor Health — L1: reading the dashboard. (internal only)
  * Built from the monitoring-team screen recording. Real 1280px frames as detail
  * screenshots (spotlight-driven, no guide cursor — the recording already has an
- * OS pointer). Teaches the navigation first: the plant list, opening a plant,
- * the Faults view (summary chips, Active/Fixed/Sensor-List tabs, fault rows, and
- * the detail panel with the readings chart + event timeline), then hands off to
- * the four fault-type lessons.
+ * OS pointer). Seven steps: the plant list, opening a plant, the Active Faults
+ * rows, the fully-loaded detail panel (value / history / readings chart / event
+ * timeline), the Fixed Faults history, the flag filters (Stuck / Out of Range /
+ * Data Break), and the Sensor List, then hands off to the four fault lessons.
+ * Spotlights are measured against the 1280×552 app-cropped frames.
  */
 const lesson: Lesson = {
   id: 'sensor-health-dashboard',
   moduleId: 'module-13-sensor-health',
   lessonNumber: 1,
-  estimatedMinutes: 4,
+  estimatedMinutes: 5,
   screenshots: {
     list: `${BASE}/list.jpg`,
     faults: `${BASE}/faults.jpg`,
+    detail: `${BASE}/detail.jpg`,
     fixed: `${BASE}/fixed-stuck.jpg`,
-    sensorList: `${BASE}/sensor-list.jpg`,
   },
   layouts: [
     {
       mode: 'detail', screenshot: 'list', caption: 'Every plant, and its live fault counts',
-      spotlight: { top: '13%', left: '62%', width: '37%', height: '44%' },
+      spotlight: { top: '17%', left: '63.5%', width: '32.5%', height: '40%' },
     },
     {
       mode: 'detail', screenshot: 'faults', caption: 'Open a plant — the Faults view',
-      spotlight: { top: '9%', left: '68%', width: '31%', height: '8%' },
+      spotlight: { top: '14%', left: '68.5%', width: '30.5%', height: '5.5%' },
     },
     {
       mode: 'detail', screenshot: 'faults', caption: 'Active faults — one row per open flag',
-      spotlight: { top: '28%', left: '0%', width: '68%', height: '10%' },
+      spotlight: { top: '32%', left: '0%', width: '69%', height: '17%' },
     },
     {
-      mode: 'detail', screenshot: 'faults', caption: 'Click a fault — the full story',
-      spotlight: { top: '26%', left: '69%', width: '30%', height: '60%' },
+      mode: 'detail', screenshot: 'detail', caption: 'Click a fault — the full story',
+      spotlight: { top: '21%', left: '68.5%', width: '30.5%', height: '76%' },
     },
     {
       mode: 'detail', screenshot: 'fixed', caption: 'Fixed Faults — the resolved history',
-      spotlight: { top: '17%', left: '1%', width: '22%', height: '7%' },
+      spotlight: { top: '21.5%', left: '7.3%', width: '6.5%', height: '4%' },
     },
     {
-      mode: 'detail', screenshot: 'sensorList', caption: 'Sensor List — what still needs a range',
-      spotlight: { top: '30%', left: '15%', width: '84%', height: '8%' },
+      mode: 'detail', screenshot: 'fixed', caption: 'Filter by flag — Stuck, Out of Range, Data Break',
+      spotlight: { top: '27%', left: '16%', width: '13%', height: '4%' },
+    },
+    {
+      mode: 'detail', screenshot: 'faults', caption: 'Sensor List — what still needs a range',
+      spotlight: { top: '21.5%', left: '13%', width: '7%', height: '4%' },
     },
   ],
   content: {
@@ -67,13 +72,13 @@ const lesson: Lesson = {
         },
         {
           label: 'Active faults', title: 'One row per open fault',
-          body: "The <strong>Active Faults</strong> tab lists everything open right now. Each row leads with a <strong>badge</strong> — <strong>STUCK</strong> or <strong>OUT OF RANGE</strong> (with a <strong>Persistent</strong> or <strong>Fluttering</strong> tag) — then the sensor, its tag, its reading against the valid range (or <strong>Frozen at…</strong> when stuck), and how long it's been active. Use the <strong>Stuck</strong> and <strong>Out of Range</strong> chips to filter.",
-          voice: "The Active Faults tab lists everything open right now. Every row leads with a badge — Stuck, or Out of Range with a Persistent or Fluttering tag — then the sensor and its tag, its current reading against the valid range, or Frozen at a value when it's stuck, and how long the fault has been active. The Stuck and Out of Range chips let you filter the list down to one type.",
+          body: "The <strong>Active Faults</strong> tab lists everything open right now. Each row leads with a <strong>badge</strong> — <strong>STUCK</strong> or <strong>OUT OF RANGE</strong> (with a <strong>Persistent</strong> or <strong>Fluttering</strong> tag) — then the sensor, its tag, its reading against the valid range (or <strong>Frozen at…</strong> when stuck), and how long it's been active.",
+          voice: "The Active Faults tab lists everything open right now. Every row leads with a badge — Stuck, or Out of Range with a Persistent or Fluttering tag — then the sensor and its tag, its current reading against the valid range, or Frozen at a value when it's stuck, and how long the fault has been active.",
         },
         {
           label: 'The detail', title: 'Click a fault for the full story',
-          body: "Select a fault and the panel on the right opens up. You get the <strong>current value</strong>, a <strong>history</strong> — total events, average duration, percent of time in fault, and the most common type — a <strong>readings chart</strong> with the valid range drawn in so you can see exactly when it drifted, and an <strong>event timeline</strong> logging every open and close. This is where you investigate before you act.",
-          voice: "Select any fault and the panel on the right opens up. You get the current value, a short history — total events, average duration, the percent of time this sensor has spent in fault, and its most common fault type. Below that, a readings chart with the valid range drawn in, so you can see exactly when it drifted out. And an event timeline logging every open and close. This panel is where you investigate a fault before acting on it.",
+          body: "Select a fault and the panel on the right opens up. You get the <strong>current value</strong>, a <strong>history</strong> — total events, average duration, percent of time in fault, and the most common type — a <strong>readings chart</strong> with the valid range drawn in so you can see exactly when it drifted, and an <strong>event timeline</strong> logging every open and close, including plant-level <strong>Data Break</strong> entries when a site goes quiet. This is where you investigate before you act.",
+          voice: "Select any fault and the panel on the right opens up. You get the current value, a short history — total events, average duration, the percent of time this sensor has spent in fault, and its most common fault type. Below that, a readings chart with the valid range drawn in, so you can see exactly when it drifted out. And an event timeline logging every open and close — including plant-level Data Break entries, from moments the whole site went quiet. This panel is where you investigate a fault before acting on it.",
           tip: { type: 'tipLabel', text: 'The readings chart shades the valid range — points outside it are the ones that raised the fault.' },
         },
         {
@@ -82,10 +87,16 @@ const lesson: Lesson = {
           voice: "The Fixed Faults tab is the same list, but for faults that have already closed — handy for spotting a sensor that keeps flapping in and out. Remember, everything here is automatic: the system opens and closes each fault on its own. The timeline entries — started, resolved, back in range — are your audit trail of what happened and when.",
         },
         {
+          label: 'The flags', title: 'Filter by flag — including Data Break',
+          body: "Both the Active and Fixed lists filter by flag. The chips up top are the three fault types you'll see: <strong>STUCK</strong>, <strong>OUT OF RANGE</strong>, and <strong>DATA BREAK</strong>. Stuck and Out of Range are sensor-level; <strong>Data Break is plant-level</strong> — it fires when a whole site stops sending data, so it shows up here and inside the event timelines. Tap a chip to narrow the list to one flag.",
+          voice: "Both the active and fixed lists can be filtered by flag. The chips along the top are the three fault types you'll run into — Stuck, Out of Range, and Data Break. Stuck and Out of Range are sensor-level. Data Break is different — it's the plant-level flag that fires when a whole site stops sending data, so you'll see it here in the filters and inside the event timelines. Tap any chip to narrow the list down to just that flag.",
+          tip: { type: 'noteLabel', text: 'Data Break is plant-wide, not one sensor — the next lesson covers it in full.' },
+        },
+        {
           label: 'Sensor List', title: 'Sensor List — what still needs a range',
-          body: "The <strong>Sensor List (Due)</strong> tab is the to-do: sensors that <strong>can't be monitored yet</strong> because their <strong>valid min / max</strong> aren't configured. These are the <strong>No Range Config</strong> and <strong>Threshold Due</strong> counts from before. Flip <strong>Threshold Pending only</strong> to see just those, set their ranges, and they join the watch. That's the tour — next, the four faults the system raises.",
-          voice: "The Sensor List, marked Due, is your to-do. These are sensors we can't monitor yet because their valid minimum and maximum aren't configured — the same No Range Config and Threshold Due numbers you saw earlier. Flip on Threshold Pending only to see just those, configure their ranges, and they join the watch. That's the whole dashboard. Next, we'll walk through the four faults the system raises — one plant-level, and three at the sensor level.",
-          tip: { type: 'upNextLabel', text: 'Next: Data Break — the plant-level fault that fires when a whole site goes quiet.' },
+          body: "The <strong>Sensor List (Due)</strong> tab gathers the sensors we <strong>can't monitor yet</strong> — their <strong>valid min / max</strong> haven't been set. That's the <strong>No Range Config</strong> count from the plant list. Configure a sensor's valid range and it immediately joins Stuck and Out-of-Range monitoring. That's the tour — next, the four faults the system raises.",
+          voice: "Finally, the Sensor List tab — marked Due — gathers the sensors we can't monitor yet, because their valid minimum and maximum haven't been set. That's the same No Range Config count you saw on the plant list. Configure a sensor's valid range, and it immediately joins Stuck and Out-of-Range monitoring. That's the whole dashboard. Next, we'll walk through the four faults the system raises — one at the plant level, and three at the sensor level.",
+          tip: { type: 'upNextLabel', text: 'Next: Data Break — the plant-level fault, in full.' },
         },
       ],
     },
@@ -107,13 +118,13 @@ const lesson: Lesson = {
         },
         {
           label: 'सक्रिय फ़ॉल्ट', title: 'हर खुले फ़ॉल्ट की एक पंक्ति',
-          body: "<strong>Active Faults</strong> टैब अभी खुली हर चीज़ दिखाता है। हर पंक्ति एक <strong>बैज</strong> से शुरू होती है — <strong>STUCK</strong> या <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> या <strong>Fluttering</strong> टैग के साथ) — फिर सेंसर, उसका टैग, वैध रेंज के सामने उसकी रीडिंग (या stuck होने पर <strong>Frozen at…</strong>), और वह कितनी देर से सक्रिय है। <strong>Stuck</strong> और <strong>Out of Range</strong> चिप्स से फ़िल्टर करें।",
-          voice: "Active Faults टैब अभी खुली हर चीज़ की सूची है। हर पंक्ति एक बैज से शुरू होती है — Stuck, या Out of Range एक Persistent या Fluttering टैग के साथ — फिर सेंसर और उसका टैग, वैध रेंज के सामने उसकी मौजूदा रीडिंग, या stuck होने पर किसी मान पर Frozen, और फ़ॉल्ट कितनी देर से सक्रिय है। Stuck और Out of Range चिप्स सूची को एक ही प्रकार तक छाँट देते हैं।",
+          body: "<strong>Active Faults</strong> टैब अभी खुली हर चीज़ दिखाता है। हर पंक्ति एक <strong>बैज</strong> से शुरू होती है — <strong>STUCK</strong> या <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> या <strong>Fluttering</strong> टैग के साथ) — फिर सेंसर, उसका टैग, वैध रेंज के सामने उसकी रीडिंग (या stuck होने पर <strong>Frozen at…</strong>), और वह कितनी देर से सक्रिय है।",
+          voice: "Active Faults टैब अभी खुली हर चीज़ की सूची है। हर पंक्ति एक बैज से शुरू होती है — Stuck, या Out of Range एक Persistent या Fluttering टैग के साथ — फिर सेंसर और उसका टैग, वैध रेंज के सामने उसकी मौजूदा रीडिंग, या stuck होने पर किसी मान पर Frozen, और फ़ॉल्ट कितनी देर से सक्रिय है।",
         },
         {
           label: 'विवरण', title: 'पूरी कहानी के लिए फ़ॉल्ट पर क्लिक करें',
-          body: "कोई फ़ॉल्ट चुनें और दाईं ओर का पैनल खुल जाता है। आपको मिलता है <strong>current value</strong>, एक <strong>history</strong> — कुल इवेंट, औसत अवधि, फ़ॉल्ट में बिताए समय का प्रतिशत, और सबसे आम प्रकार — एक <strong>readings chart</strong> जिसमें वैध रेंज खींची है ताकि आप ठीक देख सकें कब भटका, और एक <strong>event timeline</strong> जो हर खुलना-बंद होना दर्ज करती है। कार्रवाई से पहले जाँच यहीं होती है।",
-          voice: "कोई भी फ़ॉल्ट चुनें और दाईं ओर का पैनल खुल जाता है। आपको मिलता है current value, एक छोटी history — कुल इवेंट, औसत अवधि, इस सेंसर ने फ़ॉल्ट में कितने प्रतिशत समय बिताया, और उसका सबसे आम फ़ॉल्ट प्रकार। नीचे, वैध रेंज के साथ एक readings chart, ताकि आप ठीक देख सकें कब यह बाहर भटका। और एक event timeline जो हर खुलना और बंद होना दर्ज करती है। कार्रवाई से पहले फ़ॉल्ट की जाँच इसी पैनल में होती है।",
+          body: "कोई फ़ॉल्ट चुनें और दाईं ओर का पैनल खुल जाता है। आपको मिलता है <strong>current value</strong>, एक <strong>history</strong> — कुल इवेंट, औसत अवधि, फ़ॉल्ट में बिताए समय का प्रतिशत, और सबसे आम प्रकार — एक <strong>readings chart</strong> जिसमें वैध रेंज खींची है ताकि आप ठीक देख सकें कब भटका, और एक <strong>event timeline</strong> जो हर खुलना-बंद होना दर्ज करती है, जिसमें साइट के चुप होने पर प्लांट-स्तरीय <strong>Data Break</strong> प्रविष्टियाँ भी शामिल हैं। कार्रवाई से पहले जाँच यहीं होती है।",
+          voice: "कोई भी फ़ॉल्ट चुनें और दाईं ओर का पैनल खुल जाता है। आपको मिलता है current value, एक छोटी history — कुल इवेंट, औसत अवधि, इस सेंसर ने फ़ॉल्ट में कितने प्रतिशत समय बिताया, और उसका सबसे आम फ़ॉल्ट प्रकार। नीचे, वैध रेंज के साथ एक readings chart, ताकि आप ठीक देख सकें कब यह बाहर भटका। और एक event timeline जो हर खुलना और बंद होना दर्ज करती है — जिसमें प्लांट-स्तरीय Data Break प्रविष्टियाँ भी, उन पलों की जब पूरा साइट चुप हो गया। कार्रवाई से पहले फ़ॉल्ट की जाँच इसी पैनल में होती है।",
           tip: { type: 'tipLabel', text: 'Readings chart वैध रेंज को छायांकित करता है — उसके बाहर के बिंदु ही फ़ॉल्ट उठाते हैं।' },
         },
         {
@@ -122,10 +133,16 @@ const lesson: Lesson = {
           voice: "Fixed Faults टैब वही सूची है, पर उन फ़ॉल्ट के लिए जो पहले ही बंद हो चुके — किसी ऐसे सेंसर को पकड़ने में सुविधाजनक जो बार-बार अंदर-बाहर होता रहता है। याद रखें, यहाँ सब कुछ स्वचालित है: सिस्टम हर फ़ॉल्ट को ख़ुद खोलता और बंद करता है। टाइमलाइन की प्रविष्टियाँ — started, resolved, back in range — क्या हुआ और कब, इसका आपका ऑडिट ट्रेल हैं।",
         },
         {
+          label: 'फ़्लैग', title: 'Flag से फ़िल्टर करें — Data Break सहित',
+          body: "Active और Fixed दोनों सूचियाँ flag से फ़िल्टर होती हैं। ऊपर के चिप्स वे तीन फ़ॉल्ट प्रकार हैं जो आपको दिखेंगे: <strong>STUCK</strong>, <strong>OUT OF RANGE</strong>, और <strong>DATA BREAK</strong>। Stuck और Out of Range सेंसर-स्तरीय हैं; <strong>Data Break प्लांट-स्तरीय है</strong> — यह तब फ़ायर होता है जब पूरा साइट डेटा भेजना बंद कर दे, इसलिए यह यहाँ और event timeline के अंदर दिखता है। किसी चिप पर टैप करें और सूची एक ही flag तक सिमट जाती है।",
+          voice: "Active और Fixed, दोनों सूचियाँ flag से फ़िल्टर हो सकती हैं। ऊपर के चिप्स वे तीन फ़ॉल्ट प्रकार हैं जिनसे आपका सामना होगा — Stuck, Out of Range, और Data Break। Stuck और Out of Range सेंसर-स्तरीय हैं। Data Break अलग है — यह प्लांट-स्तरीय flag है जो तब फ़ायर होता है जब पूरा साइट डेटा भेजना बंद कर दे, इसलिए यह यहाँ फ़िल्टर में और event timeline के अंदर दिखता है। किसी भी चिप पर टैप करें और सूची सिर्फ़ उसी flag तक सिमट जाती है।",
+          tip: { type: 'noteLabel', text: 'Data Break पूरे प्लांट का है, एक सेंसर का नहीं — अगला पाठ इसे पूरा कवर करता है।' },
+        },
+        {
           label: 'सेंसर सूची', title: 'Sensor List — जिन्हें अभी रेंज चाहिए',
-          body: "<strong>Sensor List (Due)</strong> टैब आपका टू-डू है: वे सेंसर जिन्हें <strong>अभी मॉनिटर नहीं किया जा सकता</strong> क्योंकि उनका <strong>valid min / max</strong> कॉन्फ़िगर नहीं है। यही पहले वाली <strong>No Range Config</strong> और <strong>Threshold Due</strong> गिनती है। <strong>Threshold Pending only</strong> चालू करें, उनकी रेंज सेट करें, और वे निगरानी में शामिल हो जाते हैं। यह रहा टूर — आगे, सिस्टम जो चार फ़ॉल्ट उठाता है।",
-          voice: "Sensor List, जिस पर Due लिखा है, आपका टू-डू है। ये वे सेंसर हैं जिन्हें हम अभी मॉनिटर नहीं कर सकते क्योंकि उनका valid minimum और maximum कॉन्फ़िगर नहीं है — वही No Range Config और Threshold Due संख्याएँ जो पहले दिखीं। Threshold Pending only चालू करें ताकि केवल वही दिखें, उनकी रेंज कॉन्फ़िगर करें, और वे निगरानी में शामिल हो जाते हैं। यह रहा पूरा डैशबोर्ड। आगे, हम उन चार फ़ॉल्ट को देखेंगे जो सिस्टम उठाता है — एक प्लांट स्तर पर, और तीन सेंसर स्तर पर।",
-          tip: { type: 'upNextLabel', text: 'आगे: Data Break — प्लांट-स्तरीय फ़ॉल्ट जो तब फ़ायर होता है जब पूरा साइट चुप हो जाए।' },
+          body: "<strong>Sensor List (Due)</strong> टैब उन सेंसरों को इकट्ठा करता है जिन्हें हम <strong>अभी मॉनिटर नहीं कर सकते</strong> — उनका <strong>valid min / max</strong> सेट नहीं है। यही प्लांट सूची वाली <strong>No Range Config</strong> गिनती है। किसी सेंसर की वैध रेंज कॉन्फ़िगर करें और वह तुरंत Stuck और Out-of-Range निगरानी में शामिल हो जाता है। यह रहा टूर — आगे, सिस्टम जो चार फ़ॉल्ट उठाता है।",
+          voice: "आख़िर में, Sensor List टैब — जिस पर Due लिखा है — उन सेंसरों को इकट्ठा करता है जिन्हें हम अभी मॉनिटर नहीं कर सकते, क्योंकि उनका valid minimum और maximum सेट नहीं है। यही वही No Range Config गिनती है जो आपने प्लांट सूची पर देखी। किसी सेंसर की वैध रेंज कॉन्फ़िगर करें, और वह तुरंत Stuck और Out-of-Range निगरानी में शामिल हो जाता है। यह रहा पूरा डैशबोर्ड। आगे, हम उन चार फ़ॉल्ट को देखेंगे जो सिस्टम उठाता है — एक प्लांट स्तर पर, और तीन सेंसर स्तर पर।",
+          tip: { type: 'upNextLabel', text: 'आगे: Data Break — प्लांट-स्तरीय फ़ॉल्ट, पूरे विस्तार से।' },
         },
       ],
     },
@@ -147,13 +164,13 @@ const lesson: Lesson = {
         },
         {
           label: 'செயல் கோளாறுகள்', title: 'ஒவ்வொரு திறந்த கோளாற்றுக்கும் ஒரு வரிசை',
-          body: "<strong>Active Faults</strong> டேப் இப்போது திறந்திருக்கும் அனைத்தையும் பட்டியலிடுகிறது. ஒவ்வொரு வரிசையும் ஒரு <strong>பேட்ஜ்</strong>-உடன் தொடங்குகிறது — <strong>STUCK</strong> அல்லது <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> அல்லது <strong>Fluttering</strong> டேக்குடன்) — பின் சென்சார், அதன் டேக், செல்லுபடி வரம்புக்கு எதிரான அளவீடு (அல்லது stuck எனில் <strong>Frozen at…</strong>), எவ்வளவு நேரம் செயலில். <strong>Stuck</strong> மற்றும் <strong>Out of Range</strong> சிப்களால் வடிகட்டவும்.",
-          voice: "Active Faults டேப் இப்போது திறந்திருக்கும் அனைத்தையும் பட்டியலிடுகிறது. ஒவ்வொரு வரிசையும் ஒரு பேட்ஜுடன் தொடங்குகிறது — Stuck, அல்லது Out of Range ஒரு Persistent அல்லது Fluttering டேக்குடன் — பின் சென்சாரும் அதன் டேக்கும், செல்லுபடி வரம்புக்கு எதிரான தற்போதைய அளவீடு, அல்லது stuck எனில் ஒரு மதிப்பில் Frozen, மேலும் கோளாறு எவ்வளவு நேரம் செயலில் உள்ளது. Stuck மற்றும் Out of Range சிப்கள் பட்டியலை ஒரே வகைக்குக் குறைக்கின்றன.",
+          body: "<strong>Active Faults</strong> டேப் இப்போது திறந்திருக்கும் அனைத்தையும் பட்டியலிடுகிறது. ஒவ்வொரு வரிசையும் ஒரு <strong>பேட்ஜ்</strong>-உடன் தொடங்குகிறது — <strong>STUCK</strong> அல்லது <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> அல்லது <strong>Fluttering</strong> டேக்குடன்) — பின் சென்சார், அதன் டேக், செல்லுபடி வரம்புக்கு எதிரான அளவீடு (அல்லது stuck எனில் <strong>Frozen at…</strong>), எவ்வளவு நேரம் செயலில்.",
+          voice: "Active Faults டேப் இப்போது திறந்திருக்கும் அனைத்தையும் பட்டியலிடுகிறது. ஒவ்வொரு வரிசையும் ஒரு பேட்ஜுடன் தொடங்குகிறது — Stuck, அல்லது Out of Range ஒரு Persistent அல்லது Fluttering டேக்குடன் — பின் சென்சாரும் அதன் டேக்கும், செல்லுபடி வரம்புக்கு எதிரான தற்போதைய அளவீடு, அல்லது stuck எனில் ஒரு மதிப்பில் Frozen, மேலும் கோளாறு எவ்வளவு நேரம் செயலில் உள்ளது.",
         },
         {
           label: 'விவரம்', title: 'முழுக் கதைக்கும் கோளாற்றைக் கிளிக் செய்யுங்கள்',
-          body: "ஒரு கோளாற்றைத் தேர்ந்தால் வலதுபுறப் பேனல் திறக்கிறது. உங்களுக்குக் கிடைக்கும்: <strong>current value</strong>, ஒரு <strong>history</strong> — மொத்த நிகழ்வுகள், சராசரி கால அளவு, கோளாற்றில் இருந்த நேர சதவீதம், மிகப் பொதுவான வகை — செல்லுபடி வரம்பு வரையப்பட்ட <strong>readings chart</strong>, எப்போது விலகியது எனத் தெளிவாகக் காண, மற்றும் ஒவ்வொரு திறப்பு-மூடலையும் பதியும் <strong>event timeline</strong>. செயல்படுவதற்கு முன் விசாரணை இங்கே.",
-          voice: "எந்தக் கோளாற்றையும் தேர்ந்தால் வலதுபுறப் பேனல் திறக்கிறது. உங்களுக்குக் கிடைக்கும் current value, ஒரு சிறு history — மொத்த நிகழ்வுகள், சராசரி கால அளவு, இந்தச் சென்சார் கோளாற்றில் இருந்த நேர சதவீதம், அதன் மிகப் பொதுவான கோளாறு வகை. கீழே, செல்லுபடி வரம்புடன் ஒரு readings chart, எப்போது வெளியே விலகியது எனத் தெளிவாகக் காண. மற்றும் ஒவ்வொரு திறப்பையும் மூடலையும் பதியும் event timeline. செயல்படுவதற்கு முன் கோளாற்றை விசாரிக்கும் இடம் இதுவே.",
+          body: "ஒரு கோளாற்றைத் தேர்ந்தால் வலதுபுறப் பேனல் திறக்கிறது. உங்களுக்குக் கிடைக்கும்: <strong>current value</strong>, ஒரு <strong>history</strong> — மொத்த நிகழ்வுகள், சராசரி கால அளவு, கோளாற்றில் இருந்த நேர சதவீதம், மிகப் பொதுவான வகை — செல்லுபடி வரம்பு வரையப்பட்ட <strong>readings chart</strong>, எப்போது விலகியது எனத் தெளிவாகக் காண, மற்றும் ஒவ்வொரு திறப்பு-மூடலையும் பதியும் <strong>event timeline</strong> — ஒரு தளம் அமைதியாகும்போது ஆலை-மட்ட <strong>Data Break</strong> பதிவுகள் உட்பட. செயல்படுவதற்கு முன் விசாரணை இங்கே.",
+          voice: "எந்தக் கோளாற்றையும் தேர்ந்தால் வலதுபுறப் பேனல் திறக்கிறது. உங்களுக்குக் கிடைக்கும் current value, ஒரு சிறு history — மொத்த நிகழ்வுகள், சராசரி கால அளவு, இந்தச் சென்சார் கோளாற்றில் இருந்த நேர சதவீதம், அதன் மிகப் பொதுவான கோளாறு வகை. கீழே, செல்லுபடி வரம்புடன் ஒரு readings chart, எப்போது வெளியே விலகியது எனத் தெளிவாகக் காண. மற்றும் ஒவ்வொரு திறப்பையும் மூடலையும் பதியும் event timeline — ஒரு முழு தளமும் அமைதியாகிய தருணங்களின் ஆலை-மட்ட Data Break பதிவுகள் உட்பட. செயல்படுவதற்கு முன் கோளாற்றை விசாரிக்கும் இடம் இதுவே.",
           tip: { type: 'tipLabel', text: 'Readings chart செல்லுபடி வரம்பை நிழலிடுகிறது — அதற்கு வெளியே உள்ள புள்ளிகளே கோளாற்றை எழுப்பியவை.' },
         },
         {
@@ -162,10 +179,16 @@ const lesson: Lesson = {
           voice: "Fixed Faults டேப் அதே பட்டியல், ஆனால் ஏற்கனவே மூடிய கோளாறுகளுக்கு — மீண்டும் மீண்டும் உள்ளே-வெளியே ஏற்ற-இறங்கும் சென்சாரைக் கண்டறிய வசதியானது. நினைவில் கொள்ளுங்கள், இங்கே எல்லாம் தானியங்கி: சிஸ்டம் ஒவ்வொரு கோளாற்றையும் தானே திறந்து மூடுகிறது. டைம்லைன் பதிவுகள் — started, resolved, back in range — என்ன நடந்தது, எப்போது என்பதற்கான உங்கள் தணிக்கைத் தடம்.",
         },
         {
+          label: 'கொடிகள்', title: 'Flag வாரியாக வடிகட்டு — Data Break உட்பட',
+          body: "Active மற்றும் Fixed இரு பட்டியல்களும் flag வாரியாக வடிகட்டப்படும். மேலே உள்ள சிப்கள் நீங்கள் காணும் மூன்று கோளாறு வகைகள்: <strong>STUCK</strong>, <strong>OUT OF RANGE</strong>, <strong>DATA BREAK</strong>. Stuck மற்றும் Out of Range சென்சார்-மட்டம்; <strong>Data Break ஆலை-மட்டம்</strong> — ஒரு முழு தளமும் தரவு அனுப்புவதை நிறுத்தும்போது எழுகிறது, எனவே இது இங்கேயும் event timeline-லும் தோன்றும். ஒரு சிப்பைத் தட்டினால் பட்டியல் ஒரே flag-க்குக் குறுகும்.",
+          voice: "Active மற்றும் Fixed — இரு பட்டியல்களையும் flag வாரியாக வடிகட்டலாம். மேலே உள்ள சிப்கள் நீங்கள் சந்திக்கும் மூன்று கோளாறு வகைகள் — Stuck, Out of Range, மற்றும் Data Break. Stuck மற்றும் Out of Range சென்சார்-மட்டம். Data Break வேறு — இது ஆலை-மட்ட flag, ஒரு முழு தளமும் தரவு அனுப்புவதை நிறுத்தும்போது எழுகிறது, எனவே இதை இங்கே வடிப்பான்களிலும் event timeline-களுக்குள்ளும் காண்பீர்கள். எந்த சிப்பையும் தட்டினால் பட்டியல் அந்த ஒரே flag-க்குக் குறுகும்.",
+          tip: { type: 'noteLabel', text: 'Data Break ஆலை முழுவதும் சார்ந்தது, ஒரு சென்சார் அல்ல — அடுத்த பாடம் இதை முழுமையாக விளக்கும்.' },
+        },
+        {
           label: 'சென்சார் பட்டியல்', title: 'Sensor List — இன்னும் வரம்பு தேவைப்படுபவை',
-          body: "<strong>Sensor List (Due)</strong> டேப் உங்கள் செய்யவேண்டியது: <strong>இன்னும் கண்காணிக்க முடியாத</strong> சென்சார்கள், ஏனெனில் அவற்றின் <strong>valid min / max</strong> அமைக்கப்படவில்லை. இவையே முன் பார்த்த <strong>No Range Config</strong> மற்றும் <strong>Threshold Due</strong> எண்கள். <strong>Threshold Pending only</strong>-ஐ இயக்கி, அவற்றின் வரம்புகளை அமைத்தால் அவை கண்காணிப்பில் சேர்கின்றன. இது சுற்றுலா — அடுத்து, சிஸ்டம் எழுப்பும் நான்கு கோளாறுகள்.",
-          voice: "Due எனக் குறிக்கப்பட்ட Sensor List உங்கள் செய்யவேண்டியது. இவை நாம் இன்னும் கண்காணிக்க முடியாத சென்சார்கள், ஏனெனில் அவற்றின் valid minimum, maximum அமைக்கப்படவில்லை — முன் பார்த்த அதே No Range Config, Threshold Due எண்கள். Threshold Pending only-ஐ இயக்கினால் அவை மட்டும் தெரியும், அவற்றின் வரம்புகளை அமைத்தால் அவை கண்காணிப்பில் சேர்கின்றன. இது முழு டாஷ்போர்டு. அடுத்து, சிஸ்டம் எழுப்பும் நான்கு கோளாறுகளைப் பார்ப்போம் — ஒன்று ஆலை மட்டத்தில், மூன்று சென்சார் மட்டத்தில்.",
-          tip: { type: 'upNextLabel', text: 'அடுத்து: Data Break — ஒரு முழு தளமும் அமைதியாகும்போது எழும் ஆலை-மட்டக் கோளாறு.' },
+          body: "<strong>Sensor List (Due)</strong> டேப் நாம் <strong>இன்னும் கண்காணிக்க முடியாத</strong> சென்சார்களைச் சேகரிக்கிறது — அவற்றின் <strong>valid min / max</strong> அமைக்கப்படவில்லை. இதுவே ஆலைப் பட்டியலில் பார்த்த <strong>No Range Config</strong> எண். ஒரு சென்சாரின் செல்லுபடி வரம்பை அமைத்தால் அது உடனே Stuck மற்றும் Out-of-Range கண்காணிப்பில் சேர்கிறது. இது சுற்றுலா — அடுத்து, சிஸ்டம் எழுப்பும் நான்கு கோளாறுகள்.",
+          voice: "இறுதியாக, Due எனக் குறிக்கப்பட்ட Sensor List டேப் — நாம் இன்னும் கண்காணிக்க முடியாத சென்சார்களைச் சேகரிக்கிறது, ஏனெனில் அவற்றின் valid minimum, maximum அமைக்கப்படவில்லை. இதுவே ஆலைப் பட்டியலில் நீங்கள் பார்த்த அதே No Range Config எண். ஒரு சென்சாரின் செல்லுபடி வரம்பை அமைத்தால், அது உடனே Stuck மற்றும் Out-of-Range கண்காணிப்பில் சேர்கிறது. இது முழு டாஷ்போர்டு. அடுத்து, சிஸ்டம் எழுப்பும் நான்கு கோளாறுகளைப் பார்ப்போம் — ஒன்று ஆலை மட்டத்தில், மூன்று சென்சார் மட்டத்தில்.",
+          tip: { type: 'upNextLabel', text: 'அடுத்து: Data Break — ஆலை-மட்டக் கோளாறு, முழுமையாக.' },
         },
       ],
     },
@@ -187,13 +210,13 @@ const lesson: Lesson = {
         },
         {
           label: 'सक्रिय फॉल्ट', title: 'प्रत्येक उघड्या फॉल्टची एक ओळ',
-          body: "<strong>Active Faults</strong> टॅब आत्ता उघडे असलेले सर्व दाखवते. प्रत्येक ओळ एका <strong>बॅजने</strong> सुरू होते — <strong>STUCK</strong> किंवा <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> किंवा <strong>Fluttering</strong> टॅगसह) — मग सेन्सर, त्याचा टॅग, वैध श्रेणीसमोर त्याचे रीडिंग (किंवा stuck असल्यास <strong>Frozen at…</strong>), आणि तो किती वेळ सक्रिय आहे. <strong>Stuck</strong> आणि <strong>Out of Range</strong> चिप्सने फिल्टर करा.",
-          voice: "Active Faults टॅब आत्ता उघडे असलेले सर्व दाखवते. प्रत्येक ओळ एका बॅजने सुरू होते — Stuck, किंवा Out of Range एका Persistent किंवा Fluttering टॅगसह — मग सेन्सर आणि त्याचा टॅग, वैध श्रेणीसमोर त्याचे सध्याचे रीडिंग, किंवा stuck असल्यास एका मूल्यावर Frozen, आणि फॉल्ट किती वेळ सक्रिय आहे. Stuck आणि Out of Range चिप्स यादी एकाच प्रकारापर्यंत कमी करतात.",
+          body: "<strong>Active Faults</strong> टॅब आत्ता उघडे असलेले सर्व दाखवते. प्रत्येक ओळ एका <strong>बॅजने</strong> सुरू होते — <strong>STUCK</strong> किंवा <strong>OUT OF RANGE</strong> (<strong>Persistent</strong> किंवा <strong>Fluttering</strong> टॅगसह) — मग सेन्सर, त्याचा टॅग, वैध श्रेणीसमोर त्याचे रीडिंग (किंवा stuck असल्यास <strong>Frozen at…</strong>), आणि तो किती वेळ सक्रिय आहे.",
+          voice: "Active Faults टॅब आत्ता उघडे असलेले सर्व दाखवते. प्रत्येक ओळ एका बॅजने सुरू होते — Stuck, किंवा Out of Range एका Persistent किंवा Fluttering टॅगसह — मग सेन्सर आणि त्याचा टॅग, वैध श्रेणीसमोर त्याचे सध्याचे रीडिंग, किंवा stuck असल्यास एका मूल्यावर Frozen, आणि फॉल्ट किती वेळ सक्रिय आहे.",
         },
         {
           label: 'तपशील', title: 'पूर्ण कहाणीसाठी फॉल्टवर क्लिक करा',
-          body: "एखादा फॉल्ट निवडा आणि उजवीकडचे पॅनेल उघडते. तुम्हाला मिळते <strong>current value</strong>, एक <strong>history</strong> — एकूण इव्हेंट, सरासरी कालावधी, फॉल्टमध्ये घालवलेल्या वेळेची टक्केवारी, आणि सर्वात सामान्य प्रकार — वैध श्रेणी काढलेला <strong>readings chart</strong>, कधी भरकटले हे नेमके पाहण्यासाठी, आणि प्रत्येक उघडणे-बंद होणे नोंदवणारी <strong>event timeline</strong>. कृतीआधी तपासणी इथेच.",
-          voice: "कोणताही फॉल्ट निवडा आणि उजवीकडचे पॅनेल उघडते. तुम्हाला मिळते current value, एक छोटी history — एकूण इव्हेंट, सरासरी कालावधी, या सेन्सरने फॉल्टमध्ये किती टक्के वेळ घालवला, आणि त्याचा सर्वात सामान्य फॉल्ट प्रकार. खाली, वैध श्रेणीसह एक readings chart, कधी बाहेर भरकटले हे नेमके पाहण्यासाठी. आणि प्रत्येक उघडणे आणि बंद होणे नोंदवणारी event timeline. कृती करण्याआधी फॉल्ट तपासण्याचे ठिकाण हेच.",
+          body: "एखादा फॉल्ट निवडा आणि उजवीकडचे पॅनेल उघडते. तुम्हाला मिळते <strong>current value</strong>, एक <strong>history</strong> — एकूण इव्हेंट, सरासरी कालावधी, फॉल्टमध्ये घालवलेल्या वेळेची टक्केवारी, आणि सर्वात सामान्य प्रकार — वैध श्रेणी काढलेला <strong>readings chart</strong>, कधी भरकटले हे नेमके पाहण्यासाठी, आणि प्रत्येक उघडणे-बंद होणे नोंदवणारी <strong>event timeline</strong> — साइट शांत झाल्यावरच्या प्लांट-पातळीच्या <strong>Data Break</strong> नोंदींसह. कृतीआधी तपासणी इथेच.",
+          voice: "कोणताही फॉल्ट निवडा आणि उजवीकडचे पॅनेल उघडते. तुम्हाला मिळते current value, एक छोटी history — एकूण इव्हेंट, सरासरी कालावधी, या सेन्सरने फॉल्टमध्ये किती टक्के वेळ घालवला, आणि त्याचा सर्वात सामान्य फॉल्ट प्रकार. खाली, वैध श्रेणीसह एक readings chart, कधी बाहेर भरकटले हे नेमके पाहण्यासाठी. आणि प्रत्येक उघडणे आणि बंद होणे नोंदवणारी event timeline — संपूर्ण साइट शांत झालेल्या क्षणांच्या प्लांट-पातळीच्या Data Break नोंदींसह. कृती करण्याआधी फॉल्ट तपासण्याचे ठिकाण हेच.",
           tip: { type: 'tipLabel', text: 'Readings chart वैध श्रेणी छायांकित करतो — तिच्या बाहेरचे बिंदूच फॉल्ट उठवतात.' },
         },
         {
@@ -202,10 +225,16 @@ const lesson: Lesson = {
           voice: "Fixed Faults टॅब तीच यादी, पण आधीच बंद झालेल्या फॉल्टसाठी — वारंवार आत-बाहेर हेलकावणारा सेन्सर ओळखण्यास सोयीचे. लक्षात ठेवा, इथे सर्व काही स्वयंचलित आहे: सिस्टम प्रत्येक फॉल्ट स्वतः उघडते आणि बंद करते. टाइमलाइन नोंदी — started, resolved, back in range — काय झाले आणि कधी याचा तुमचा ऑडिट ट्रेल.",
         },
         {
+          label: 'फ्लॅग', title: 'Flag नुसार फिल्टर करा — Data Break सह',
+          body: "Active आणि Fixed दोन्ही याद्या flag नुसार फिल्टर होतात. वरचे चिप्स तुम्हाला दिसणारे तीन फॉल्ट प्रकार आहेत: <strong>STUCK</strong>, <strong>OUT OF RANGE</strong>, आणि <strong>DATA BREAK</strong>. Stuck आणि Out of Range सेन्सर-पातळीचे आहेत; <strong>Data Break प्लांट-पातळीचा आहे</strong> — संपूर्ण साइट डेटा पाठवणे थांबवते तेव्हा तो उठतो, म्हणून तो इथे आणि event timeline मध्ये दिसतो. एखाद्या चिपवर टॅप करा आणि यादी एकाच flag पर्यंत मर्यादित होते.",
+          voice: "Active आणि Fixed — दोन्ही याद्या flag नुसार फिल्टर करता येतात. वरचे चिप्स तुम्हाला भेटणारे तीन फॉल्ट प्रकार आहेत — Stuck, Out of Range, आणि Data Break. Stuck आणि Out of Range सेन्सर-पातळीचे आहेत. Data Break वेगळा आहे — तो प्लांट-पातळीचा flag आहे जो संपूर्ण साइट डेटा पाठवणे थांबवते तेव्हा उठतो, म्हणून तो इथे फिल्टरमध्ये आणि event timeline च्या आत दिसतो. कोणत्याही चिपवर टॅप करा आणि यादी फक्त त्या flag पर्यंत मर्यादित होते.",
+          tip: { type: 'noteLabel', text: 'Data Break संपूर्ण प्लांटचा आहे, एका सेन्सरचा नाही — पुढील धडा तो पूर्ण कव्हर करतो.' },
+        },
+        {
           label: 'सेन्सर यादी', title: 'Sensor List — ज्यांना अजून श्रेणी हवी',
-          body: "<strong>Sensor List (Due)</strong> टॅब तुमची टू-डू: <strong>अजून मॉनिटर करता न येणारे</strong> सेन्सर, कारण त्यांचे <strong>valid min / max</strong> कॉन्फिगर नाही. हेच आधीचे <strong>No Range Config</strong> आणि <strong>Threshold Due</strong> आकडे. <strong>Threshold Pending only</strong> चालू करा, त्यांच्या श्रेणी सेट करा, आणि ते निगराणीत सामील होतात. हा झाला दौरा — पुढे, सिस्टम उठवणारे चार फॉल्ट.",
-          voice: "Due असे चिन्हांकित Sensor List तुमची टू-डू आहे. हे असे सेन्सर आहेत जे आपण अजून मॉनिटर करू शकत नाही कारण त्यांचे valid minimum आणि maximum कॉन्फिगर नाही — तेच No Range Config आणि Threshold Due आकडे जे आधी दिसले. Threshold Pending only चालू करा म्हणजे फक्त तेच दिसतील, त्यांच्या श्रेणी कॉन्फिगर करा, आणि ते निगराणीत सामील होतात. हा झाला संपूर्ण डॅशबोर्ड. पुढे, सिस्टम उठवणारे चार फॉल्ट पाहू — एक प्लांट पातळीवर, आणि तीन सेन्सर पातळीवर.",
-          tip: { type: 'upNextLabel', text: 'पुढे: Data Break — संपूर्ण साइट शांत झाल्यावर उठणारा प्लांट-पातळीचा फॉल्ट.' },
+          body: "<strong>Sensor List (Due)</strong> टॅब आपण <strong>अजून मॉनिटर करू न शकणारे</strong> सेन्सर गोळा करतो — त्यांचे <strong>valid min / max</strong> सेट नाहीत. हाच प्लांट यादीतील <strong>No Range Config</strong> आकडा. एखाद्या सेन्सरची वैध श्रेणी कॉन्फिगर करा आणि तो लगेच Stuck आणि Out-of-Range निगराणीत सामील होतो. हा झाला दौरा — पुढे, सिस्टम उठवणारे चार फॉल्ट.",
+          voice: "शेवटी, Due असे चिन्हांकित Sensor List टॅब — आपण अजून मॉनिटर करू न शकणारे सेन्सर गोळा करतो, कारण त्यांचे valid minimum आणि maximum सेट नाहीत. हाच तो No Range Config आकडा जो तुम्ही प्लांट यादीवर पाहिला. एखाद्या सेन्सरची वैध श्रेणी कॉन्फिगर करा, आणि तो लगेच Stuck आणि Out-of-Range निगराणीत सामील होतो. हा झाला संपूर्ण डॅशबोर्ड. पुढे, सिस्टम उठवणारे चार फॉल्ट पाहू — एक प्लांट पातळीवर, आणि तीन सेन्सर पातळीवर.",
+          tip: { type: 'upNextLabel', text: 'पुढे: Data Break — प्लांट-पातळीचा फॉल्ट, संपूर्ण तपशिलात.' },
         },
       ],
     },
