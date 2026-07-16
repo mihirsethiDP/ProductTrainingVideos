@@ -17,6 +17,27 @@ interface ProgRow {
   completed: boolean;
 }
 
+interface ActRow {
+  at: string;
+  action: string;
+  email: string | null;
+  ip: string | null;
+}
+
+// friendly label + a tone colour for each raw auth-event action
+const ACT: Record<string, { label: string; tone: string }> = {
+  login: { label: 'Signed in', tone: '#1c8a58' },
+  logout: { label: 'Signed out', tone: '#6a7d8d' },
+  user_signedup: { label: 'Account created', tone: '#0a5b67' },
+  user_invited: { label: 'Invite emailed', tone: '#0a5b67' },
+  invite_created: { label: 'Invite created', tone: '#0a5b67' },
+  user_recovery_requested: { label: 'Reset link requested', tone: '#a56a12' },
+  user_confirmation_requested: { label: 'Confirmation sent', tone: '#6a7d8d' },
+  user_modified: { label: 'Account updated', tone: '#6a7d8d' },
+  user_deleted: { label: 'Account deleted', tone: '#a56a12' },
+};
+const actMeta = (action: string) => ACT[action] ?? { label: action, tone: '#6a7d8d' };
+
 // real (registered, non-coming-soon) lessons across the whole catalog
 const ALL_LESSONS = MODULES.flatMap((m) =>
   m.lessons.filter((l) => !l.comingSoon && getLesson(l.id)).map((l) => ({ moduleId: m.id, moduleNumber: m.number, id: l.id })),
@@ -46,13 +67,16 @@ export default function Admin() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [activity, setActivity] = useState<ActRow[]>([]);
+  const [activityMsg, setActivityMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setFetching(true);
-    const [{ data: p, error: pErr }, { data: lp, error: lpErr }, jb] = await Promise.all([
+    const [{ data: p, error: pErr }, { data: lp, error: lpErr }, jb, { data: act, error: actErr }] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
       listJobs(),
+      supabase.rpc('admin_activity', { limit_n: 250 }),
     ]);
     // distinguish a real load failure from a genuinely empty org — otherwise a
     // network/RLS error reads as "no users yet". Gate the "couldn't load users"
@@ -65,6 +89,16 @@ export default function Admin() {
     setUsers((p as Profile[]) ?? []);
     setProgress((lp as ProgRow[]) ?? []);
     setJobs(jb);
+    // activity log is best-effort: if the admin_activity function isn't deployed
+    // yet (schema.sql not re-run), degrade gracefully instead of blanking the page.
+    if (actErr) {
+      setActivity([]);
+      setActivityMsg('Activity log unavailable — run the latest supabase/schema.sql in the SQL editor to enable it.');
+      console.error('Admin load — activity:', actErr.message);
+    } else {
+      setActivity((act as ActRow[]) ?? []);
+      setActivityMsg(null);
+    }
     setFetching(false);
   }, []);
 
@@ -346,6 +380,59 @@ export default function Admin() {
               </div>
             );
           })}
+        </div>
+
+        {/* activity log — admin only (sign-ins, sign-outs, invites, account changes) */}
+        <div style={{ margin: '32px 0 10px' }}>
+          <div className="eyebrow">Activity</div>
+          <div style={{ fontWeight: 700, fontSize: 18, marginTop: 2 }}>Recent user activity</div>
+          <div style={{ fontSize: 13, color: '#6a7d8d', marginTop: 4 }}>
+            Sign-ins, sign-outs, invites and account changes — admin-only.
+          </div>
+        </div>
+        <div className="admin-users">
+          <div className="au-head" style={{ gridTemplateColumns: '1.5fr 1.1fr 2fr 0.9fr' }}>
+            <span>When</span>
+            <span>Event</span>
+            <span>User</span>
+            <span>IP</span>
+          </div>
+          {fetching && <div className="au-empty">…</div>}
+          {!fetching && activityMsg && <div className="au-empty">{activityMsg}</div>}
+          {!fetching && !activityMsg && activity.length === 0 && <div className="au-empty">No activity recorded yet.</div>}
+          {!fetching &&
+            activity.map((a, i) => {
+              const m = actMeta(a.action);
+              return (
+                <div
+                  key={i}
+                  className="au-row"
+                  style={{ gridTemplateColumns: '1.5fr 1.1fr 2fr 0.9fr', cursor: 'default' }}
+                >
+                  <div className="au-email" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {new Date(a.at).toLocaleString()}
+                  </div>
+                  <div>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '2px 9px',
+                        borderRadius: 999,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: '#fff',
+                        background: m.tone,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {m.label}
+                    </span>
+                  </div>
+                  <div className="au-email" style={{ wordBreak: 'break-all' }}>{a.email || '—'}</div>
+                  <div className="au-email">{a.ip || '—'}</div>
+                </div>
+              );
+            })}
         </div>
 
         <Footer />

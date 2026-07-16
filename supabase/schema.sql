@@ -331,3 +331,54 @@ begin
   return new;
 end;
 $$;
+
+-- ============================================================
+--  Admin activity log — sign-ins, sign-outs, invites, account
+--  changes. GoTrue records these in auth.audit_log_entries, which
+--  PostgREST does NOT expose to the client. This SECURITY DEFINER
+--  function reads that table (plus the invites table) on the admin's
+--  behalf and is gated to admins only. Exposed to the app as
+--  supabase.rpc('admin_activity').
+-- ============================================================
+create or replace function public.admin_activity(limit_n int default 250)
+returns table (at timestamptz, action text, email text, ip text)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'admin only';
+  end if;
+
+  return query
+  with ev as (
+    -- real auth events: login, logout, user_invited, user_signedup,
+    -- user_recovery_requested, user_modified, … (token refreshes filtered out)
+    select
+      a.created_at as at,
+      coalesce(a.payload ->> 'action', '?') as action,
+      coalesce(
+        nullif(a.payload #>> '{traits,user_email}', ''),  -- the affected user (admin actions)
+        nullif(a.payload ->> 'actor_username', ''),        -- the actor (self actions: login/logout)
+        u.email
+      ) as email,
+      host(a.ip_address) as ip
+    from auth.audit_log_entries a
+    left join auth.users u on u.id = nullif(a.payload ->> 'actor_id', '')::uuid
+    where coalesce(a.payload ->> 'action', '') <> 'token_refreshed'
+    union all
+    -- invites recorded in-app (before/without an email send)
+    select i.created_at, 'invite_created', i.email, null
+    from public.invites i
+  )
+  select ev.at, ev.action, ev.email, ev.ip
+  from ev
+  order by ev.at desc
+  limit greatest(1, least(limit_n, 1000));
+end;
+$$;
+
+-- only signed-in admins may call it (the body also re-checks is_admin())
+revoke all on function public.admin_activity(int) from public, anon;
+grant execute on function public.admin_activity(int) to authenticated;
