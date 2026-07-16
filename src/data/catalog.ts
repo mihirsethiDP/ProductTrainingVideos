@@ -42,6 +42,10 @@ import lessonComm2 from './lessons/module-08-communications/lesson-02-emails-and
 import lessonEvents from './lessons/module-09-events/lesson-01-events';
 import lessonEventsConfig from './lessons/module-09-events/lesson-01-events-config';
 import lessonTriggers from './lessons/module-10-triggers/lesson-01-triggers';
+import lessonSensorDashboard from './lessons/module-13-sensor-health/lesson-01-dashboard';
+import lessonSensorDataBreak from './lessons/module-13-sensor-health/lesson-02-data-break';
+import lessonSensorStuck from './lessons/module-13-sensor-health/lesson-03-stuck';
+import lessonSensorOutOfRange from './lessons/module-13-sensor-health/lesson-04-out-of-range';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -90,6 +94,10 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonEvents.id]: lessonEvents,
   [lessonEventsConfig.id]: lessonEventsConfig,
   [lessonTriggers.id]: lessonTriggers,
+  [lessonSensorDashboard.id]: lessonSensorDashboard,
+  [lessonSensorDataBreak.id]: lessonSensorDataBreak,
+  [lessonSensorStuck.id]: lessonSensorStuck,
+  [lessonSensorOutOfRange.id]: lessonSensorOutOfRange,
 };
 
 /**
@@ -377,6 +385,30 @@ export const MODULES: ModuleDef[] = [
     lessons: [
       { id: 'lesson-building-dashboards', comingSoon: true },
       { id: 'lesson-customer-hub', comingSoon: true },
+    ],
+  },
+  {
+    id: 'module-13-sensor-health',
+    number: 13,
+    tag: 'M13',
+    roles: ['internal'],
+    name: {
+      en: 'Sensor Health Dashboard',
+      hi: 'सेंसर हेल्थ डैशबोर्ड',
+      ta: 'சென்சார் ஹெல்த் டாஷ்போர்டு',
+      mr: 'सेन्सर हेल्थ डॅशबोर्ड',
+    },
+    description: {
+      en: 'The monitoring team’s cockpit — read the plant-by-plant fault dashboard, then learn the four faults the system raises automatically: plant-level Data Break, and sensor-level Stuck, Persistent and Fluttering Out-of-Range.',
+      hi: 'मॉनिटरिंग टीम का कॉकपिट — प्लांट-दर-प्लांट फ़ॉल्ट डैशबोर्ड पढ़ें, फिर सिस्टम अपने-आप उठाने वाले चार फ़ॉल्ट सीखें: प्लांट-स्तरीय Data Break, और सेंसर-स्तरीय Stuck, Persistent और Fluttering Out-of-Range।',
+      ta: 'கண்காணிப்புக் குழுவின் பணியிடம் — ஆலை வாரியான கோளாறு டாஷ்போர்டைப் படியுங்கள், பின் சிஸ்டம் தானாக எழுப்பும் நான்கு கோளாறுகளைக் கற்றுக்கொள்ளுங்கள்: ஆலை-மட்ட Data Break, மற்றும் சென்சார்-மட்ட Stuck, Persistent, Fluttering Out-of-Range.',
+      mr: 'मॉनिटरिंग टीमचे कॉकपिट — प्लांट-निहाय फॉल्ट डॅशबोर्ड वाचा, मग सिस्टम आपोआप उठवणारे चार फॉल्ट शिका: प्लांट-पातळीचा Data Break, आणि सेन्सर-पातळीचे Stuck, Persistent आणि Fluttering Out-of-Range.',
+    },
+    lessons: [
+      { id: 'sensor-health-dashboard' },
+      { id: 'sensor-health-data-break' },
+      { id: 'sensor-health-stuck' },
+      { id: 'sensor-health-out-of-range' },
     ],
   },
   // Hidden holder for generated personalized demos. roles: [] keeps it out of
