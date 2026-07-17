@@ -24,12 +24,12 @@ const lesson: Lesson = {
       spotlight: { top: '28%', left: '0%', width: '50%', height: '11%' },
     },
     {
-      mode: 'detail', screenshot: 'faults', caption: 'A rolling window, checked for spread',
-      spotlight: { top: '40%', left: '69%', width: '30%', height: '32%' },
+      mode: 'detail', screenshot: 'fixed', caption: 'A rolling window, checked for spread',
+      spotlight: { top: '61%', left: '70%', width: '27%', height: '27%' },
     },
     {
-      mode: 'detail', screenshot: 'faults', caption: 'Epsilon — the allowed wiggle room',
-      spotlight: { top: '26%', left: '69%', width: '30%', height: '14%' },
+      mode: 'detail', screenshot: 'fixed', caption: 'Epsilon — the allowed wiggle room',
+      spotlight: { top: '61%', left: '70%', width: '27%', height: '27%' },
     },
     {
       mode: 'detail', screenshot: 'faults', caption: 'Window & tolerance vary by category',
@@ -37,7 +37,7 @@ const lesson: Lesson = {
     },
     {
       mode: 'detail', screenshot: 'fixed', caption: 'Reading moves → Stuck clears',
-      spotlight: { top: '17%', left: '1%', width: '30%', height: '7%' },
+      spotlight: { top: '22%', left: '8%', width: '5.5%', height: '4.3%' },
     },
   ],
   content: {

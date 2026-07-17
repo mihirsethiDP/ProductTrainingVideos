@@ -26,9 +26,9 @@ const lesson: Lesson = {
   },
   layouts: [
     { mode: 'detail', screenshot: 'list', caption: 'Add Manual Sensor', spotlight: { top: '4%', left: '87%', width: '12%', height: '9%' } },
-    { mode: 'detail', screenshot: 'add', caption: 'Category, type & name', spotlight: { top: '27%', left: '24%', width: '52%', height: '20%' } },
+    { mode: 'detail', screenshot: 'add', caption: 'Category, type & name', spotlight: { top: '41%', left: '26%', width: '47%', height: '17%' } },
     { mode: 'detail', screenshot: 'thresholds', caption: 'Apply thresholds', spotlight: { top: '49%', left: '25%', width: '50%', height: '38%' } },
-    { mode: 'detail', screenshot: 'viz', caption: 'Go to the plant’s Visualization', spotlight: { top: '90%', left: '12%', width: '15%', height: '8%' } },
+    { mode: 'detail', screenshot: 'viz', caption: 'Go to the plant’s Visualization', spotlight: { top: '93%', left: '12%', width: '6%', height: '6%' } },
     { mode: 'detail', screenshot: 'apply', caption: 'Apply it → a real sensor tag', spotlight: { top: '13%', left: '28%', width: '44%', height: '14%' } },
     { mode: 'detail', screenshot: 'operator', caption: 'On the operator dashboard', spotlight: { top: '27%', left: '1%', width: '40%', height: '8%' } },
     { mode: 'detail', screenshot: 'outOfRange', caption: 'Enter data — and out-of-range', spotlight: { top: '27%', left: '20%', width: '78%', height: '12%' } },

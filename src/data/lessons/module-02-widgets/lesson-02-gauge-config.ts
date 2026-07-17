@@ -16,7 +16,7 @@ const lesson: Lesson = {
   layouts: [
     { mode: 'detail', screenshot: 'config', caption: 'Same as Number', spotlight: { top: '18%', left: '34%', width: '32%', height: '40%' } },
     { mode: 'detail', screenshot: 'agg', caption: 'Aggregation', spotlight: { top: '18%', left: '33%', width: '34%', height: '60%' } },
-    { mode: 'detail', screenshot: 'config', caption: 'Thresholds → the arc', spotlight: { top: '28%', left: '66%', width: '33%', height: '22%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Thresholds → the arc', spotlight: { top: '32%', left: '66.5%', width: '33%', height: '24%' } },
   ],
   content: {
     en: {

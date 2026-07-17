@@ -24,7 +24,7 @@ const lesson: Lesson = {
   layouts: [
     { mode: 'detail', screenshot: 'workflow', caption: 'Build the workflow', spotlight: { top: '55%', left: '12%', width: '76%', height: '20%' } },
     { mode: 'detail', screenshot: 'template', caption: 'Create a task template', spotlight: { top: '11%', left: '1%', width: '64%', height: '19%' } },
-    { mode: 'detail', screenshot: 'type', caption: 'Task type & details', spotlight: { top: '28%', left: '40%', width: '22%', height: '38%' } },
+    { mode: 'detail', screenshot: 'type', caption: 'Task type & details', spotlight: { top: '26%', left: '40%', width: '20%', height: '31%' } },
     { mode: 'detail', screenshot: 'template', caption: 'House the workflow', spotlight: { top: '20%', left: '60%', width: '38%', height: '8%' } },
     { mode: 'detail', screenshot: 'list', caption: 'Saved to Fixed Tasks', spotlight: { top: '3%', left: '80%', width: '18%', height: '9%' } },
     { mode: 'detail', screenshot: 'component', caption: 'Task component on a trigger', spotlight: { top: '12%', left: '25%', width: '50%', height: '13%' } },

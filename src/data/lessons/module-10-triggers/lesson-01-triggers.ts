@@ -23,11 +23,11 @@ const lesson: Lesson = {
     saved: `${BASE}/saved.jpg`,
   },
   layouts: [
-    { mode: 'detail', screenshot: 'conditional', caption: 'Three types of trigger', spotlight: { top: '9%', left: '1%', width: '33%', height: '11%' } },
+    { mode: 'detail', screenshot: 'conditional', caption: 'Three types of trigger', spotlight: { top: '20%', left: '1%', width: '33%', height: '8%' } },
     { mode: 'detail', screenshot: 'onetime', caption: 'One Time', spotlight: { top: '26%', left: '1%', width: '98%', height: '12%' } },
     { mode: 'detail', screenshot: 'recurring', caption: 'Recurring', spotlight: { top: '28%', left: '40%', width: '20%', height: '12%' } },
     { mode: 'detail', screenshot: 'conditional', caption: 'Conditional: the opening logic', spotlight: { top: '40%', left: '1%', width: '49%', height: '20%' } },
-    { mode: 'detail', screenshot: 'formula', caption: 'Build the condition formula', spotlight: { top: '46%', left: '19%', width: '62%', height: '12%' } },
+    { mode: 'detail', screenshot: 'formula', caption: 'Build the condition formula', spotlight: { top: '42%', left: '19%', width: '44%', height: '8%' } },
     { mode: 'detail', screenshot: 'conditional', caption: 'Resolution: condition or time', spotlight: { top: '40%', left: '50%', width: '49%', height: '20%' } },
     { mode: 'detail', screenshot: 'saved', caption: 'Components attach here', spotlight: { top: '40%', left: '1%', width: '98%', height: '20%' } },
   ],

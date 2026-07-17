@@ -14,8 +14,8 @@ const lesson: Lesson = {
   },
   layouts: [
     { mode: 'detail', screenshot: 'config', caption: 'Select sensors', spotlight: { top: '16%', left: '1%', width: '32%', height: '72%' } },
-    { mode: 'detail', screenshot: 'config', caption: 'Name the widget', spotlight: { top: '2%', left: '5%', width: '40%', height: '14%' } },
-    { mode: 'detail', screenshot: 'config', caption: 'Multiple aggregations', spotlight: { top: '20%', left: '33%', width: '34%', height: '20%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Name the widget', spotlight: { top: '3%', left: '3%', width: '8.5%', height: '5%' } },
+    { mode: 'detail', screenshot: 'config', caption: 'Multiple aggregations', spotlight: { top: '20%', left: '33%', width: '33%', height: '12%' } },
   ],
   content: {
     en: {

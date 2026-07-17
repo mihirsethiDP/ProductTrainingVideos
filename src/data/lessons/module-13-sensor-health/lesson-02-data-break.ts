@@ -20,7 +20,7 @@ const lesson: Lesson = {
   layouts: [
     {
       mode: 'detail', screenshot: 'list', caption: 'Internet & Last Contact — the plant’s pulse',
-      spotlight: { top: '13%', left: '48%', width: '25%', height: '44%' },
+      spotlight: { top: '17%', left: '47%', width: '16.5%', height: '40%' },
     },
     {
       mode: 'detail', screenshot: 'timeline', caption: 'No data for 5+ minutes → Data Break',
@@ -32,7 +32,7 @@ const lesson: Lesson = {
     },
     {
       mode: 'detail', screenshot: 'timeline', caption: 'New reading arrives → resolved',
-      spotlight: { top: '20%', left: '69%', width: '30%', height: '14%' },
+      spotlight: { top: '29%', left: '69%', width: '29%', height: '6%' },
     },
   ],
   content: {

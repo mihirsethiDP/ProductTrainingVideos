@@ -16,7 +16,7 @@ const lesson: Lesson = {
     { mode: 'detail', screenshot: 'axes', caption: 'Three axes', spotlight: { top: '42%', left: '3%', width: '94%', height: '56%' } },
     { mode: 'detail', screenshot: 'axes', caption: 'Aggregations', spotlight: { top: '43%', left: '3%', width: '94%', height: '17%' } },
     { mode: 'detail', screenshot: 'axes', caption: 'Relative time & granularity', spotlight: { top: '60%', left: '3%', width: '94%', height: '18%' } },
-    { mode: 'detail', screenshot: 'axes', caption: 'Per-sensor thresholds', spotlight: { top: '80%', left: '60%', width: '38%', height: '16%' } },
+    { mode: 'detail', screenshot: 'axes', caption: 'Per-sensor thresholds', spotlight: { top: '86.5%', left: '65%', width: '23%', height: '11%' } },
   ],
   content: {
     en: {

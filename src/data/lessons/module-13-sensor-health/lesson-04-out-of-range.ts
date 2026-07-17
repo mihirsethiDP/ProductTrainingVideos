@@ -24,23 +24,23 @@ const lesson: Lesson = {
   layouts: [
     {
       mode: 'detail', screenshot: 'faults', caption: 'OUT OF RANGE — past a valid limit',
-      spotlight: { top: '28%', left: '0%', width: '50%', height: '11%' },
+      spotlight: { top: '39.5%', left: '2.5%', width: '24%', height: '9%' },
     },
     {
       mode: 'detail', screenshot: 'readings', caption: 'Persistent — 3 in a row, out',
-      spotlight: { top: '30%', left: '69%', width: '30%', height: '34%' },
+      spotlight: { top: '60%', left: '70%', width: '27%', height: '29%' },
     },
     {
       mode: 'detail', screenshot: 'faults', caption: 'Fluttering — 3+ trips in 30 min',
-      spotlight: { top: '28%', left: '0%', width: '50%', height: '11%' },
+      spotlight: { top: '40%', left: '2.5%', width: '24%', height: '4%' },
     },
     {
       mode: 'detail', screenshot: 'faults', caption: 'The two are mutually exclusive',
-      spotlight: { top: '40%', left: '69%', width: '30%', height: '30%' },
+      spotlight: { top: '49.5%', left: '2.5%', width: '26%', height: '4%' },
     },
     {
       mode: 'detail', screenshot: 'sensorList', caption: 'No range set → Threshold Pending',
-      spotlight: { top: '30%', left: '15%', width: '84%', height: '8%' },
+      spotlight: { top: '17.5%', left: '80.5%', width: '7%', height: '45%' },
     },
   ],
   content: {

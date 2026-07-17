@@ -15,8 +15,8 @@ const lesson: Lesson = {
   },
   layouts: [
     { mode: 'detail', screenshot: 'sensors', caption: 'Select sensors', spotlight: { top: '14%', left: '1%', width: '38%', height: '70%' } },
-    { mode: 'detail', screenshot: 'grouping', caption: 'Group sensors', spotlight: { top: '14%', left: '1%', width: '40%', height: '52%' } },
-    { mode: 'detail', screenshot: 'sensors', caption: 'Layout: granularity & windows', spotlight: { top: '24%', left: '46%', width: '52%', height: '18%' } },
+    { mode: 'detail', screenshot: 'grouping', caption: 'Group sensors', spotlight: { top: '11%', left: '1%', width: '46%', height: '40%' } },
+    { mode: 'detail', screenshot: 'sensors', caption: 'Layout: granularity & windows', spotlight: { top: '32%', left: '48%', width: '50%', height: '9%' } },
     { mode: 'detail', screenshot: 'grouping', caption: 'Two axes & column view', spotlight: { top: '60%', left: '1%', width: '98%', height: '38%' } },
   ],
   content: {

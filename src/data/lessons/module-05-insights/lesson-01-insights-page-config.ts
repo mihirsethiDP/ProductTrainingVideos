@@ -29,8 +29,8 @@ const lesson: Lesson = {
     { mode: 'detail', screenshot: 'rca', caption: 'Add an AI-generated RCA', spotlight: { top: '26%', left: '1%', width: '97%', height: '22%' } },
     { mode: 'detail', screenshot: 'trigger', caption: 'Opening & closing conditions', spotlight: { top: '40%', left: '24%', width: '70%', height: '14%' } },
     { mode: 'detail', screenshot: 'create', caption: 'Trigger component → Insight', spotlight: { top: '18%', left: '25%', width: '50%', height: '10%' } },
-    { mode: 'detail', screenshot: 'timeSensitive', caption: 'Time Sensitive → WhatsApp + user', spotlight: { top: '36%', left: '46%', width: '33%', height: '11%' } },
-    { mode: 'detail', screenshot: 'timeSensitive', caption: 'Save — or cancel', spotlight: { top: '91%', left: '60%', width: '33%', height: '9%' } },
+    { mode: 'detail', screenshot: 'timeSensitive', caption: 'Time Sensitive → WhatsApp + user', spotlight: { top: '32%', left: '46%', width: '30%', height: '8%' } },
+    { mode: 'detail', screenshot: 'timeSensitive', caption: 'Save — or cancel', spotlight: { top: '84.5%', left: '61%', width: '14%', height: '6%' } },
   ],
   content: {
     en: {

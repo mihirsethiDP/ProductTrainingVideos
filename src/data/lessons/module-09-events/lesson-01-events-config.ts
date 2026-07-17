@@ -24,12 +24,12 @@ const lesson: Lesson = {
   },
   layouts: [
     { mode: 'detail', screenshot: 'templates', caption: 'Event Templates', spotlight: { top: '8%', left: '84%', width: '15%', height: '10%' } },
-    { mode: 'detail', screenshot: 'form', caption: 'Name & equipment type', spotlight: { top: '30%', left: '41%', width: '37%', height: '14%' } },
+    { mode: 'detail', screenshot: 'form', caption: 'Name & equipment type', spotlight: { top: '37%', left: '22%', width: '56%', height: '9%' } },
     { mode: 'detail', screenshot: 'triggers', caption: 'A conditional trigger', spotlight: { top: '30%', left: '1%', width: '60%', height: '8%' } },
     { mode: 'detail', screenshot: 'create', caption: 'Trigger component → Event', spotlight: { top: '14%', left: '24%', width: '24%', height: '34%' } },
     { mode: 'detail', screenshot: 'equipment', caption: 'Associate equipment', spotlight: { top: '20%', left: '50%', width: '26%', height: '52%' } },
     { mode: 'detail', screenshot: 'sensors', caption: 'Select the sensors', spotlight: { top: '38%', left: '25%', width: '50%', height: '24%' } },
-    { mode: 'detail', screenshot: 'sensors', caption: 'Plot on the dashboard', spotlight: { top: '75%', left: '25%', width: '32%', height: '9%' } },
+    { mode: 'detail', screenshot: 'sensors', caption: 'Plot on the dashboard', spotlight: { top: '84%', left: '68%', width: '8%', height: '5%' } },
   ],
   content: {
     en: {
