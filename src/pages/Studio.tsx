@@ -46,17 +46,24 @@ function DemoRowExtras({ job }: { job: GenerationJob }) {
     }
   };
 
+  const expires = demoExpiry(job).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
   return (
     <>
-      <button type="button" className="studio-share" onClick={copy}>
-        {copied ? '✓ Link copied!' : '🔗 Copy share link'}
-      </button>
-      {videoUrl && (
-        <a className="studio-share" href={demoVideoDownloadUrl(lessonId)} download>⬇ Video</a>
-      )}
-      <div className="studio-expiry">
-        No sign-in needed to watch · available until {demoExpiry(job).toLocaleDateString()}
+      <div className="studio-actions">
+        <a className="studio-share" href={`#/${job.result_lesson_id}`}>Open ↗</a>
+        <button type="button" className={`studio-share${copied ? ' copied' : ''}`} onClick={copy}>
+          {copied ? '✓ Copied' : 'Copy share link'}
+        </button>
+        {videoUrl && (
+          <a className="studio-share" href={demoVideoDownloadUrl(lessonId)} download>Download video</a>
+        )}
       </div>
+      <div className="studio-expiry">No sign-in needed · expires {expires}</div>
     </>
   );
 }
@@ -311,10 +318,9 @@ export default function Studio() {
                   <span className={`badge studio-status ${j.status}`}>{STATUS_LABEL[j.status]}</span>
                 )}
                 {j.status === 'done' && j.result_lesson_id && (j.kind !== 'demo' || demoExpiry(j).getTime() >= Date.now()) && (
-                  <>
-                    <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
-                    {j.kind === 'demo' && <DemoRowExtras job={j} />}
-                  </>
+                  j.kind === 'demo'
+                    ? <DemoRowExtras job={j} />
+                    : <a className="studio-open" href={`#/${j.result_lesson_id}`}>Open →</a>
                 )}
                 {j.kind === 'demo' && j.status === 'done' && demoExpiry(j).getTime() < Date.now() && (
                   <div className="studio-expiry">Demos are kept for 30 days, then removed.</div>

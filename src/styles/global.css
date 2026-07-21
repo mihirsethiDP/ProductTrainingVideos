@@ -2020,9 +2020,14 @@ button.badge.config:hover { background: rgba(25, 52, 88, 0.18); }
 .demo-download:hover { background: rgba(30, 96, 145, 0.18); }
 .nl-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .nl-actions .demo-download { margin-top: 0; }
-.studio-share { display: inline-block; margin-top: 6px; margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--water); background: none; border: none; cursor: pointer; padding: 0; }
+/* actions row under a ready demo: Open ↗ / Copy share link / Download video.
+   Pure flex gaps (no dot separators) so a wrap in the narrow Status column
+   stays clean — no dangling separator at a line start. */
+.studio-actions { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
+.studio-share { display: inline-block; font-family: var(--mono); font-size: 11px; color: var(--water); background: none; border: none; cursor: pointer; padding: 0; white-space: nowrap; }
 .studio-share:hover { color: var(--water-deep); text-decoration: underline; }
-.studio-expiry { font-size: 10.5px; color: var(--ink-soft); margin-top: 4px; }
+.studio-share.copied { color: var(--leaf); }
+.studio-expiry { font-size: 11px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
 .studio-submit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .studio-jobs-head { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 10px; }
 .studio-jobs-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
