@@ -1,6 +1,7 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
 import demoHindalco from './lessons/module-demos/demo-hindalco';
 import demoHindalcoDataInput from './lessons/module-demos/demo-hindalco-data-input';
+import demoMerino from './lessons/module-demos/demo-merino';
 import shortOperational from './lessons/module-shorts/short-operational';
 import shortNonOperational from './lessons/module-shorts/short-non-operational';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
@@ -60,6 +61,7 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 export const LESSONS: Record<string, Lesson> = {
   [demoHindalco.id]: demoHindalco,
   [demoHindalcoDataInput.id]: demoHindalcoDataInput,
+  [demoMerino.id]: demoMerino,
   [shortOperational.id]: shortOperational,
   [shortNonOperational.id]: shortNonOperational,
   [lessonReading.id]: lessonReading,
@@ -488,7 +490,7 @@ export const MODULES: ModuleDef[] = [
       ta: 'பதிவிலிருந்து உருவாக்கப்பட்ட வாடிக்கையாளர் டெமோக்கள் — இணைப்பால் அணுகலாம், பட்டியலிடப்படவில்லை.',
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
-    lessons: [{ id: 'demo-hindalco' }, { id: 'demo-hindalco-data-input' }],
+    lessons: [{ id: 'demo-hindalco' }, { id: 'demo-hindalco-data-input' }, { id: 'demo-merino' }],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
   // of every home list; the /watch/* routes serve them WITHOUT login.
