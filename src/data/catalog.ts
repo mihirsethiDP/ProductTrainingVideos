@@ -169,7 +169,6 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-07-scatter' },
       { id: 'lesson-07-scatter-config', internalOnly: true },
       { id: 'lesson-08-sankey' },
-      { id: 'lesson-09-map-tickets', comingSoon: true },
     ],
   },
   {
@@ -353,7 +352,7 @@ export const MODULES: ModuleDef[] = [
     id: 'module-11-reports-insights',
     number: 11,
     tag: 'M11',
-    roles: ['supervisor'],
+    roles: ['operator', 'supervisor', 'internal'],
     name: {
       en: 'Reports & Team Access',
       hi: 'रिपोर्ट और टीम एक्सेस',
@@ -368,9 +367,11 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'lesson-reports-exports', comingSoon: true },
-      { id: 'lesson-sharing-permissions', comingSoon: true },
+      { id: 'lesson-sharing-permissions', comingSoon: true, roles: ['internal'] },
     ],
   },
+  /* PARKED 2026-07-21 — M12 "Internal Tools & Onboarding" removed from the catalog for now, kept cached here.
+     To restore: uncomment this block and renumber Sensor Health back to number 13 / tag M13 and Remote Control to 14 / M14.
   {
     id: 'module-12-internal-tools',
     number: 12,
@@ -393,10 +394,11 @@ export const MODULES: ModuleDef[] = [
       { id: 'lesson-customer-hub', comingSoon: true },
     ],
   },
+  */
   {
     id: 'module-13-sensor-health',
-    number: 13,
-    tag: 'M13',
+    number: 12,
+    tag: 'M12',
     roles: ['internal'],
     name: {
       en: 'Sensor Health Dashboard',
@@ -419,8 +421,8 @@ export const MODULES: ModuleDef[] = [
   },
   {
     id: 'module-14-remote-control',
-    number: 14,
-    tag: 'M14',
+    number: 13,
+    tag: 'M13',
     roles: ['operator', 'supervisor', 'internal'],
     name: {
       en: 'Remote Control',

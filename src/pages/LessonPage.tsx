@@ -259,6 +259,12 @@ export default function LessonPage() {
   if (assignedRole && role !== assignedRole && module.roles.length > 0) {
     return <Navigate to={`/${assignedRole}`} replace />;
   }
+  // a lesson can narrow visibility below its module (e.g. an internal-only lesson
+  // inside an all-roles module). An invited user off that lesson's list bounces home.
+  const lessonRef = module.lessons.find((l) => l.id === lesson.id);
+  if (assignedRole && lessonRef?.roles && !lessonRef.roles.includes(assignedRole)) {
+    return <Navigate to={`/${assignedRole}`} replace />;
+  }
 
   // clamp for the single render right after a lesson switch, before the reset effect runs
   const safeStep = Math.max(0, Math.min(step, totalSteps - 1));

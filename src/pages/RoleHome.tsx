@@ -94,7 +94,9 @@ export default function RoleHome() {
               <div className="module-desc">{mod.description[lang]}</div>
             </div>
             <div className="lesson-list">
-              {mod.lessons.filter((r) => !r.internalOnly).map((ref, idx) => {
+              {mod.lessons
+                .filter((r) => !r.internalOnly && (!r.roles || r.roles.includes(roleId)))
+                .map((ref, idx) => {
                 // configuration tracks are reached via the Read ⇄ Configure toggle
                 // (and the Configure deep-link below), so they get no row of their
                 // own — filtering them out keeps the visible lesson numbering right.

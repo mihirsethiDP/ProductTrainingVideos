@@ -16,7 +16,8 @@ const MODULE_ACCENT: Record<number, string> = {
   9: '#b0573f', // events — terracotta
   10: '#9a6f1f', // triggers — bronze
   11: '#3a7ca5', // reports — steel
-  12: '#5a6b8c', // internal — slate
+  12: '#5a6b8c', // sensor health — slate (was internal tools, now parked)
+  13: '#3f7d6e', // remote control — deep teal
 };
 
 export function moduleAccent(n: number): string {
@@ -36,7 +37,8 @@ const MODULE_GLYPH: Record<number, string> = {
   9: 'pulse',
   10: 'bolt',
   11: 'report',
-  12: 'gear',
+  12: 'pulse', // sensor health — monitoring
+  13: 'gear', // remote control — controls
 };
 
 export function moduleGlyph(n: number): string {

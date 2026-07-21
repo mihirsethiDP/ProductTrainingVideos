@@ -44,6 +44,7 @@ export function searchContent(query: string, role: RoleId, lang: LangCode): Sear
     for (const ref of mod.lessons) {
       if (ref.comingSoon) continue;
       if (ref.internalOnly && role !== 'internal') continue;
+      if (ref.roles && !ref.roles.includes(role)) continue;
       const lesson = getLesson(ref.id);
       if (!lesson) continue;
       const c = lesson.content[lang];

@@ -609,7 +609,11 @@ export interface Lesson {
 export interface LessonRef {
   id: string;
   comingSoon?: boolean;
-  internalOnly?: boolean; // configuration tracks — visible only to internal users
+  internalOnly?: boolean; // configuration tracks — hidden Configure side-track, reached via the Read⇄Configure toggle
+  /** Narrow a NORMAL listed lesson to specific personas (unlike `internalOnly`,
+   *  which hides the row entirely). Absent = inherit the module's roles.
+   *  e.g. an internal-only lesson living inside an all-roles module. */
+  roles?: RoleId[];
 }
 
 export interface ModuleDef {

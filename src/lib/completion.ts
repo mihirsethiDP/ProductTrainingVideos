@@ -18,9 +18,15 @@ export function lessonPercent(lessonId: string): number {
  *  NEVER part of the countable, linear course for ANY role (including internal),
  *  so the role-card counts, progress rings, and the rendered lesson list all
  *  agree. `_role` is kept for call-site compatibility / future role scoping. */
-export function moduleLessons(module: ModuleDef, _role?: RoleId): string[] {
+export function moduleLessons(module: ModuleDef, role?: RoleId): string[] {
   return module.lessons
-    .filter((l) => !l.comingSoon && getLesson(l.id) && !l.internalOnly)
+    .filter(
+      (l) =>
+        !l.comingSoon &&
+        getLesson(l.id) &&
+        !l.internalOnly &&
+        (!l.roles || !role || l.roles.includes(role)),
+    )
     .map((l) => l.id);
 }
 
