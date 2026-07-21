@@ -46,6 +46,9 @@ import lessonSensorDashboard from './lessons/module-13-sensor-health/lesson-01-d
 import lessonSensorDataBreak from './lessons/module-13-sensor-health/lesson-02-data-break';
 import lessonSensorStuck from './lessons/module-13-sensor-health/lesson-03-stuck';
 import lessonSensorOutOfRange from './lessons/module-13-sensor-health/lesson-04-out-of-range';
+import lessonRemoteGroups from './lessons/module-14-remote-control/lesson-01-group-control';
+import lessonRemoteOperate from './lessons/module-14-remote-control/lesson-02-take-control';
+import lessonRemoteConfig from './lessons/module-14-remote-control/lesson-03-configure';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -98,6 +101,9 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonSensorDataBreak.id]: lessonSensorDataBreak,
   [lessonSensorStuck.id]: lessonSensorStuck,
   [lessonSensorOutOfRange.id]: lessonSensorOutOfRange,
+  [lessonRemoteGroups.id]: lessonRemoteGroups,
+  [lessonRemoteOperate.id]: lessonRemoteOperate,
+  [lessonRemoteConfig.id]: lessonRemoteConfig,
 };
 
 /**
@@ -409,6 +415,29 @@ export const MODULES: ModuleDef[] = [
       { id: 'sensor-health-data-break' },
       { id: 'sensor-health-stuck' },
       { id: 'sensor-health-out-of-range' },
+    ],
+  },
+  {
+    id: 'module-14-remote-control',
+    number: 14,
+    tag: 'M14',
+    roles: ['operator', 'supervisor', 'internal'],
+    name: {
+      en: 'Remote Control',
+      hi: 'रिमोट कंट्रोल',
+      ta: 'ரிமோட் கண்ட்ரோல்',
+      mr: 'रिमोट कंट्रोल',
+    },
+    description: {
+      en: 'Operate plant equipment from the SCADA screen — open Group Control, take a control group into Remote mode, and turn equipment On/Off with live status. Internal users also configure the groups: auto-detect or build from scratch.',
+      hi: 'प्लांट के उपकरण SCADA स्क्रीन से चलाएँ — Group Control खोलें, किसी control group को Remote मोड में लें, और लाइव स्थिति के साथ उपकरण On/Off करें। Internal यूज़र ग्रुप भी कॉन्फ़िगर करते हैं: auto-detect या शुरू से बनाएँ।',
+      ta: 'ஆலை உபகரணங்களை SCADA திரையிலிருந்து இயக்குங்கள் — Group Control-ஐத் திறந்து, ஒரு control group-ஐ Remote பயன்முறைக்குக் கொண்டுசென்று, நேரலை நிலையுடன் உபகரணங்களை On/Off செய்யுங்கள். Internal பயனர்கள் குழுக்களையும் கட்டமைப்பர்: auto-detect அல்லது புதிதாக உருவாக்கல்.',
+      mr: 'प्लांटची उपकरणे SCADA स्क्रीनवरून चालवा — Group Control उघडा, एखादा control group Remote मोडमध्ये घ्या, आणि लाइव्ह स्थितीसह उपकरणे On/Off करा. Internal यूजर ग्रुपही कॉन्फिगर करतात: auto-detect किंवा सुरवातीपासून तयार करा.',
+    },
+    lessons: [
+      { id: 'remote-control-groups' },
+      { id: 'remote-control-operate' },
+      { id: 'remote-control-config', internalOnly: true },
     ],
   },
   // Hidden holder for generated personalized demos. roles: [] keeps it out of
