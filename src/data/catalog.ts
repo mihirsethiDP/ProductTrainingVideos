@@ -49,6 +49,10 @@ import lessonSensorOutOfRange from './lessons/module-13-sensor-health/lesson-04-
 import lessonRemoteGroups from './lessons/module-14-remote-control/lesson-01-group-control';
 import lessonRemoteOperate from './lessons/module-14-remote-control/lesson-02-take-control';
 import lessonRemoteConfig from './lessons/module-14-remote-control/lesson-03-configure';
+import lessonAnalyticalFormulas from './lessons/module-15-analytical-engine/lesson-01-formulas';
+import lessonAnalyticalCreate from './lessons/module-15-analytical-engine/lesson-02-create';
+import lessonAnalyticalSettings from './lessons/module-15-analytical-engine/lesson-03-settings';
+import lessonAnalyticalNested from './lessons/module-15-analytical-engine/lesson-04-nested';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -104,6 +108,10 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonRemoteGroups.id]: lessonRemoteGroups,
   [lessonRemoteOperate.id]: lessonRemoteOperate,
   [lessonRemoteConfig.id]: lessonRemoteConfig,
+  [lessonAnalyticalFormulas.id]: lessonAnalyticalFormulas,
+  [lessonAnalyticalCreate.id]: lessonAnalyticalCreate,
+  [lessonAnalyticalSettings.id]: lessonAnalyticalSettings,
+  [lessonAnalyticalNested.id]: lessonAnalyticalNested,
 };
 
 /**
@@ -440,6 +448,30 @@ export const MODULES: ModuleDef[] = [
       { id: 'remote-control-groups' },
       { id: 'remote-control-groups-config', internalOnly: true },
       { id: 'remote-control-operate' },
+    ],
+  },
+  {
+    id: 'module-15-analytical-engine',
+    number: 14,
+    tag: 'M14',
+    roles: ['internal'],
+    name: {
+      en: 'Analytical Engine',
+      hi: 'एनालिटिकल इंजन',
+      ta: 'அனலிட்டிகல் எஞ்சின்',
+      mr: 'ॲनालिटिकल इंजिन',
+    },
+    description: {
+      en: 'Formulas over sensor tags — every calculated data point on the platform. The formula library, creating a formula (frequency, @ tags, Excel-style functions), per-tag Sensor Settings (aggregators, time windows, data completeness), and formulas built from other formulas.',
+      hi: 'सेंसर टैग पर फ़ॉर्मूले — प्लेटफ़ॉर्म का हर परिकलित डेटा पॉइंट। फ़ॉर्मूला लाइब्रेरी, फ़ॉर्मूला बनाना (frequency, @ टैग, Excel-शैली फ़ंक्शन), प्रति-टैग Sensor Settings (aggregator, time window, data completeness), और दूसरे फ़ॉर्मूलों से बने फ़ॉर्मूले।',
+      ta: 'சென்சார் டேக்குகள் மீது சூத்திரங்கள் — தளத்தின் ஒவ்வொரு கணக்கிடப்பட்ட தரவுப் புள்ளியும். சூத்திர நூலகம், சூத்திரம் உருவாக்கல் (frequency, @ டேக்குகள், Excel-பாணி செயல்பாடுகள்), ஒவ்வொரு டேக்கிற்குமான Sensor Settings (aggregator, time window, data completeness), பிற சூத்திரங்களால் கட்டப்பட்ட சூத்திரங்கள்.',
+      mr: 'सेन्सर टॅगवर फॉर्म्युले — प्लॅटफॉर्मवरील प्रत्येक गणित डेटा पॉइंट. फॉर्म्युला लायब्ररी, फॉर्म्युला तयार करणे (frequency, @ टॅग, Excel-शैली फंक्शन्स), प्रति-टॅग Sensor Settings (aggregator, time window, data completeness), आणि इतर फॉर्म्युल्यांनी बांधलेले फॉर्म्युले.',
+    },
+    lessons: [
+      { id: 'analytical-engine-formulas' },
+      { id: 'analytical-engine-create' },
+      { id: 'analytical-engine-settings' },
+      { id: 'analytical-engine-nested' },
     ],
   },
   // Hidden holder for generated personalized demos. roles: [] keeps it out of
