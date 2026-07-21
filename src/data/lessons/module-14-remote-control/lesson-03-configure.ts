@@ -3,16 +3,19 @@ import type { Lesson } from '../../types';
 const BASE = `${import.meta.env.BASE_URL}screenshots/remote-control-config`;
 
 /**
- * M14 · Remote Control — L3: configure control groups. (INTERNAL ONLY)
+ * M14 · Remote Control — the Configure track of L1 (INTERNAL ONLY).
+ * Id ends in "-config" and matches base lesson `remote-control-groups`, so it
+ * surfaces via the Read⇄Configure toggle on that lesson for internal users (the
+ * standard config-track mechanism — see LessonPage). Shares L1's lessonNumber.
  * The one-time setup internal users do so operators/supervisors have groups to
  * control. Auto-detect (detecting → review draft: keep all / keep selective /
  * delete / run again) and Create from scratch; edit any group's name, equipment
  * and sensors. Real 1280px frames, spotlight-driven.
  */
 const lesson: Lesson = {
-  id: 'remote-control-config',
+  id: 'remote-control-groups-config',
   moduleId: 'module-14-remote-control',
-  lessonNumber: 3,
+  lessonNumber: 1,
   estimatedMinutes: 4,
   screenshots: {
     config: `${BASE}/config.jpg`,

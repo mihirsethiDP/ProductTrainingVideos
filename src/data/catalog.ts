@@ -436,8 +436,8 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'remote-control-groups' },
+      { id: 'remote-control-groups-config', internalOnly: true },
       { id: 'remote-control-operate' },
-      { id: 'remote-control-config', internalOnly: true },
     ],
   },
   // Hidden holder for generated personalized demos. roles: [] keeps it out of
