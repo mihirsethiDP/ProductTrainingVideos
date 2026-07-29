@@ -30,6 +30,7 @@ import lessonDataInput3 from './lessons/module-03-data-input/lesson-03-ocr';
 import lessonDataInput3Config from './lessons/module-03-data-input/lesson-03-ocr-config';
 import lessonDataInput4 from './lessons/module-03-data-input/lesson-04-bulk-upload';
 import lessonInventory1 from './lessons/module-04-inventory/lesson-01-supervisor';
+import lessonInventory1Config from './lessons/module-04-inventory/lesson-01-supervisor-config';
 import lessonInventory2 from './lessons/module-04-inventory/lesson-02-operator';
 import lessonInsights1 from './lessons/module-05-insights/lesson-01-insights-page';
 import lessonInsights1Config from './lessons/module-05-insights/lesson-01-insights-page-config';
@@ -91,6 +92,7 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonDataInput3Config.id]: lessonDataInput3Config,
   [lessonDataInput4.id]: lessonDataInput4,
   [lessonInventory1.id]: lessonInventory1,
+  [lessonInventory1Config.id]: lessonInventory1Config,
   [lessonInventory2.id]: lessonInventory2,
   [lessonInsights1.id]: lessonInsights1,
   [lessonInsights1Config.id]: lessonInsights1Config,
@@ -213,7 +215,9 @@ export const MODULES: ModuleDef[] = [
     id: 'module-04-inventory',
     number: 4,
     tag: 'M4',
-    roles: ['operator', 'supervisor'],
+    // internal added 2026-07-29: CSMs configure stores/items and answer questions
+    // about stock, so they need both role views (L1 supervisor, L2 operator).
+    roles: ['operator', 'supervisor', 'internal'],
     name: {
       en: 'Inventory Management',
       hi: 'इन्वेंटरी प्रबंधन',
@@ -228,6 +232,7 @@ export const MODULES: ModuleDef[] = [
     },
     lessons: [
       { id: 'lesson-01-supervisor' },
+      { id: 'lesson-01-supervisor-config', internalOnly: true },
       { id: 'lesson-02-operator' },
     ],
   },
