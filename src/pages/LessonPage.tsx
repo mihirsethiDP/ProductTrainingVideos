@@ -259,18 +259,19 @@ export default function LessonPage() {
   if (assignedRole && role !== assignedRole && module.roles.length > 0) {
     return <Navigate to={`/${assignedRole}`} replace />;
   }
-  // a lesson can narrow visibility below its module (e.g. an internal-only lesson
-  // inside an all-roles module). An invited user off that lesson's list bounces home.
+  // A lesson can narrow visibility below its module, two different ways, and BOTH
+  // have to be enforced here and not only in the listings — otherwise a forwarded
+  // or guessed URL plays content the viewer was never meant to see.
+  //   · roles: [...]        — e.g. an internal-only lesson inside an all-roles module
+  //   · internalOnly: true  — the ⚙ Configure tracks
+  // Checked against the path's role, so it covers staff browsing another path as
+  // well as invited users (whose path is already pinned by the check above).
   const lessonRef = module.lessons.find((l) => l.id === lesson.id);
-  if (assignedRole && lessonRef?.roles && !lessonRef.roles.includes(assignedRole)) {
-    return <Navigate to={`/${assignedRole}`} replace />;
-  }
-  // ⚙ Configuration tracks are internal-only. They're already unlisted and the
-  // Read⇄Configure toggle is hidden for other roles, but the URL still resolved —
-  // so a shared or guessed link played the config lesson to an operator or
-  // supervisor. Bounce them to their own home.
-  if (lessonRef?.internalOnly && role !== 'internal') {
-    return <Navigate to={`/${role}`} replace />;
+  const offLimits =
+    (lessonRef?.roles && !lessonRef.roles.includes(role as RoleId)) ||
+    (lessonRef?.internalOnly && role !== 'internal');
+  if (offLimits) {
+    return <Navigate to={`/${assignedRole ?? role}`} replace />;
   }
 
   // clamp for the single render right after a lesson switch, before the reset effect runs
