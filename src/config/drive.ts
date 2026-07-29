@@ -31,13 +31,24 @@
  * per plant in the Equipment Library. This is just the default.
  */
 
-/** OAuth client id from step 5 above. Empty = in-app upload stays switched off
- *  and curators use the "paste a Drive link" path instead. */
-export const DRIVE_CLIENT_ID = (import.meta.env.VITE_GDRIVE_CLIENT_ID as string | undefined) ?? '';
+/** OAuth client id (project "Product Training Hub", consent screen = Internal).
+ *  Public by design — see the note at the top of this file. Empty = in-app upload
+ *  switches off and curators use the "paste a Drive link" path instead. */
+export const DRIVE_CLIENT_ID =
+  (import.meta.env.VITE_GDRIVE_CLIENT_ID as string | undefined) ??
+  '1011955028491-0fjuk1t1hjvgllistf8m12650e40p3pe.apps.googleusercontent.com';
 
-/** Default destination folder id. Empty = uploads land in the signing-in user's
- *  Drive root, which we'd rather avoid — set this. */
-export const DRIVE_FOLDER_ID = (import.meta.env.VITE_GDRIVE_FOLDER_ID as string | undefined) ?? '';
+/**
+ * Default destination folder.
+ *
+ * NOTE: this currently lives in a PERSONAL My Drive, not a Shared Drive. It works,
+ * but the files are owned by whoever uploads them and the folder goes with that
+ * person's account — so equipment videos are at risk if they leave. Moving the
+ * folder into a Shared Drive later only means swapping this id; the library rows
+ * keep working because they reference file ids, not the folder.
+ */
+export const DRIVE_FOLDER_ID =
+  (import.meta.env.VITE_GDRIVE_FOLDER_ID as string | undefined) ?? '16wm6CGOHnVIvgqHDO03jqtM8sRy0VDHD';
 
 /** Narrow scope: per-file access to files THIS APP creates. It cannot read,
  *  list, or modify anything else in the user's Drive. */
