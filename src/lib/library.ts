@@ -19,6 +19,8 @@ export interface Plant {
   name: string;
   workspace: string | null;
   asset_ref: string | null;
+  /** Per-plant Drive destination; null = use the app default folder. */
+  drive_folder_id: string | null;
   created_at: string;
 }
 
@@ -112,15 +114,18 @@ export async function listMedia(plantId?: string): Promise<{ rows: PlantMedia[];
   return { rows: (data as PlantMedia[]) ?? [], error: error?.message ?? null };
 }
 
+/** Add a library entry. Either paste a Drive link (`driveLink`) or pass a
+ *  `driveFileId` straight from an in-app upload. */
 export async function addMedia(opts: {
   plantId: string;
   kind: MediaKind;
   title: string;
   equipment?: string;
   description?: string;
-  driveLink: string;
+  driveLink?: string;
+  driveFileId?: string;
 }): Promise<{ error: string | null }> {
-  const driveFileId = parseDriveId(opts.driveLink);
+  const driveFileId = opts.driveFileId ?? parseDriveId(opts.driveLink ?? '');
   if (!driveFileId) return { error: "That doesn't look like a Google Drive link — paste the file's share link." };
   if (!opts.title.trim()) return { error: 'Give it a title.' };
   const { data: who } = await supabase.auth.getUser();

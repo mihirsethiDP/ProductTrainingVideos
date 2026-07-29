@@ -2038,6 +2038,15 @@ button.badge.config:hover { background: rgba(25, 52, 88, 0.18); }
 }
 .lib-desc:focus { outline: none; border-color: var(--water); }
 
+/* in-app Drive upload */
+.lib-upload { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 2px; }
+.lib-upload input[type="file"] { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); }
+.lib-connected { display: inline-flex; align-items: baseline; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--leaf); }
+.lib-or { font-size: 11.5px; color: var(--ink-soft); margin: 12px 0 8px; }
+.lib-progress { display: flex; align-items: center; gap: 10px; margin: 10px 0 2px; font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+.lib-progress-rail { flex: 1 1 160px; height: 5px; border-radius: 99px; background: var(--paper-warm); overflow: hidden; }
+.lib-progress-fill { height: 100%; background: var(--water); transition: width 0.2s ease; }
+
 .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 4px; }
 .lib-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; }
 .lib-thumb {

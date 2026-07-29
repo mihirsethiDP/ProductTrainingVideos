@@ -350,6 +350,9 @@ create table if not exists public.plants (
   created_at  timestamptz not null default now()
 );
 create unique index if not exists plants_name_key on public.plants (lower(name));
+-- Optional per-plant Drive destination folder. Null = use the app default
+-- (src/config/drive.ts). Lets each plant file its equipment media separately.
+alter table public.plants add column if not exists drive_folder_id text;
 
 create table if not exists public.plant_media (
   id            uuid primary key default gen_random_uuid(),

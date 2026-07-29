@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,6 +7,8 @@ import {
   addMedia, createPlant, deleteMedia, driveOpenUrl, driveThumbUrl, isMissingSchema, listMedia,
   listPlants, parseDriveId, shareUrl, type MediaKind, type Plant, type PlantMedia,
 } from '../lib/library';
+import { DRIVE_FOLDER_ID, driveUploadEnabled } from '../config/drive';
+import { connectDrive, disconnectDrive, driveConnected, shareWithAnyone, uploadToDrive } from '../lib/googleDrive';
 
 /**
  * Equipment library (DP staff only, English-only like the Studio).
@@ -40,6 +42,13 @@ export default function Library() {
 
   const [copied, setCopied] = useState<string | null>(null);
   const [needsSetup, setNeedsSetup] = useState(false);
+
+  // in-app Drive upload
+  const [file, setFile] = useState<File | null>(null);
+  const [connected, setConnected] = useState(driveConnected());
+  const [progress, setProgress] = useState<number | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const cancelRef = useRef(false);
 
   const loadPlants = useCallback(async () => {
     const { rows, error } = await listPlants();
@@ -76,21 +85,75 @@ export default function Library() {
     if (plant) setPlantId(plant.id);
   }
 
+  function resetForm() {
+    setTitle('');
+    setEquipment('');
+    setDescription('');
+    setDriveLink('');
+    setFile(null);
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  async function connect() {
+    setErr(null);
+    try {
+      await connectDrive();
+      setConnected(true);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Could not connect to Google Drive.');
+    }
+  }
+
+  /**
+   * Two ways in, one handler:
+   *  · a file chosen → upload to Drive, make it link-shareable, save the row
+   *  · a Drive link pasted → just save the row
+   */
   async function submitMedia(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
     setMsg(null);
     if (!plantId) { setErr('Pick a plant first — or add one.'); return; }
+    if (!file && !driveLink.trim()) { setErr('Choose a file to upload, or paste a Drive link.'); return; }
+
     setBusy(true);
-    const { error } = await addMedia({ plantId, kind, title, equipment, description, driveLink });
-    setBusy(false);
-    if (error) { setErr(error); return; }
-    setMsg(`Added “${title.trim()}”.`);
-    setTitle('');
-    setEquipment('');
-    setDescription('');
-    setDriveLink('');
-    loadMedia(plantId);
+    cancelRef.current = false;
+    try {
+      let driveFileId: string | undefined;
+
+      if (file) {
+        const token = await connectDrive();
+        setConnected(true);
+        const folderId = plants.find((p) => p.id === plantId)?.drive_folder_id || DRIVE_FOLDER_ID || undefined;
+        setProgress(0);
+        const up = await uploadToDrive({
+          file,
+          folderId,
+          token,
+          onProgress: setProgress,
+          shouldCancel: () => cancelRef.current,
+        });
+        driveFileId = up.fileId;
+        // without this the share link shows "access denied" to plant staff
+        await shareWithAnyone(driveFileId, token);
+        setProgress(null);
+      }
+
+      const { error } = await addMedia({
+        plantId, kind, title, equipment, description,
+        driveLink: driveFileId ? undefined : driveLink,
+        driveFileId,
+      });
+      if (error) { setErr(error); return; }
+      setMsg(file ? `Uploaded and added “${title.trim()}”.` : `Added “${title.trim()}”.`);
+      resetForm();
+      loadMedia(plantId);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Upload failed.');
+    } finally {
+      setProgress(null);
+      setBusy(false);
+    }
   }
 
   async function remove(item: PlantMedia) {
@@ -185,9 +248,59 @@ export default function Library() {
             <input type="text" placeholder="Title (e.g. Softener feed pump — how it works)" value={title} onChange={(e) => setTitle(e.target.value)} required />
             <input type="text" placeholder="Equipment / area (optional)" value={equipment} onChange={(e) => setEquipment(e.target.value)} />
           </div>
+
+          {driveUploadEnabled() ? (
+            <>
+              <div className="lib-upload">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={kind === 'video' ? 'video/*' : 'image/*'}
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                />
+                {!connected && (
+                  <button type="button" className="au-toggle" onClick={connect}>Connect Google Drive</button>
+                )}
+                {connected && (
+                  <span className="lib-connected">
+                    ✓ Drive connected
+                    <button type="button" className="studio-share" onClick={() => { disconnectDrive(); setConnected(false); }}>
+                      disconnect
+                    </button>
+                  </span>
+                )}
+              </div>
+              {file && (
+                <div className="ai-hint">
+                  {file.name} · {(file.size / (1024 * 1024)).toFixed(1)} MB → uploads to Drive, then gets a share link automatically.
+                </div>
+              )}
+              {progress !== null && (
+                <div className="lib-progress">
+                  <div className="lib-progress-rail"><div className="lib-progress-fill" style={{ width: `${Math.round(progress * 100)}%` }} /></div>
+                  <span>{Math.round(progress * 100)}% uploaded</span>
+                  <button type="button" className="studio-share" onClick={() => { cancelRef.current = true; }}>cancel</button>
+                </div>
+              )}
+              <div className="lib-or">or paste a link to a file already in Drive</div>
+            </>
+          ) : (
+            <div className="ai-hint">
+              In-app upload is off until an OAuth client id is set in <code>src/config/drive.ts</code> — paste a Drive link for now.
+            </div>
+          )}
+
           <div className="ai-row">
-            <input type="text" placeholder="Paste the Google Drive share link" value={driveLink} onChange={(e) => setDriveLink(e.target.value)} required />
-            <button type="submit" className="lesson-cta" disabled={busy}>{busy ? 'Adding…' : 'Add to library'}</button>
+            <input
+              type="text"
+              placeholder="Google Drive share link"
+              value={driveLink}
+              onChange={(e) => setDriveLink(e.target.value)}
+              disabled={!!file}
+            />
+            <button type="submit" className="lesson-cta" disabled={busy}>
+              {busy ? (progress !== null ? 'Uploading…' : 'Adding…') : file ? 'Upload & add' : 'Add to library'}
+            </button>
           </div>
           <textarea
             className="lib-desc"
