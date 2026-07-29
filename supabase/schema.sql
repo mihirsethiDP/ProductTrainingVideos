@@ -333,6 +333,83 @@ end;
 $$;
 
 -- ============================================================
+--  Equipment library — plant-scoped photos & videos of physical
+--  equipment (a trainer explaining a pump, a blower, a valve).
+--  Google Drive holds the BYTES; this only holds the index, so
+--  the repo/bundle stays small and content updates need no deploy.
+--  DP staff (admin/csm) curate; each item gets an unguessable
+--  share_token so a single item can be forwarded to plant staff
+--  with no sign-in (see shared_equipment_media below).
+-- ============================================================
+
+create table if not exists public.plants (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  workspace   text,                       -- client workspace, for grouping/search
+  asset_ref   text,                       -- main-platform asset id, so this can be reconciled later
+  created_at  timestamptz not null default now()
+);
+create unique index if not exists plants_name_key on public.plants (lower(name));
+
+create table if not exists public.plant_media (
+  id            uuid primary key default gen_random_uuid(),
+  plant_id      uuid not null references public.plants (id) on delete cascade,
+  media_kind    text not null default 'video' check (media_kind in ('video', 'photo')),
+  title         text not null,
+  equipment     text,                     -- free label: "Softener-1 feed pump", "Blower room"
+  description   text,
+  drive_file_id text not null,            -- Google Drive file id (bytes live there)
+  share_token   uuid not null default gen_random_uuid(),
+  created_by    uuid references auth.users (id),
+  created_at    timestamptz not null default now()
+);
+create unique index if not exists plant_media_share_token_key on public.plant_media (share_token);
+create index if not exists plant_media_plant_idx on public.plant_media (plant_id, created_at desc);
+
+alter table public.plants enable row level security;
+alter table public.plant_media enable row level security;
+
+-- plants: any signed-in user may read (dropdowns); staff manage
+drop policy if exists plants_read on public.plants;
+create policy plants_read on public.plants for select using (auth.uid() is not null);
+drop policy if exists plants_write on public.plants;
+create policy plants_write on public.plants
+  for all using (public.can_create()) with check (public.can_create());
+
+-- plant_media: STAFF ONLY for the browsable library. Deliberately NOT readable by
+-- plain trainees: users carry no plant assignment yet, so a blanket read would let
+-- one client's operator list another client's equipment. Plant staff reach a single
+-- item through its share link (the RPC below), never the whole library.
+drop policy if exists plant_media_read on public.plant_media;
+create policy plant_media_read on public.plant_media for select using (public.can_create());
+drop policy if exists plant_media_write on public.plant_media;
+create policy plant_media_write on public.plant_media
+  for all using (public.can_create()) with check (public.can_create());
+
+-- Zero-auth watch: returns EXACTLY the one item matching an unguessable token.
+-- SECURITY DEFINER so it bypasses the staff-only read policy, but it can never
+-- list the library — no token, no row.
+create or replace function public.shared_equipment_media(token uuid)
+returns table (
+  id uuid, media_kind text, title text, equipment text, description text,
+  drive_file_id text, plant_name text, created_at timestamptz
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select m.id, m.media_kind, m.title, m.equipment, m.description,
+         m.drive_file_id, p.name as plant_name, m.created_at
+  from public.plant_media m
+  join public.plants p on p.id = m.plant_id
+  where m.share_token = token
+  limit 1;
+$$;
+
+revoke all on function public.shared_equipment_media(uuid) from public;
+grant execute on function public.shared_equipment_media(uuid) to anon, authenticated;
+
+-- ============================================================
 --  Admin activity log — sign-ins, sign-outs, invites, account
 --  changes. GoTrue records these in auth.audit_log_entries, which
 --  PostgREST does NOT expose to the client. This SECURITY DEFINER

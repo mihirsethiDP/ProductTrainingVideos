@@ -6,6 +6,8 @@ import LessonPage from './pages/LessonPage';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Studio from './pages/Studio';
+import Library from './pages/Library';
+import WatchEquipment from './pages/WatchEquipment';
 import SetPassword from './pages/SetPassword';
 import Protected from './components/Protected';
 import { useAuth } from './context/AuthContext';
@@ -54,6 +56,10 @@ export default function App() {
       <Route path="/set-password" element={<SetPassword />} />
       <Route path="/admin" element={<Protected><Admin /></Protected>} />
       <Route path="/admin/studio" element={<Protected><Studio /></Protected>} />
+      <Route path="/admin/library" element={<Protected><Library /></Protected>} />
+      {/* forwardable equipment training — plant staff open this with NO sign-in,
+          reachable only with the item's unguessable share token */}
+      <Route path="/watch/equipment/:token" element={<WatchEquipment />} />
       {/* clean forwardable links for the persona shorts (public) */}
       <Route path="/watch/operational" element={<Navigate to="/operator/module-shorts/short-operational" replace />} />
       <Route path="/watch/non-operational" element={<Navigate to="/supervisor/module-shorts/short-non-operational" replace />} />

@@ -195,9 +195,14 @@ export default function Admin() {
           <div className="eyebrow">{t('adminEyebrow')}</div>
           <h1 className="lesson-title">{t('adminTitle')}</h1>
           <p className="lesson-subtitle">{t('adminSubtitle')}</p>
-          <Link to="/admin/studio">
-            <button className="lesson-cta" style={{ marginTop: 16 }}>🎬 Content Studio — build demos & lessons →</button>
-          </Link>
+          <div className="studio-submit-row" style={{ marginTop: 16 }}>
+            <Link to="/admin/studio">
+              <button className="lesson-cta">🎬 Content Studio — build demos &amp; lessons →</button>
+            </Link>
+            <Link to="/admin/library">
+              <button className="lesson-cta">🔧 Equipment Library — plant photos &amp; videos →</button>
+            </Link>
+          </div>
         </div>
 
         {/* invite */}

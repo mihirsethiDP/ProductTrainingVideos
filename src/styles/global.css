@@ -2028,6 +2028,52 @@ button.badge.config:hover { background: rgba(25, 52, 88, 0.18); }
 .studio-share:hover { color: var(--water-deep); text-decoration: underline; }
 .studio-share.copied { color: var(--leaf); }
 .studio-expiry { font-size: 11px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+
+/* ===== equipment library (staff) + zero-auth watch page ===== */
+.lib-plantbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 22px 0 14px; }
+.lib-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.lib-desc {
+  width: 100%; margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font-family: var(--sans); font-size: 13.5px; background: #fff; color: var(--ink); resize: vertical;
+}
+.lib-desc:focus { outline: none; border-color: var(--water); }
+
+.lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 4px; }
+.lib-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; }
+.lib-thumb {
+  position: relative; display: block; aspect-ratio: 16 / 9; background: var(--paper-warm);
+  overflow: hidden; border-bottom: 1px solid var(--line);
+}
+.lib-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lib-kind {
+  position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(25, 52, 88, 0.82); color: #fff; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.lib-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+.lib-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+.lib-equip { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; color: var(--water-deep); }
+.lib-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+.lib-del { color: #b3413b; }
+.lib-del:hover { color: #8f302b; }
+
+/* watch page */
+.eqw-equip { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; color: var(--water-deep); margin-bottom: 10px; }
+.eqw-frame {
+  position: relative; aspect-ratio: 16 / 9; width: 100%; background: #0d1b2a;
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+}
+.eqw-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.eqw-photo { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper-warm); }
+.eqw-photo img { width: 100%; height: auto; display: block; }
+.eqw-foot { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-top: 12px; }
+.eqw-hint { font-size: 11.5px; color: var(--ink-soft); }
+@media (max-width: 700px) {
+  .lib-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .lib-body { padding: 10px 11px 12px; }
+  .lib-title { font-size: 13px; }
+}
+@media (max-width: 430px) { .lib-grid { grid-template-columns: 1fr; } }
 .studio-submit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .studio-jobs-head { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 10px; }
 .studio-jobs-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
