@@ -265,6 +265,13 @@ export default function LessonPage() {
   if (assignedRole && lessonRef?.roles && !lessonRef.roles.includes(assignedRole)) {
     return <Navigate to={`/${assignedRole}`} replace />;
   }
+  // ⚙ Configuration tracks are internal-only. They're already unlisted and the
+  // Read⇄Configure toggle is hidden for other roles, but the URL still resolved —
+  // so a shared or guessed link played the config lesson to an operator or
+  // supervisor. Bounce them to their own home.
+  if (lessonRef?.internalOnly && role !== 'internal') {
+    return <Navigate to={`/${role}`} replace />;
+  }
 
   // clamp for the single render right after a lesson switch, before the reset effect runs
   const safeStep = Math.max(0, Math.min(step, totalSteps - 1));
