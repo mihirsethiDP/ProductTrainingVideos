@@ -64,6 +64,8 @@ export default function Admin() {
   const [inviteTraining, setInviteTraining] = useState<TrainingRole>('operator');
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  // the owner sees the full set of controls; other admins manage users/CSMs only
+  const iAmOwner = profile?.is_superadmin === true;
   const [fetching, setFetching] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
@@ -220,7 +222,9 @@ export default function Admin() {
             <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as AppRole)}>
               <option value="user">{t('roleUserLabel')}</option>
               <option value="csm">{t('roleCsmLabel')}</option>
-              <option value="admin">{t('roleAdminLabel')}</option>
+              {/* inviting a new admin is owner-only — mirrored in the
+                  invite-user Edge Function and the protect_admin_invites trigger */}
+              {iAmOwner && <option value="admin">{t('roleAdminLabel')}</option>}
             </select>
             {inviteRole === 'user' && (
               <select
@@ -321,6 +325,11 @@ export default function Admin() {
                       <span className="au-badge-owner" title={t('adminOwnerHint')}>
                         ★ {t('roleOwnerLabel')}
                       </span>
+                    ) : u.role === 'admin' && !iAmOwner ? (
+                      // a peer admin — only the owner may change an admin account
+                      <span className="au-badge-admin" title={t('adminPeerHint')}>
+                        {t('roleAdminLabel')}
+                      </span>
                     ) : (
                       <select
                         className="au-role"
@@ -330,7 +339,8 @@ export default function Admin() {
                       >
                         <option value="user">{t('roleUserLabel')}</option>
                         <option value="csm">{t('roleCsmLabel')}</option>
-                        <option value="admin">{t('roleAdminLabel')}</option>
+                        {/* only the owner mints admins */}
+                        {iAmOwner && <option value="admin">{t('roleAdminLabel')}</option>}
                       </select>
                     )}
                     {u.role === 'user' && (
@@ -354,9 +364,12 @@ export default function Admin() {
                     <span>{o.done}/{o.total} {t('lessonsWord')}</span>
                   </div>
                   <div>
-                    {u.is_superadmin ? (
-                      <span className="au-toggle on au-toggle-locked" title={t('adminOwnerHint')}>
-                        {t('adminActive')}
+                    {u.is_superadmin || (u.role === 'admin' && !iAmOwner) ? (
+                      <span
+                        className={`au-toggle au-toggle-locked${u.active ? ' on' : ''}`}
+                        title={u.is_superadmin ? t('adminOwnerHint') : t('adminPeerHint')}
+                      >
+                        {u.active ? t('adminActive') : t('adminDisabled')}
                       </span>
                     ) : (
                       <button

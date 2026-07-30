@@ -507,58 +507,114 @@ as $$
   );
 $$;
 
-create or replace function public.protect_superadmin()
+-- ----------------------------------------------------------------------------
+--  The handover model (chosen 2026-07-29, when the tool passed from its author
+--  to the customer-facing teams).
+--
+--  An ADMIN may:      invite users and CSMs, change a user/CSM role, and
+--                     activate or deactivate a user/CSM.
+--  An ADMIN may NOT:  grant the admin role, or change ANY admin account —
+--                     not the owner's, and not a peer's. Admins cannot demote,
+--                     deactivate or delete each other.
+--  Only the OWNER:    creates admins, and changes or removes an admin account.
+--
+--  Rationale: the admin pool must stay deliberate. Without the "no minting"
+--  rule the first admin handed over can promote anyone, and the pool grows
+--  without the owner. Without peer protection, two admins in a disagreement
+--  can deactivate each other, and whoever clicks first wins.
+-- ----------------------------------------------------------------------------
+create or replace function public.protect_admin_accounts()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  -- NOTE: false for the service key, psql and the SQL editor (auth.uid() is
+  -- NULL there). That is deliberate — those callers are blocked too. See the
+  -- recovery note at the bottom of this block.
+  actor_is_owner boolean := public.is_superadmin();
 begin
   if tg_op = 'DELETE' then
     if old.is_superadmin then
       raise exception 'The superadmin account cannot be deleted.';
     end if;
+    if old.role = 'admin' and not actor_is_owner then
+      raise exception 'Only the superadmin can remove an admin account.';
+    end if;
     return old;
   end if;
 
-  -- the owner's role, active state and flag are off-limits to everyone else.
-  -- `is distinct from` (not `<>`) so a NULL auth.uid() — service key, psql,
-  -- the SQL editor — counts as "not the owner" and is blocked too.
-  if old.is_superadmin
-     and auth.uid() is distinct from old.id
-     and (new.role <> old.role
-          or new.active <> old.active
-          or new.is_superadmin <> old.is_superadmin
-          -- training_role is harmless while the owner is role='admin' (it only
-          -- pins a path for role='user'), but guard it so the protection still
-          -- holds if the owner account is ever something other than admin
-          or new.training_role is distinct from old.training_role) then
-    raise exception 'Only the superadmin can change the superadmin account.';
-  end if;
+  if not actor_is_owner then
+    -- an admin account — owner's or a peer's — is untouchable by anyone else.
+    -- full_name is left alone on purpose; only the fields that carry power are
+    -- guarded, so a display-name correction still works.
+    if (old.is_superadmin or old.role = 'admin')
+       and (new.role <> old.role
+            or new.active <> old.active
+            or new.is_superadmin <> old.is_superadmin
+            or new.training_role is distinct from old.training_role) then
+      raise exception 'Only the superadmin can change an admin account.';
+    end if;
 
-  -- no self-promotion: an admin cannot hand themselves (or anyone) the flag
-  if new.is_superadmin and not old.is_superadmin and not public.is_superadmin() then
-    raise exception 'Only a superadmin can grant superadmin.';
+    -- no minting: nobody but the owner creates a new admin
+    if new.role = 'admin' and old.role <> 'admin' then
+      raise exception 'Only the superadmin can grant the admin role.';
+    end if;
+
+    -- and no self-promotion to owner
+    if new.is_superadmin and not old.is_superadmin then
+      raise exception 'Only a superadmin can grant superadmin.';
+    end if;
   end if;
 
   return new;
 end;
 $$;
 
--- Disarm → crown the owner → arm. The grant rule above would otherwise block
--- this very statement (auth.uid() is NULL in the SQL editor), and this order
--- makes the block safe to re-run at any time.
-drop trigger if exists trg_protect_superadmin on public.profiles;
+-- The other minting path: an invite pre-authorises a role, which the signup
+-- trigger applies when the account is created. Guard it too, or "invite a new
+-- admin" walks straight around the profiles rules above.
+--
+-- auth.uid() IS NULL is allowed here because the invite-user Edge Function
+-- inserts with the service key AFTER doing its own owner check — blocking NULL
+-- would break every emailed invite. The browser fallback path in Admin.tsx
+-- inserts with the caller's own token, so it is covered.
+create or replace function public.protect_admin_invites()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.role = 'admin' and auth.uid() is not null and not public.is_superadmin() then
+    raise exception 'Only the superadmin can invite an admin.';
+  end if;
+  return new;
+end;
+$$;
+
+-- Disarm → crown the owner → arm. The rules above would otherwise block this
+-- very statement (auth.uid() is NULL in the SQL editor), and this order makes
+-- the whole block safe to re-run at any time.
+drop trigger if exists trg_protect_superadmin on public.profiles;   -- earlier name
+drop trigger if exists trg_protect_admin_accounts on public.profiles;
 
 update public.profiles
    set is_superadmin = true, role = 'admin', active = true
  where lower(email) = 'mihir.sethi@digitalpaani.com';
 
-create trigger trg_protect_superadmin
+create trigger trg_protect_admin_accounts
   before update or delete on public.profiles
-  for each row execute function public.protect_superadmin();
+  for each row execute function public.protect_admin_accounts();
+
+drop trigger if exists trg_protect_admin_invites on public.invites;
+create trigger trg_protect_admin_invites
+  before insert or update on public.invites
+  for each row execute function public.protect_admin_invites();
 
 -- Recovery, if the owner account is ever genuinely lost: as the project owner in
--- the SQL editor, `alter table public.profiles disable trigger trg_protect_superadmin;`
--- make the change, then re-enable it. Database access is the root of trust —
--- this guard stops admins inside the app, not whoever holds the DB keys.
+-- the SQL editor, `alter table public.profiles disable trigger
+-- trg_protect_admin_accounts;` make the change, then re-enable it. Database
+-- access is the root of trust — these guards stop admins inside the app, not
+-- whoever holds the DB keys.

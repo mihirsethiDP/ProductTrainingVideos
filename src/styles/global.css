@@ -242,6 +242,12 @@ button { font-family: var(--sans); }
   background: rgba(212, 160, 23, 0.14); color: #8a6608;
   border: 1px solid rgba(212, 160, 23, 0.4); cursor: default;
 }
+/* a peer admin, seen by another admin: readable, but not a control */
+.au-badge-admin {
+  display: inline-block; border-radius: 8px; padding: 6px 10px;
+  font-size: 12px; font-weight: 600; color: var(--ink-soft);
+  background: var(--paper-warm); border: 1px solid var(--line); cursor: default;
+}
 .au-detail { padding: 4px 20px 18px; }
 .au-mod { padding: 10px 0; border-top: 1px dashed #e8eef5; }
 .au-mod-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }

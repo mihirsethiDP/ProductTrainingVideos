@@ -36,10 +36,19 @@ Deno.serve(async (req) => {
 
   // 2) confirm the caller is an active admin (service role bypasses RLS)
   const admin = createClient(url, serviceRole);
-  const { data: prof } = await admin.from('profiles').select('role, active').eq('id', callerId).single();
+  const { data: prof } = await admin
+    .from('profiles')
+    .select('role, active, is_superadmin')
+    .eq('id', callerId)
+    .single();
   if (!prof || prof.role !== 'admin' || prof.active !== true) {
     return json(403, { error: 'Admins only' });
   }
+  // This function writes with the service key, which bypasses the
+  // protect_admin_invites trigger — so the "only the owner mints admins" rule
+  // has to be re-checked HERE. Without it, any admin could invite a new admin
+  // through this endpoint and walk around the database guard entirely.
+  const callerIsOwner = prof.is_superadmin === true;
 
   // 3) read input
   let payload: { email?: string; role?: string; training_role?: string; redirectTo?: string };
@@ -53,6 +62,9 @@ Deno.serve(async (req) => {
   // keep the whole role set (admin/csm/user) — the old code silently downgraded
   // every csm invite to a plain user.
   const role = ['admin', 'csm', 'user'].includes(payload.role ?? '') ? payload.role! : 'user';
+  if (role === 'admin' && !callerIsOwner) {
+    return json(403, { error: 'Only the superadmin can invite an admin.' });
+  }
   // the training path only locks plain users; staff (admin/csm) roam all modules
   const training_role =
     role === 'user' && ['operator', 'supervisor', 'internal'].includes(payload.training_role ?? '')
