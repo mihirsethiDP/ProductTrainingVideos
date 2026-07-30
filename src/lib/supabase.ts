@@ -57,6 +57,10 @@ export interface Profile {
   /** admin-assigned training path; the user only sees this role's modules. NULL = unrestricted. */
   training_role: TrainingRole | null;
   active: boolean;
+  /** The owner account. Stays role='admin' so all admin powers apply; the flag
+   *  only stops OTHER admins changing its role or deactivating it (enforced by
+   *  the protect_superadmin trigger, not just by hiding the controls). */
+  is_superadmin?: boolean;
 }
 
 export interface RemoteProgress {

@@ -63,6 +63,7 @@ export default function Admin() {
   const [inviteRole, setInviteRole] = useState<AppRole>('user');
   const [inviteTraining, setInviteTraining] = useState<TrainingRole>('operator');
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [jobs, setJobs] = useState<GenerationJob[]>([]);
@@ -142,18 +143,18 @@ export default function Admin() {
     [byUser],
   );
 
-  async function setRole(id: string, role: AppRole) {
-    await supabase.from('profiles').update({ role }).eq('id', id);
+  // the protect_superadmin trigger rejects edits to the owner account, so these
+  // can legitimately fail — show why instead of silently reloading the old value
+  async function patchProfile(id: string, patch: Record<string, unknown>) {
+    setRowError(null);
+    const { error } = await supabase.from('profiles').update(patch).eq('id', id);
+    if (error) setRowError(error.message);
     load();
   }
-  async function setTraining(id: string, training_role: TrainingRole | null) {
-    await supabase.from('profiles').update({ training_role }).eq('id', id);
-    load();
-  }
-  async function setActive(id: string, active: boolean) {
-    await supabase.from('profiles').update({ active }).eq('id', id);
-    load();
-  }
+  const setRole = (id: string, role: AppRole) => patchProfile(id, { role });
+  const setTraining = (id: string, training_role: TrainingRole | null) =>
+    patchProfile(id, { training_role });
+  const setActive = (id: string, active: boolean) => patchProfile(id, { active });
   async function sendInvite(e: React.FormEvent) {
     e.preventDefault();
     setInviteMsg(null);
@@ -300,6 +301,7 @@ export default function Admin() {
               <button className="au-toggle" onClick={load}>{t('adminRetry')}</button>
             </div>
           )}
+          {rowError && <div className="ai-msg err" style={{ margin: '10px 20px' }}>{rowError}</div>}
           {!fetching && !loadError && users.length === 0 && <div className="au-empty">{t('adminNoUsers')}</div>}
           {users.map((u) => {
             const o = userOverall(u.id);
@@ -313,16 +315,24 @@ export default function Admin() {
                     <div className="au-email">{u.email}</div>
                   </div>
                   <div>
-                    <select
-                      className="au-role"
-                      value={u.role}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => setRole(u.id, e.target.value as AppRole)}
-                    >
-                      <option value="user">{t('roleUserLabel')}</option>
-                      <option value="csm">{t('roleCsmLabel')}</option>
-                      <option value="admin">{t('roleAdminLabel')}</option>
-                    </select>
+                    {u.is_superadmin ? (
+                      // the owner: no role picker at all. The DB trigger rejects
+                      // the change anyway — this just doesn't offer a dead control.
+                      <span className="au-badge-owner" title={t('adminOwnerHint')}>
+                        ★ {t('roleOwnerLabel')}
+                      </span>
+                    ) : (
+                      <select
+                        className="au-role"
+                        value={u.role}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => setRole(u.id, e.target.value as AppRole)}
+                      >
+                        <option value="user">{t('roleUserLabel')}</option>
+                        <option value="csm">{t('roleCsmLabel')}</option>
+                        <option value="admin">{t('roleAdminLabel')}</option>
+                      </select>
+                    )}
                     {u.role === 'user' && (
                       <select
                         className="au-role"
@@ -344,12 +354,18 @@ export default function Admin() {
                     <span>{o.done}/{o.total} {t('lessonsWord')}</span>
                   </div>
                   <div>
-                    <button
-                      className={`au-toggle${u.active ? ' on' : ''}`}
-                      onClick={(e) => { e.stopPropagation(); setActive(u.id, !u.active); }}
-                    >
-                      {u.active ? t('adminActive') : t('adminDisabled')}
-                    </button>
+                    {u.is_superadmin ? (
+                      <span className="au-toggle on au-toggle-locked" title={t('adminOwnerHint')}>
+                        {t('adminActive')}
+                      </span>
+                    ) : (
+                      <button
+                        className={`au-toggle${u.active ? ' on' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActive(u.id, !u.active); }}
+                      >
+                        {u.active ? t('adminActive') : t('adminDisabled')}
+                      </button>
+                    )}
                   </div>
                 </div>
                 {open && (

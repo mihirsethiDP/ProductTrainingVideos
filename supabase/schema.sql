@@ -472,3 +472,93 @@ $$;
 -- only signed-in admins may call it (the body also re-checks is_admin())
 revoke all on function public.admin_activity(int) from public, anon;
 grant execute on function public.admin_activity(int) to authenticated;
+
+-- ============================================================================
+--  Superadmin — one protected owner account
+--
+--  Admins keep every power they had: invite users, assign a role at invite
+--  time, change anyone's role, activate/deactivate. What they cannot do is
+--  touch the OWNER's account — otherwise "admin" is really "can demote the
+--  owner", and any admin could lock the owner out of their own platform.
+--
+--  Implemented as a FLAG, deliberately not a fourth `role` value: is_admin()
+--  and can_create() both test `role`, so introducing role='superadmin' would
+--  demote the owner everywhere those checks were missed. As a flag the owner
+--  stays role='admin' — every existing permission keeps working untouched and
+--  this block only *subtracts* what others may do.
+--
+--  Enforced by a TRIGGER, not only RLS: RLS grants or denies a whole row, and
+--  admins legitimately need UPDATE on profiles. A trigger can allow the row
+--  but reject the three columns that matter, and it fires on every path in —
+--  the app, a raw REST call with an admin's token, or psql.
+-- ============================================================================
+
+alter table public.profiles add column if not exists is_superadmin boolean not null default false;
+
+create or replace function public.is_superadmin()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and is_superadmin = true and active = true
+  );
+$$;
+
+create or replace function public.protect_superadmin()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if tg_op = 'DELETE' then
+    if old.is_superadmin then
+      raise exception 'The superadmin account cannot be deleted.';
+    end if;
+    return old;
+  end if;
+
+  -- the owner's role, active state and flag are off-limits to everyone else.
+  -- `is distinct from` (not `<>`) so a NULL auth.uid() — service key, psql,
+  -- the SQL editor — counts as "not the owner" and is blocked too.
+  if old.is_superadmin
+     and auth.uid() is distinct from old.id
+     and (new.role <> old.role
+          or new.active <> old.active
+          or new.is_superadmin <> old.is_superadmin
+          -- training_role is harmless while the owner is role='admin' (it only
+          -- pins a path for role='user'), but guard it so the protection still
+          -- holds if the owner account is ever something other than admin
+          or new.training_role is distinct from old.training_role) then
+    raise exception 'Only the superadmin can change the superadmin account.';
+  end if;
+
+  -- no self-promotion: an admin cannot hand themselves (or anyone) the flag
+  if new.is_superadmin and not old.is_superadmin and not public.is_superadmin() then
+    raise exception 'Only a superadmin can grant superadmin.';
+  end if;
+
+  return new;
+end;
+$$;
+
+-- Disarm → crown the owner → arm. The grant rule above would otherwise block
+-- this very statement (auth.uid() is NULL in the SQL editor), and this order
+-- makes the block safe to re-run at any time.
+drop trigger if exists trg_protect_superadmin on public.profiles;
+
+update public.profiles
+   set is_superadmin = true, role = 'admin', active = true
+ where lower(email) = 'mihir.sethi@digitalpaani.com';
+
+create trigger trg_protect_superadmin
+  before update or delete on public.profiles
+  for each row execute function public.protect_superadmin();
+
+-- Recovery, if the owner account is ever genuinely lost: as the project owner in
+-- the SQL editor, `alter table public.profiles disable trigger trg_protect_superadmin;`
+-- make the change, then re-enable it. Database access is the root of trust —
+-- this guard stops admins inside the app, not whoever holds the DB keys.
