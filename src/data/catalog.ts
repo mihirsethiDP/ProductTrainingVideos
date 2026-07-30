@@ -3,6 +3,7 @@ import demoHindalco from './lessons/module-demos/demo-hindalco';
 import demoHindalcoDataInput from './lessons/module-demos/demo-hindalco-data-input';
 import demoMerino from './lessons/module-demos/demo-merino';
 import demoAdaniMumbai from './lessons/module-demos/demo-adani-mumbai';
+import demoPasswordReset from './lessons/module-demos/demo-password-reset';
 import shortOperational from './lessons/module-shorts/short-operational';
 import shortNonOperational from './lessons/module-shorts/short-non-operational';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
@@ -65,6 +66,7 @@ export const LESSONS: Record<string, Lesson> = {
   [demoHindalcoDataInput.id]: demoHindalcoDataInput,
   [demoMerino.id]: demoMerino,
   [demoAdaniMumbai.id]: demoAdaniMumbai,
+  [demoPasswordReset.id]: demoPasswordReset,
   [shortOperational.id]: shortOperational,
   [shortNonOperational.id]: shortNonOperational,
   [lessonReading.id]: lessonReading,
@@ -502,6 +504,7 @@ export const MODULES: ModuleDef[] = [
       { id: 'demo-hindalco-data-input' },
       { id: 'demo-merino' },
       { id: 'demo-adani-mumbai' },
+      { id: 'demo-password-reset' },
     ],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
