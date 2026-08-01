@@ -12,7 +12,7 @@ const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
  * password they'll use from the next sign-in on.
  */
 export default function SetPassword() {
-  const { session, loading } = useAuth();
+  const { session, loading, mustSetPassword } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -30,7 +30,13 @@ export default function SetPassword() {
       return;
     }
     setBusy(true);
-    const { error: err } = await supabase.auth.updateUser({ password });
+    // clearing must_set_password in the same call as the password itself: an
+    // account provisioned with a temp password carries that flag until it picks
+    // its own, and Protected keeps bouncing it here until the flag is gone
+    const { error: err } = await supabase.auth.updateUser({
+      password,
+      data: { must_set_password: false },
+    });
     setBusy(false);
     if (err) {
       setError(err.message);
@@ -40,8 +46,10 @@ export default function SetPassword() {
     window.setTimeout(() => navigate('/', { replace: true }), 1800);
   }
 
-  // only reset/invite email links belong on this screen
-  const fromAuthLink = AUTH_LINK_TYPE === 'recovery' || AUTH_LINK_TYPE === 'invite';
+  // reset/invite email links belong on this screen — and so does an account
+  // still carrying the temporary password it was provisioned with
+  const fromAuthLink =
+    AUTH_LINK_TYPE === 'recovery' || AUTH_LINK_TYPE === 'invite' || mustSetPassword;
 
   if (loading) return null;
   // a signed-in visitor who did NOT arrive via a reset/invite link has no

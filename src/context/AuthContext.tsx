@@ -13,6 +13,10 @@ interface AuthCtx {
   /** the training path this user is locked to (set by the admin at invite time);
    *  null = free choice (admins, CSMs, and legacy unassigned accounts) */
   assignedRole: 'operator' | 'supervisor' | 'internal' | null;
+  /** account was provisioned with a temporary password — hold it on the
+   *  set-password screen until it chooses its own. Cleared by SetPassword in
+   *  the same updateUser call that sets the new password. */
+  mustSetPassword: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null; needsConfirm: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -153,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       canCreate: profile?.role === 'admin' || profile?.role === 'csm',
       // only plain users are locked to their assigned path; staff roam freely
       assignedRole: profile?.role === 'user' ? (profile?.training_role ?? null) : null,
+      mustSetPassword: session?.user?.user_metadata?.must_set_password === true,
       signUp,
       signIn,
       signOut,
