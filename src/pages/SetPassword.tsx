@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { AUTH_LINK_ERROR, AUTH_LINK_TYPE, supabase } from '../lib/supabase';
+import { AUTH_LINK_ERROR, AUTH_LINK_TYPE, INVITE_LINK_HOURS, supabase } from '../lib/supabase';
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}logo.png`;
 
@@ -69,6 +69,11 @@ export default function SetPassword() {
           {AUTH_LINK_ERROR || !session ? (
             <>
               <div className="auth-notice">{t('authLinkExpired')}</div>
+              {/* the window is the useful part: it tells them this is normal and
+                  that a fresh link will work, rather than "the tool is broken" */}
+              <p className="auth-sub">
+                {t('authLinkExpiryHint').replace('{h}', String(INVITE_LINK_HOURS))}
+              </p>
               <div className="auth-foot">
                 <Link to="/login" className="auth-link">{t('authBackToSignIn')}</Link>
               </div>

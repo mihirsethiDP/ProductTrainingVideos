@@ -618,3 +618,45 @@ create trigger trg_protect_admin_invites
 -- trg_protect_admin_accounts;` make the change, then re-enable it. Database
 -- access is the root of trust — these guards stop admins inside the app, not
 -- whoever holds the DB keys.
+
+-- ============================================================================
+--  Invite state, for the Admin roster
+--
+--  A name in the roster looks identical whether the person never opened their
+--  email, the link died, or they are using the tool daily. That ambiguity is
+--  what makes the mailer's low hourly cap read as a broken tool, so surface it.
+--
+--  Everything needed lives in auth.users, which the app cannot read directly —
+--  hence SECURITY DEFINER, guarded by is_admin() in the body (same shape as
+--  admin_activity above).
+--
+--  has_password separates the two ways an account is created:
+--    invited        — no password yet, holds a link that EXPIRES
+--    provisioned    — admin set a temporary password, which never expires
+--  Without it, the five password-provisioned admins would show as "expired"
+--  invites forever, which is exactly backwards.
+-- ============================================================================
+create or replace function public.admin_account_status()
+returns table (
+  id                uuid,
+  invited_at        timestamptz,
+  confirmed_at      timestamptz,
+  last_sign_in_at   timestamptz,
+  has_password      boolean
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    u.id,
+    u.invited_at,
+    u.confirmed_at,
+    u.last_sign_in_at,
+    (u.encrypted_password is not null and u.encrypted_password <> '') as has_password
+  from auth.users u
+  where public.is_admin();
+$$;
+
+revoke all on function public.admin_account_status() from public, anon;
+grant execute on function public.admin_account_status() to authenticated;

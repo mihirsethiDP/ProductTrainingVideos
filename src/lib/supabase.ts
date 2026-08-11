@@ -49,6 +49,41 @@ export const AUTH_LINK_ERROR: string | null = (() => {
 export type AppRole = 'admin' | 'csm' | 'user';
 export type TrainingRole = 'operator' | 'supervisor' | 'internal';
 
+/**
+ * How long an emailed invite / password-reset link stays valid.
+ *
+ * MUST match Supabase → Authentication → Email → OTP expiry. It is not readable
+ * from the client, so it is mirrored here — the single place to change if that
+ * setting changes. Used both to word the "links last N hours" copy and to decide
+ * whether a pending invite is shown as expired in the Admin roster, so a
+ * mismatch would make the roster lie.
+ */
+export const INVITE_LINK_HOURS = 24;
+
+/** Per-account sign-in state, from the admin_account_status RPC (reads auth.users). */
+export interface AccountStatusRow {
+  id: string;
+  invited_at: string | null;
+  confirmed_at: string | null;
+  last_sign_in_at: string | null;
+  /** true = has a password (admin-provisioned; never expires).
+   *  false = holds an emailed invite link, which does expire. */
+  has_password: boolean;
+}
+
+export type InviteState = 'active' | 'awaiting-first-signin' | 'invite-pending' | 'invite-expired' | 'unknown';
+
+/** Which of the four states an account is in, given its auth row. */
+export function inviteState(s: AccountStatusRow | undefined): InviteState {
+  if (!s) return 'unknown';
+  if (s.last_sign_in_at) return 'active';
+  // provisioned with a temporary password — nothing to expire
+  if (s.has_password) return 'awaiting-first-signin';
+  if (!s.invited_at) return 'unknown';
+  const ageHours = (Date.now() - new Date(s.invited_at).getTime()) / 3_600_000;
+  return ageHours > INVITE_LINK_HOURS ? 'invite-expired' : 'invite-pending';
+}
+
 export interface Profile {
   id: string;
   email: string;

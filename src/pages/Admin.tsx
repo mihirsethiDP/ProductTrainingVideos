@@ -5,7 +5,15 @@ import Footer from '../components/Footer';
 import ProgressRing from '../components/ProgressRing';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { supabase, type AppRole, type Profile, type TrainingRole } from '../lib/supabase';
+import {
+  supabase,
+  inviteState,
+  INVITE_LINK_HOURS,
+  type AccountStatusRow,
+  type AppRole,
+  type Profile,
+  type TrainingRole,
+} from '../lib/supabase';
 import { listJobs, reviewJob, type GenerationJob } from '../lib/studio';
 import { MODULES, getLesson } from '../data/catalog';
 
@@ -74,14 +82,23 @@ export default function Admin() {
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [activity, setActivity] = useState<ActRow[]>([]);
   const [activityMsg, setActivityMsg] = useState<string | null>(null);
+  // per-account sign-in state, keyed by user id (empty until the RPC is deployed)
+  const [statuses, setStatuses] = useState<Map<string, AccountStatusRow>>(new Map());
 
   const load = useCallback(async () => {
     setFetching(true);
-    const [{ data: p, error: pErr }, { data: lp, error: lpErr }, jb, { data: act, error: actErr }] = await Promise.all([
+    const [
+      { data: p, error: pErr },
+      { data: lp, error: lpErr },
+      jb,
+      { data: act, error: actErr },
+      { data: st, error: stErr },
+    ] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
       listJobs(),
       supabase.rpc('admin_activity', { limit_n: 250 }),
+      supabase.rpc('admin_account_status'),
     ]);
     // distinguish a real load failure from a genuinely empty org — otherwise a
     // network/RLS error reads as "no users yet". Gate the "couldn't load users"
@@ -94,6 +111,10 @@ export default function Admin() {
     setUsers((p as Profile[]) ?? []);
     setProgress((lp as ProgRow[]) ?? []);
     setJobs(jb);
+    // best-effort, like the activity log: if admin_account_status isn't deployed
+    // yet the roster still renders, just without the invite-state pills
+    if (stErr) console.error('Admin load — account status:', stErr.message);
+    setStatuses(new Map(((st as AccountStatusRow[]) ?? []).map((r) => [r.id, r])));
     // activity log is best-effort: if the admin_activity function isn't deployed
     // yet (schema.sql not re-run), degrade gracefully instead of blanking the page.
     if (actErr) {
@@ -172,7 +193,11 @@ export default function Admin() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setInviteMsg(t('adminInviteEmailed').replace('{email}', email));
+      // say the expiry out loud: an unopened link is the most common failure and
+      // the admin is the only one who can resend it
+      setInviteMsg(
+        `${t('adminInviteEmailed').replace('{email}', email)} ${t('adminInviteLinkNote').replace('{h}', String(INVITE_LINK_HOURS))}`,
+      );
       setInviteEmail('');
       load();
       return;
@@ -317,6 +342,32 @@ export default function Admin() {
                   <div className="au-user">
                     <div className="au-name">{u.full_name || u.email}</div>
                     <div className="au-email">{u.email}</div>
+                    {/* the Active/Disabled toggle on the right means "not
+                        deactivated" — it says nothing about whether they ever
+                        got in. That's what this resolves. Signed-in accounts
+                        show nothing, so the pill only ever means "needs you". */}
+                    {(() => {
+                      const st = statuses.get(u.id);
+                      const state = inviteState(st);
+                      if (state === 'active' || state === 'unknown') return null;
+                      if (state === 'invite-expired') {
+                        return <span className="au-state expired">{t('adminStateExpired')}</span>;
+                      }
+                      if (state === 'awaiting-first-signin') {
+                        return <span className="au-state waiting">{t('adminStateNeverSignedIn')}</span>;
+                      }
+                      const leftH = Math.max(
+                        0,
+                        Math.ceil(
+                          INVITE_LINK_HOURS - (Date.now() - new Date(st!.invited_at!).getTime()) / 3_600_000,
+                        ),
+                      );
+                      return (
+                        <span className="au-state pending">
+                          {t('adminStatePending').replace('{h}', String(leftH))}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div>
                     {u.is_superadmin ? (
