@@ -660,3 +660,101 @@ $$;
 
 revoke all on function public.admin_account_status() from public, anon;
 grant execute on function public.admin_account_status() to authenticated;
+
+-- ============================================================================
+--  Google SSO for DigitalPaani staff
+--
+--  Customers stay invite-only. Staff get one sanctioned exception: sign in with
+--  their @digitalpaani.com Google account — no invite, no password, and no email
+--  anywhere in the loop, which is why this sidesteps the mailer's hourly cap
+--  entirely for the internal team.
+--
+--  THE DOMAIN RULE LIVES HERE, not in the client. The `hd` parameter the login
+--  page sends only pre-filters Google's account chooser; a Google account can
+--  carry any address and that hint is trivially removed. Raising inside this
+--  BEFORE-trigger aborts the whole signup, so a rejected address leaves no
+--  orphan auth row and no orphan profile.
+--
+--  Staff who sign in this way land as role='user' on the INTERNAL training path.
+--  Anyone who needs csm or admin is promoted afterwards from the Admin page —
+--  and per the handover model, only the owner can grant admin.
+--
+--  NOTE for existing accounts: this fires on INSERT only. When someone who
+--  already has a password account signs in with Google on the SAME address,
+--  GoTrue links the identity to the existing user, so no row is inserted, this
+--  never runs, and their role is preserved. Test that path with one account
+--  before telling the whole team to switch.
+-- ============================================================================
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inv         public.invites%rowtype;
+  is_google   boolean := coalesce(new.raw_app_meta_data ->> 'provider', '') = 'google';
+  is_staff    boolean := lower(new.email) like '%@digitalpaani.com';
+begin
+  if is_google and not is_staff then
+    raise exception 'Google sign-in is limited to @digitalpaani.com accounts. Ask an admin for an invite instead.';
+  end if;
+
+  select * into inv
+  from public.invites
+  where lower(email) = lower(new.email) and used = false
+  order by created_at desc
+  limit 1;
+
+  -- INVITE-ONLY still holds for email signups: no matching unused invite means
+  -- the account lands INACTIVE and can never reach gated content (AuthContext
+  -- signs inactive accounts straight back out). Staff-domain Google is the one
+  -- exception, and it comes in as a plain user on the internal path.
+  insert into public.profiles (id, email, full_name, role, training_role, active)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name'),
+    coalesce(inv.role, 'user'),
+    coalesce(inv.training_role, case when is_google and is_staff then 'internal' end),
+    inv.id is not null or (is_google and is_staff)
+  );
+
+  if inv.id is not null then
+    update public.invites set used = true where id = inv.id;
+  end if;
+
+  return new;
+end;
+$$;
+
+-- Surface the sign-in provider in the roster, so the owner can see at a glance
+-- who arrived via Google rather than by invite. Replaces the earlier version.
+create or replace function public.admin_account_status()
+returns table (
+  id                uuid,
+  invited_at        timestamptz,
+  confirmed_at      timestamptz,
+  last_sign_in_at   timestamptz,
+  has_password      boolean,
+  provider          text,
+  created_at        timestamptz
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    u.id,
+    u.invited_at,
+    u.confirmed_at,
+    u.last_sign_in_at,
+    (u.encrypted_password is not null and u.encrypted_password <> '') as has_password,
+    coalesce(u.raw_app_meta_data ->> 'provider', 'email') as provider,
+    u.created_at
+  from auth.users u
+  where public.is_admin();
+$$;
+
+revoke all on function public.admin_account_status() from public, anon;
+grant execute on function public.admin_account_status() to authenticated;

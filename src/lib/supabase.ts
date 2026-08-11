@@ -60,6 +60,16 @@ export type TrainingRole = 'operator' | 'supervisor' | 'internal';
  */
 export const INVITE_LINK_HOURS = 24;
 
+/**
+ * The one domain allowed to sign in with Google.
+ *
+ * Used here only to pre-filter Google's account chooser (`hd`). It is NOT the
+ * security boundary — a Google account can carry any address and the hint is
+ * trivially dropped, so the rule is enforced in handle_new_user, which aborts
+ * the signup outright. Change both together.
+ */
+export const STAFF_DOMAIN = 'digitalpaani.com';
+
 /** Per-account sign-in state, from the admin_account_status RPC (reads auth.users). */
 export interface AccountStatusRow {
   id: string;
@@ -69,6 +79,9 @@ export interface AccountStatusRow {
   /** true = has a password (admin-provisioned; never expires).
    *  false = holds an emailed invite link, which does expire. */
   has_password: boolean;
+  /** 'google' = signed up through staff SSO; 'email' = invite or password. */
+  provider?: string;
+  created_at?: string;
 }
 
 export type InviteState = 'active' | 'awaiting-first-signin' | 'invite-pending' | 'invite-expired' | 'unknown';

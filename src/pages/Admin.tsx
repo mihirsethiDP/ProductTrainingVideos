@@ -85,6 +85,20 @@ export default function Admin() {
   // per-account sign-in state, keyed by user id (empty until the RPC is deployed)
   const [statuses, setStatuses] = useState<Map<string, AccountStatusRow>>(new Map());
 
+  // staff who arrived via Google SSO in the last 7 days — the in-app stand-in
+  // for "notify the owner", since Google signups skip the invite queue entirely
+  const recentGoogleSignups = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 3_600_000;
+    return users.filter((u) => {
+      const st = statuses.get(u.id);
+      return (
+        st?.provider === 'google' &&
+        st.created_at != null &&
+        new Date(st.created_at).getTime() > cutoff
+      );
+    });
+  }, [users, statuses]);
+
   const load = useCallback(async () => {
     setFetching(true);
     const [
@@ -330,6 +344,17 @@ export default function Admin() {
               <button className="au-toggle" onClick={load}>{t('adminRetry')}</button>
             </div>
           )}
+          {/* Owner-only heads-up on staff who let themselves in via Google SSO.
+              Google signups bypass the invite queue by design, so without this
+              they appear silently in a list nobody re-reads. In-app rather than
+              emailed, since the built-in mailer is the thing we're routing
+              around — the roster is where the owner would act anyway. */}
+          {iAmOwner && recentGoogleSignups.length > 0 && (
+            <div className="ai-msg" style={{ margin: '10px 20px' }}>
+              {t('adminGoogleNewNote').replace('{n}', String(recentGoogleSignups.length))}{' '}
+              {recentGoogleSignups.map((u) => u.full_name || u.email).join(', ')}
+            </div>
+          )}
           {rowError && <div className="ai-msg err" style={{ margin: '10px 20px' }}>{rowError}</div>}
           {!fetching && !loadError && users.length === 0 && <div className="au-empty">{t('adminNoUsers')}</div>}
           {users.map((u) => {
@@ -346,6 +371,9 @@ export default function Admin() {
                         deactivated" — it says nothing about whether they ever
                         got in. That's what this resolves. Signed-in accounts
                         show nothing, so the pill only ever means "needs you". */}
+                    {statuses.get(u.id)?.provider === 'google' && (
+                      <span className="au-state google">{t('adminViaGoogle')}</span>
+                    )}
                     {(() => {
                       const st = statuses.get(u.id);
                       const state = inviteState(st);
