@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Thumb, { moduleAccent, moduleGlyph } from '../components/Thumb';
+import GoogleSignIn from '../components/GoogleSignIn';
 import { useLanguage } from '../context/LanguageContext';
 import { MODULES, getLesson } from '../data/catalog';
 
@@ -21,6 +22,11 @@ export default function Teaser() {
           <p className="teaser-sub">{t('teaserSub')}</p>
           <div className="teaser-cta-row">
             <Link to="/login" className="teaser-cta-primary">{t('authSignIn')}</Link>
+          </div>
+          {/* staff route, on the first screen — no password to remember and no
+              invite to wait for, so it should not be hidden behind "Sign in" */}
+          <div className="teaser-google">
+            <GoogleSignIn />
           </div>
           <div className="teaser-note">🔒 {t('teaserLockNote')}</div>
         </div>

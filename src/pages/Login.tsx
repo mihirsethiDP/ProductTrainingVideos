@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { AUTH_LINK_ERROR, STAFF_DOMAIN, supabase } from '../lib/supabase';
+import { AUTH_LINK_ERROR } from '../lib/supabase';
+import GoogleSignIn from '../components/GoogleSignIn';
 
 // Signup is invite-only for customers: accounts are created by an admin (who
 // emails an invite link). DigitalPaani staff have one sanctioned exception —
@@ -40,27 +41,6 @@ export default function Login() {
     setBusy(false);
   }
 
-  /** Staff sign-in. Nothing is emailed and no password exists — the account is
-   *  created on first return from Google by handle_new_user, which is also where
-   *  the @digitalpaani.com rule is enforced. `hd` and `prompt` only shape
-   *  Google's own chooser; a rejected domain surfaces as an error on return. */
-  async function googleSignIn() {
-    setBusy(true);
-    setError(null);
-    setNotice(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
-        queryParams: { hd: STAFF_DOMAIN, prompt: 'select_account' },
-      },
-    });
-    // on success the browser leaves for Google, so this only runs on failure
-    if (error) {
-      setError(error.message);
-      setBusy(false);
-    }
-  }
 
   return (
     <div className="page">
@@ -105,14 +85,7 @@ export default function Login() {
           {mode === 'signin' && (
             <>
               <div className="auth-or"><span>{t('authOr')}</span></div>
-              {/* Staff route: no invite, no password, no email in the loop at all.
-                  `hd` only pre-filters Google's account chooser — the real domain
-                  rule is enforced by handle_new_user, since a Google account can
-                  carry any address and this hint is trivially removed. */}
-              <button className="auth-google" onClick={googleSignIn} disabled={busy} type="button">
-                {t('authGoogle')}
-              </button>
-              <div className="auth-google-note">{t('authGoogleStaffOnly')}</div>
+              <GoogleSignIn />
             </>
           )}
 
