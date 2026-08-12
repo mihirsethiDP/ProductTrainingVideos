@@ -770,3 +770,49 @@ $$;
 
 revoke all on function public.admin_account_status() from public, anon;
 grant execute on function public.admin_account_status() to authenticated;
+
+-- ----------------------------------------------------------------------------
+--  Companion to handle_new_user: activate staff SSO if the provider arrives late
+--
+--  handle_new_user reads raw_app_meta_data ->> 'provider' during INSERT. That is
+--  correct when GoTrue knows the provider inline — but it does NOT always. The
+--  admin createUser API demonstrably writes app_metadata in a SEPARATE step
+--  after the row exists, so the insert trigger sees 'email' and the account
+--  lands inactive with no training path, even though the finished row says
+--  google.
+--
+--  Whether a real OAuth callback inserts inline could not be verified from
+--  outside the project, so this removes the dependency on that ordering instead
+--  of betting on it: when raw_app_meta_data later becomes google on a staff
+--  address, finish the job. Idempotent, and scoped to rows that are still
+--  inactive so it can never re-activate an account an admin deliberately
+--  disabled.
+--
+--  Note on the non-staff case: if the provider IS known at insert,
+--  handle_new_user rejects outright and nothing is created. If it is not, the
+--  account lands INACTIVE — it can reach nothing, but leaves a row for the owner
+--  to delete. Inactive-and-harmless rather than admitted, either way.
+-- ----------------------------------------------------------------------------
+create or replace function public.activate_staff_sso()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if coalesce(new.raw_app_meta_data ->> 'provider', '') = 'google'
+     and lower(new.email) like '%@digitalpaani.com' then
+    update public.profiles
+       set active        = true,
+           training_role = coalesce(training_role, 'internal')
+     where id = new.id
+       and active = false;   -- never re-activate a deliberately disabled account
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_sso_linked on auth.users;
+create trigger on_auth_user_sso_linked
+  after update of raw_app_meta_data on auth.users
+  for each row execute function public.activate_staff_sso();
