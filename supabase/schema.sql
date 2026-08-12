@@ -275,12 +275,24 @@ create policy uploads_create_all on storage.objects
   for all using (bucket_id = 'uploads' and public.can_create())
   with check (bucket_id = 'uploads' and public.can_create());
 
--- ---------- migrate existing admins to CSM (keep only Mihir as admin) ----------
--- Run this once. Everyone currently an admin EXCEPT mihir.sethi@digitalpaani.com
--- becomes a CSM and loses admin functionality.
-update public.profiles
-  set role = 'csm'
-  where role = 'admin' and lower(email) <> 'mihir.sethi@digitalpaani.com';
+-- ---------- migrate existing admins to CSM — SPENT, DO NOT RE-ENABLE ----------
+-- Ran once when the csm role was introduced: every admin except the owner became
+-- a CSM. Retired 2026-08-01 and left here as a record.
+--
+-- Re-running it is now actively destructive. The org deliberately has several
+-- admins (the customer-facing teams), and this statement would demote every one
+-- of them in a single line — the exact opposite of the handover. It is also why
+-- re-running schema.sql started failing with "Only the superadmin can change an
+-- admin account": protect_admin_accounts rejected it, which is the guard doing
+-- its job, and the abort was the only reason nobody got silently demoted.
+--
+-- Keeping the header's "safe to re-run" promise honest means this stays commented.
+-- To take admin away from someone, do it in the Admin page (owner only) — a
+-- deliberate, per-person action, not a migration that fires on every replay.
+--
+-- update public.profiles
+--   set role = 'csm'
+--   where role = 'admin' and lower(email) <> 'mihir.sethi@digitalpaani.com';
 
 -- ============================================================
 --  Training role — assigned by the admin at invite time.
