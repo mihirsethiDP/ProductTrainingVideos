@@ -816,3 +816,200 @@ drop trigger if exists on_auth_user_sso_linked on auth.users;
 create trigger on_auth_user_sso_linked
   after update of raw_app_meta_data on auth.users
   for each row execute function public.activate_staff_sso();
+
+-- ============================================================================
+--  PHASE 1 — tenant boundary and membership
+--
+--  Groundwork for selling this to external clients, laid while there are still
+--  only internal accounts. Retrofitting a tenant boundary after real customers
+--  exist means migrating live data with contracts attached; doing it now costs
+--  nothing, because there is nothing on the other side of the boundary yet.
+--
+--  DELIBERATELY ADDITIVE. New tables, new columns, new helpers — and not one
+--  existing policy is changed. The tool keeps working for internal users
+--  exactly as it does today, and this block can sit in production unused until
+--  phase 2 wires it up.
+--
+--  THE CENTRAL RULE:  profiles.org_id IS NULL  ==  a DigitalPaani account.
+--  Internal staff are not "an org with no name" — they sit outside tenancy
+--  altogether and keep seeing everything they see now. Every future
+--  tenant-scoped policy reads:  is_internal_account() OR org_id = my_org().
+-- ============================================================================
+
+-- ---------- the tenant ----------
+create table if not exists public.organizations (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  created_at  timestamptz not null default now()
+);
+create unique index if not exists organizations_name_idx on public.organizations (lower(name));
+
+-- ---------- plants belong to a client (NULL = internal, e.g. the demo plants
+--            created for the Equipment Library) ----------
+alter table public.plants   add column if not exists org_id uuid references public.organizations (id);
+
+-- ---------- people belong to a client (NULL = DigitalPaani staff) ----------
+alter table public.profiles add column if not exists org_id uuid references public.organizations (id);
+create index if not exists profiles_org_idx on public.profiles (org_id);
+
+-- ---------- membership: many-to-many on purpose ----------
+-- A Plant Head spans several plants; a supervisor holds one. Standing is
+-- recorded PER PLANT, so the same person can be head at one site and something
+-- else at another without contorting the profile row.
+create table if not exists public.plant_members (
+  user_id     uuid not null references auth.users (id) on delete cascade,
+  plant_id    uuid not null references public.plants (id) on delete cascade,
+  plant_role  text not null check (plant_role in ('head', 'supervisor', 'operator')),
+  created_at  timestamptz not null default now(),
+  primary key (user_id, plant_id)
+);
+create index if not exists plant_members_plant_idx on public.plant_members (plant_id);
+
+-- ---------- invites can now carry the tenant and the plant ----------
+alter table public.invites add column if not exists org_id     uuid references public.organizations (id);
+alter table public.invites add column if not exists plant_id   uuid references public.plants (id);
+alter table public.invites add column if not exists plant_role text
+  check (plant_role in ('head', 'supervisor', 'operator'));
+
+-- ============================================================================
+--  Helpers. All SECURITY DEFINER for the same reason is_admin() is: a policy
+--  that queries a table which is itself protected by a policy will recurse.
+--  Created now, wired into policies in phase 2.
+-- ============================================================================
+
+-- The tenancy predicate. Orthogonal to role: a plain internal learner and the
+-- owner are both internal accounts. Says nothing about permission level.
+create or replace function public.is_internal_account()
+returns boolean
+language sql stable security definer set search_path = public
+as $fn$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and active = true and org_id is null
+  );
+$fn$;
+
+create or replace function public.my_org()
+returns uuid
+language sql stable security definer set search_path = public
+as $fn$
+  select org_id from public.profiles where id = auth.uid();
+$fn$;
+
+create or replace function public.my_plants()
+returns setof uuid
+language sql stable security definer set search_path = public
+as $fn$
+  select plant_id from public.plant_members where user_id = auth.uid();
+$fn$;
+
+create or replace function public.plants_i_manage()
+returns setof uuid
+language sql stable security definer set search_path = public
+as $fn$
+  select plant_id from public.plant_members
+  where user_id = auth.uid() and plant_role in ('head', 'supervisor');
+$fn$;
+
+-- The visibility matrix from the design doc, in one place:
+--   - always your own progress
+--   - platform admins see everyone
+--   - a HEAD sees everyone at the plants they hold
+--   - a SUPERVISOR sees operators at their plant, not peers and not the head
+-- CSM-to-org assignment is deliberately absent; that needs its own table and
+-- belongs with the dashboards, not here.
+create or replace function public.can_read_progress_of(target uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $fn$
+  select
+    target = auth.uid()
+    or public.is_admin()
+    or exists (
+      select 1
+      from public.plant_members me
+      join public.plant_members them on them.plant_id = me.plant_id
+      where me.user_id = auth.uid()
+        and them.user_id = target
+        and me.plant_role in ('head', 'supervisor')
+        and (me.plant_role = 'head' or them.plant_role = 'operator')
+    );
+$fn$;
+
+-- ============================================================================
+--  RLS on the new tables. Locked to platform staff for now — no client user
+--  can reach them yet because no client users exist. Phase 2 opens them up
+--  through the helpers above.
+-- ============================================================================
+alter table public.organizations enable row level security;
+alter table public.plant_members enable row level security;
+
+drop policy if exists organizations_staff on public.organizations;
+create policy organizations_staff on public.organizations
+  for all using (public.can_create()) with check (public.can_create());
+
+-- a client user will later need to see their own org row; harmless now
+drop policy if exists organizations_read_own on public.organizations;
+create policy organizations_read_own on public.organizations
+  for select using (id = public.my_org());
+
+drop policy if exists plant_members_staff on public.plant_members;
+create policy plant_members_staff on public.plant_members
+  for all using (public.can_create()) with check (public.can_create());
+
+drop policy if exists plant_members_read_self on public.plant_members;
+create policy plant_members_read_self on public.plant_members
+  for select using (user_id = auth.uid());
+
+-- ============================================================================
+--  Signup: carry the invite's tenant through to the profile, and record
+--  membership when the invite names a plant.
+--
+--  Backwards compatible by construction: an invite with no org_id yields
+--  org_id NULL, which is exactly today's behaviour — an internal account.
+--  Google SSO staff likewise stay NULL. Nothing existing changes.
+-- ============================================================================
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $fn$
+declare
+  inv       public.invites%rowtype;
+  is_google boolean := coalesce(new.raw_app_meta_data ->> 'provider', '') = 'google';
+  is_staff  boolean := lower(new.email) like '%@digitalpaani.com';
+begin
+  if is_google and not is_staff then
+    raise exception 'Google sign-in is limited to @digitalpaani.com accounts. Ask an admin for an invite instead.';
+  end if;
+
+  select * into inv
+  from public.invites
+  where lower(email) = lower(new.email) and used = false
+  order by created_at desc
+  limit 1;
+
+  insert into public.profiles (id, email, full_name, role, training_role, active, org_id)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name'),
+    coalesce(inv.role, 'user'),
+    coalesce(inv.training_role, case when is_google and is_staff then 'internal' end),
+    inv.id is not null or (is_google and is_staff),
+    inv.org_id
+  );
+
+  if inv.id is not null then
+    if inv.plant_id is not null then
+      insert into public.plant_members (user_id, plant_id, plant_role)
+      values (new.id, inv.plant_id, coalesce(inv.plant_role, 'operator'))
+      on conflict (user_id, plant_id) do nothing;
+    end if;
+    update public.invites set used = true where id = inv.id;
+  end if;
+
+  return new;
+end;
+$fn$;

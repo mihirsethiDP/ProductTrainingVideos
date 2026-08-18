@@ -109,6 +109,10 @@ export interface Profile {
    *  only stops OTHER admins changing its role or deactivating it (enforced by
    *  the protect_superadmin trigger, not just by hiding the controls). */
   is_superadmin?: boolean;
+  /** Owning client organisation. NULL = a DigitalPaani account — internal staff
+   *  sit outside tenancy entirely and keep full internal access. Populated from
+   *  the invite at signup; nothing reads it yet (phase 2 wires the policies). */
+  org_id?: string | null;
 }
 
 export interface RemoteProgress {
