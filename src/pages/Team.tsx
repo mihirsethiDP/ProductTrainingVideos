@@ -37,7 +37,7 @@ const RELATIVE = (iso: string | null): string => {
  * gets operators, a head gets everyone.
  */
 export default function Team() {
-  const { loading, managedPlantIds } = useAuth();
+  const { loading, authReady, managedPlantIds } = useAuth();
   const { t } = useLanguage();
 
   const [plants, setPlants] = useState<TeamPlant[]>([]);
@@ -78,7 +78,7 @@ export default function Team() {
     return { total, complete, notStarted, stalled, avg };
   }, [rows]);
 
-  if (loading) return null;
+  if (loading || !authReady) return null;
   // no managing membership = no team to look at
   if (managedPlantIds.length === 0) return <Navigate to="/" replace />;
 

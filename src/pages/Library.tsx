@@ -18,7 +18,7 @@ import { connectDrive, disconnectDrive, driveConnected, shareWithAnyone, uploadT
  * plant staff over WhatsApp.
  */
 export default function Library() {
-  const { canCreate, loading, myPlantIds } = useAuth();
+  const { canCreate, loading, authReady, myPlantIds } = useAuth();
   // staff curate the whole library; anyone who belongs to a plant can browse
   // that plant's shelf read-only. RLS does the real filtering — these two just
   // decide which controls to render.
@@ -179,7 +179,7 @@ export default function Library() {
     }
   }
 
-  if (loading) return null;
+  if (loading || !authReady) return null;
   if (!canView) return <Navigate to="/" replace />;
 
   const parsedId = parseDriveId(driveLink);

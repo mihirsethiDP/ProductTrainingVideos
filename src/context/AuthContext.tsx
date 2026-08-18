@@ -11,6 +11,11 @@ interface AuthCtx {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  /** loading covers the initial session lookup, but after a fresh sign-in it
+   *  is already false while the profile is still being fetched — so isAdmin /
+   *  canCreate briefly read false and a staff-gated page bounces the very
+   *  person it should admit. Gate on this instead. */
+  authReady: boolean;
   isAdmin: boolean;
   isCsm: boolean;
   canCreate: boolean; // admin or CSM — may use the Content Studio
@@ -201,6 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       profile,
       loading,
+      authReady: !loading && !(session && !profile),
       isAdmin: profile?.role === 'admin',
       isCsm: profile?.role === 'csm',
       canCreate: profile?.role === 'admin' || profile?.role === 'csm',

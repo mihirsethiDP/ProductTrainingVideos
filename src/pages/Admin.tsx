@@ -69,7 +69,7 @@ function pctFor(row: ProgRow | undefined, lessonId: string): number {
 }
 
 export default function Admin() {
-  const { isAdmin, loading, profile } = useAuth();
+  const { isAdmin, loading, authReady, profile } = useAuth();
   const { lang, t } = useLanguage();
 
   const [users, setUsers] = useState<Profile[]>([]);
@@ -255,7 +255,7 @@ export default function Admin() {
     }
   }
 
-  if (loading) return null;
+  if (loading || !authReady) return null;
   if (!isAdmin) return <Navigate to="/" replace />;
 
   return (
@@ -270,6 +270,9 @@ export default function Admin() {
           <div className="studio-submit-row" style={{ marginTop: 16 }}>
             <Link to="/admin/studio">
               <button className="lesson-cta">🎬 Content Studio — build demos &amp; lessons →</button>
+            </Link>
+            <Link to="/admin/plants">
+              <button className="lesson-cta">🏭 Plant Library — plants &amp; module access →</button>
             </Link>
             <Link to="/admin/library">
               <button className="lesson-cta">🔧 Equipment Library — plant photos &amp; videos →</button>
