@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Studio from './pages/Studio';
 import Library from './pages/Library';
+import Team from './pages/Team';
 import WatchEquipment from './pages/WatchEquipment';
 import SetPassword from './pages/SetPassword';
 import Protected from './components/Protected';
@@ -60,6 +61,8 @@ export default function App() {
       {/* same page, reachable without an /admin URL — plant members browse
           their own plants read-only; the page itself decides the controls */}
       <Route path="/library" element={<Protected><Library /></Protected>} />
+      {/* plant head / supervisor view of their people */}
+      <Route path="/team" element={<Protected><Team /></Protected>} />
       {/* forwardable equipment training — plant staff open this with NO sign-in,
           reachable only with the item's unguessable share token */}
       <Route path="/watch/equipment/:token" element={<WatchEquipment />} />

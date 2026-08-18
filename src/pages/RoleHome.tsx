@@ -24,7 +24,7 @@ export default function RoleHome() {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const { maybeStartFirstVisit } = useTour();
-  const { assignedRole, entitlements, myPlantIds } = useAuth();
+  const { assignedRole, entitlements, myPlantIds, managedPlantIds } = useAuth();
 
   const validRole = !!role && ROLES.includes(role as RoleId);
   useEffect(() => {
@@ -62,6 +62,13 @@ export default function RoleHome() {
           <p className="lesson-subtitle">{t('homeSubtitle')}</p>
           {/* only shown to people who actually belong to a plant — for everyone
               else the library would open on an empty shelf */}
+          {managedPlantIds.length > 0 && (
+            <Link to="/team">
+              <button className="lesson-cta" style={{ marginTop: 16, marginRight: 10 }}>
+                👥 {t('teamCta')}
+              </button>
+            </Link>
+          )}
           {myPlantIds.length > 0 && (
             <Link to="/library">
               <button className="lesson-cta" style={{ marginTop: 16 }}>

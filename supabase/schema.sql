@@ -1088,3 +1088,56 @@ create policy plant_media_read on public.plant_media for select using (
 drop policy if exists plant_media_write on public.plant_media;
 create policy plant_media_write on public.plant_media
   for all using (public.can_create()) with check (public.can_create());
+
+-- ============================================================================
+--  PHASE 4 — Plant Head and Supervisor visibility
+--
+--  Phase 1 created can_read_progress_of() and deliberately wired it to nothing.
+--  This connects it. The rule does not change: a head sees everyone at the
+--  plants they hold; a supervisor sees operators at theirs, not peers and not
+--  the head.
+--
+--  Three tables have to agree, or the dashboard contradicts itself — a name
+--  with no progress, or progress with no name.
+-- ============================================================================
+
+-- Membership rows a manager may see. A policy on plant_members cannot query
+-- plant_members (infinite recursion), so the lookup goes through SECURITY
+-- DEFINER, same reason as is_admin().
+create or replace function public.can_see_plant_member(p_plant uuid, p_role text)
+returns boolean
+language sql stable security definer set search_path = public
+as $fn$
+  select exists (
+    select 1 from public.plant_members me
+    where me.user_id = auth.uid()
+      and me.plant_id = p_plant
+      and me.plant_role in ('head', 'supervisor')
+      and (me.plant_role = 'head' or p_role = 'operator')
+  );
+$fn$;
+
+-- 1. who is on my plant
+drop policy if exists plant_members_read_self on public.plant_members;
+create policy plant_members_read_self on public.plant_members
+  for select using (
+    user_id = auth.uid()
+    or public.can_see_plant_member(plant_id, plant_role)
+  );
+
+-- 2. their names. Without this the dashboard shows user ids.
+drop policy if exists profiles_select_self on public.profiles;
+create policy profiles_select_self on public.profiles
+  for select using (
+    id = auth.uid()
+    or public.is_admin()
+    or public.can_read_progress_of(id)
+  );
+
+-- 3. their progress — the point of the screen
+drop policy if exists lp_manager_read on public.lesson_progress;
+create policy lp_manager_read on public.lesson_progress
+  for select using (public.can_read_progress_of(user_id));
+
+-- NOTE: lp_own (FOR ALL) is untouched, so writing progress is still strictly
+-- your own. A manager can read their team's rows and can never edit them.

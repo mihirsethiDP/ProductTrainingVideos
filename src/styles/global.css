@@ -239,6 +239,42 @@ button { font-family: var(--sans); }
 .au-state.pending { background: rgba(212, 160, 23, 0.16); color: #8a6608; }
 .au-state.waiting { background: var(--paper-warm); color: var(--ink-soft); }
 .au-state.google { background: rgba(66, 133, 244, 0.12); color: #2c5cb8; margin-right: 6px; }
+.au-state.done    { background: #e7f6ee; color: var(--leaf); }
+.au-state.waiting { background: var(--paper-warm); color: var(--ink-soft); }
+
+/* ===== plant head / supervisor team view ===== */
+.team-summary {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 18px; margin: 18px 0 14px; padding: 16px 20px;
+  background: var(--paper-warm); border: 1px solid var(--line); border-radius: 12px;
+}
+.team-stat { display: flex; align-items: center; gap: 14px; }
+.team-counts { display: flex; gap: 26px; }
+.team-count { display: flex; flex-direction: column; align-items: flex-start; }
+.team-count b { font-size: 22px; font-weight: 700; color: var(--leaf); font-variant-numeric: tabular-nums; }
+.team-count.warn b { color: #a56a12; }
+.team-count.bad b  { color: #b3413b; }
+.team-count span { font-size: 11.5px; color: var(--ink-soft); }
+
+.team-row {
+  display: grid; grid-template-columns: 2.2fr 1fr 1.4fr 1.2fr;
+  gap: 12px; align-items: center; padding: 14px 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+.team-row:last-child { border-bottom: none; }
+.team-head {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-soft); border-bottom: 1px solid var(--line);
+}
+.team-role { font-size: 13px; color: var(--ink-soft); }
+.team-last { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.team-when { font-size: 11.5px; color: var(--ink-soft); }
+
+@media (max-width: 720px) {
+  .team-row { grid-template-columns: 1.6fr 1fr; row-gap: 10px; }
+  .team-head { display: none; }
+  .team-counts { gap: 18px; }
+}
 
 /* staff SSO button on the sign-in card */
 .auth-or {

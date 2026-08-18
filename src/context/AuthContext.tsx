@@ -4,6 +4,9 @@ import { supabase, type Profile } from '../lib/supabase';
 import { pullRemoteProgress, pushLocalProgress, setProgressSyncUser } from '../lib/progress';
 import type { Entitlements } from '../lib/completion';
 
+export type PlantRole = 'head' | 'supervisor' | 'operator';
+export interface Membership { plant_id: string; plant_role: PlantRole }
+
 interface AuthCtx {
   session: Session | null;
   profile: Profile | null;
@@ -21,6 +24,8 @@ interface AuthCtx {
   /** plants this person belongs to; non-empty means they can browse the
    *  Equipment Library for those plants (read-only unless they are staff) */
   myPlantIds: string[];
+  /** plants where they are head or supervisor — i.e. have a team to look at */
+  managedPlantIds: string[];
   /** account was provisioned with a temporary password — hold it on the
    *  set-password screen until it chooses its own. Cleared by SetPassword in
    *  the same updateUser call that sets the new password. */
@@ -43,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [entitlements, setEntitlements] = useState<Entitlements>(null);
-  const [myPlantIds, setMyPlantIds] = useState<string[]>([]);
+  const [memberships, setMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (userId: string) => {
@@ -55,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await supabase.auth.signOut();
       setProfile(null);
       setEntitlements(null);
-      setMyPlantIds([]);
+      setMemberships([]);
       setProgressSyncUser(null);
       return;
     }
@@ -65,8 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // plants this person belongs to — drives Equipment Library access. The
     // read-self policy on plant_members means this returns only their own rows.
     if (prof) {
-      const { data: mems } = await supabase.from('plant_members').select('plant_id');
-      setMyPlantIds((mems ?? []).map((m) => m.plant_id as string));
+      const { data: mems } = await supabase.from('plant_members').select('plant_id,plant_role');
+      setMemberships((mems ?? []) as Membership[]);
     }
     if (prof?.org_id) {
       const { data: grants } = await supabase
@@ -105,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setProfile(null);
       setEntitlements(null);
-      setMyPlantIds([]);
+      setMemberships([]);
       setLoading(false);
     }, 8000);
     supabase.auth
@@ -135,7 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setProfile(null);
         setEntitlements(null);
-        setMyPlantIds([]);
+        setMemberships([]);
         setProgressSyncUser(null);
       }
     });
@@ -170,7 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     setProfile(null);
     setEntitlements(null);
-    setMyPlantIds([]);
+    setMemberships([]);
     setProgressSyncUser(null);
   }, []);
 
@@ -194,7 +199,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // only plain users are locked to their assigned path; staff roam freely
       assignedRole: profile?.role === 'user' ? (profile?.training_role ?? null) : null,
       entitlements,
-      myPlantIds,
+      myPlantIds: memberships.map((m) => m.plant_id),
+      managedPlantIds: memberships
+        .filter((m) => m.plant_role === 'head' || m.plant_role === 'supervisor')
+        .map((m) => m.plant_id),
       mustSetPassword: session?.user?.user_metadata?.must_set_password === true,
       signUp,
       signIn,
@@ -202,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       resetPassword,
       refreshProfile,
     }),
-    [session, profile, entitlements, myPlantIds, loading, signUp, signIn, signOut, resetPassword, refreshProfile],
+    [session, profile, entitlements, memberships, loading, signUp, signIn, signOut, resetPassword, refreshProfile],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
