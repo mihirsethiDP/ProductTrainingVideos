@@ -18,7 +18,12 @@ import { connectDrive, disconnectDrive, driveConnected, shareWithAnyone, uploadT
  * plant staff over WhatsApp.
  */
 export default function Library() {
-  const { canCreate, loading } = useAuth();
+  const { canCreate, loading, myPlantIds } = useAuth();
+  // staff curate the whole library; anyone who belongs to a plant can browse
+  // that plant's shelf read-only. RLS does the real filtering — these two just
+  // decide which controls to render.
+  const canCurate = canCreate;
+  const canView = canCreate || myPlantIds.length > 0;
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [plantId, setPlantId] = useState('');
@@ -66,12 +71,12 @@ export default function Library() {
   }, []);
 
   useEffect(() => {
-    if (canCreate) loadPlants();
-  }, [canCreate, loadPlants]);
+    if (canView) loadPlants();
+  }, [canView, loadPlants]);
 
   useEffect(() => {
-    if (canCreate) loadMedia(plantId);
-  }, [canCreate, plantId, loadMedia]);
+    if (canView) loadMedia(plantId);
+  }, [canView, plantId, loadMedia]);
 
   async function submitPlant(e: React.FormEvent) {
     e.preventDefault();
@@ -175,7 +180,7 @@ export default function Library() {
   }
 
   if (loading) return null;
-  if (!canCreate) return <Navigate to="/" replace />;
+  if (!canView) return <Navigate to="/" replace />;
 
   const parsedId = parseDriveId(driveLink);
   const plantName = plants.find((p) => p.id === plantId)?.name ?? '';
@@ -183,7 +188,7 @@ export default function Library() {
   return (
     <div className="page">
       <div className="container">
-        <Header meta={<Link to="/admin" className="header-link">← Admin</Link>} />
+        <Header meta={canCurate ? <Link to="/admin" className="header-link">← Admin</Link> : undefined} />
 
         <div className="title-block">
           <div className="eyebrow">Equipment Library</div>
@@ -193,9 +198,11 @@ export default function Library() {
             Files live in Google Drive; this keeps them organised per plant and gives each one a link you can forward to
             plant staff with no sign-in needed.
           </p>
-          <Link to="/admin/studio">
-            <button className="lesson-cta" style={{ marginTop: 16 }}>🎬 Content Studio — demos &amp; lessons →</button>
-          </Link>
+          {canCurate && (
+            <Link to="/admin/studio">
+              <button className="lesson-cta" style={{ marginTop: 16 }}>🎬 Content Studio — demos &amp; lessons →</button>
+            </Link>
+          )}
         </div>
 
         {needsSetup && (
@@ -214,12 +221,14 @@ export default function Library() {
               <option key={p.id} value={p.id}>{p.name}{p.workspace ? ` · ${p.workspace}` : ''}</option>
             ))}
           </select>
-          <button type="button" className="au-toggle" onClick={() => setShowNewPlant((s) => !s)}>
-            {showNewPlant ? 'Cancel' : '＋ New plant'}
-          </button>
+          {canCurate && (
+            <button type="button" className="au-toggle" onClick={() => setShowNewPlant((s) => !s)}>
+              {showNewPlant ? 'Cancel' : '＋ New plant'}
+            </button>
+          )}
         </div>
 
-        {showNewPlant && (
+        {canCurate && showNewPlant && (
           <form className="admin-invite" onSubmit={submitPlant}>
             <div className="ai-title">Add a plant</div>
             <div className="ai-row">
@@ -231,7 +240,8 @@ export default function Library() {
           </form>
         )}
 
-        {/* add media */}
+        {/* add media — staff curate; plant members browse read-only */}
+        {canCurate && (
         <form className="admin-invite" onSubmit={submitMedia}>
           <div className="ai-title">Add {kind === 'video' ? 'a video' : 'a photo'}{plantName ? ` — ${plantName}` : ''}</div>
 
@@ -321,6 +331,7 @@ export default function Library() {
             Compress long clips (720p) so they play on plant wifi.
           </div>
         </form>
+        )}
 
         {/* grid */}
         <div className="studio-jobs-head">
@@ -352,7 +363,9 @@ export default function Library() {
                     {copied === m.id ? '✓ Copied' : 'Copy share link'}
                   </button>
                   <a className="studio-share" href={driveOpenUrl(m.drive_file_id)} target="_blank" rel="noopener noreferrer">Drive</a>
-                  <button type="button" className="studio-share lib-del" onClick={() => remove(m)}>Remove</button>
+                  {canCurate && (
+                    <button type="button" className="studio-share lib-del" onClick={() => remove(m)}>Remove</button>
+                  )}
                 </div>
               </div>
             </div>

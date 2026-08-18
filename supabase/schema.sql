@@ -1051,3 +1051,40 @@ create policy org_modules_staff on public.org_modules
 drop policy if exists org_modules_read_own on public.org_modules;
 create policy org_modules_read_own on public.org_modules
   for select using (org_id = public.my_org());
+
+-- ============================================================================
+--  Equipment Library — open it to the people at the plant
+--
+--  This was staff-only for one reason, stated in the original comment: users
+--  carried no plant assignment, so any blanket read would have shown one
+--  client's operator another client's equipment. plant_members now exists, so
+--  the real rule can finally be expressed — you see the media for the plants
+--  you actually belong to.
+--
+--  Curating stays staff-only. Uploading goes through DigitalPaani's Google
+--  Drive folder and OAuth client, which is not something a client account
+--  should be reaching into.
+-- ============================================================================
+
+-- plants: previously readable by ANY signed-in user, which was fine when
+-- everyone was internal and is a cross-client leak the moment they are not —
+-- a client operator could list every plant name on the platform, including
+-- other customers'. Internal accounts keep exactly what they had.
+drop policy if exists plants_read on public.plants;
+create policy plants_read on public.plants for select using (
+  public.is_internal_account()                       -- every DigitalPaani account, as before
+  or id in (select public.my_plants())               -- a plant you belong to
+  or (org_id is not null and org_id = public.my_org()) -- or one your organisation owns
+);
+
+-- plant_media: staff curate; members read their own plants
+drop policy if exists plant_media_read on public.plant_media;
+create policy plant_media_read on public.plant_media for select using (
+  public.can_create()
+  or plant_id in (select public.my_plants())
+);
+
+-- unchanged, restated for clarity: only staff add, edit or remove entries
+drop policy if exists plant_media_write on public.plant_media;
+create policy plant_media_write on public.plant_media
+  for all using (public.can_create()) with check (public.can_create());

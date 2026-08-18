@@ -57,6 +57,9 @@ export default function App() {
       <Route path="/admin" element={<Protected><Admin /></Protected>} />
       <Route path="/admin/studio" element={<Protected><Studio /></Protected>} />
       <Route path="/admin/library" element={<Protected><Library /></Protected>} />
+      {/* same page, reachable without an /admin URL — plant members browse
+          their own plants read-only; the page itself decides the controls */}
+      <Route path="/library" element={<Protected><Library /></Protected>} />
       {/* forwardable equipment training — plant staff open this with NO sign-in,
           reachable only with the item's unguessable share token */}
       <Route path="/watch/equipment/:token" element={<WatchEquipment />} />
