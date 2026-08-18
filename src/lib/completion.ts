@@ -2,6 +2,31 @@ import { MODULES, getLesson, modulesForRole } from '../data/catalog';
 import type { ModuleDef, RoleId } from '../data/types';
 import { getLessonProgress } from './progress';
 
+/**
+ * The modules a client organisation bought.
+ *
+ * NULL means unrestricted, which is every DigitalPaani account — internal staff
+ * sit outside tenancy and see the whole catalogue. Encoding "unrestricted" as
+ * null rather than "a set containing everything" means nobody has to remember
+ * to grant internal people access when a new module ships.
+ */
+export type Entitlements = ReadonlySet<string> | null;
+
+export const isEntitled = (moduleId: string, ent: Entitlements): boolean =>
+  ent === null || ent.has(moduleId);
+
+/**
+ * The modules a person actually sees: their role's modules, narrowed to what
+ * their organisation was sold.
+ *
+ * Every caller that used to reach for modulesForRole() should come here
+ * instead — that is what keeps the denominator honest. A client who bought six
+ * modules must never see a figure measured against fourteen.
+ */
+export function visibleModules(role: RoleId, ent: Entitlements = null): ModuleDef[] {
+  return modulesForRole(role).filter((m) => isEntitled(m.id, ent));
+}
+
 /** Percent complete for one lesson (0..100). */
 export function lessonPercent(lessonId: string): number {
   const lesson = getLesson(lessonId);
@@ -45,9 +70,10 @@ export function moduleCompletion(module: ModuleDef, role?: RoleId): Tally {
   return { percent, done, total: ids.length };
 }
 
-/** Overall completion for a role (averaged across every real lesson it sees). */
-export function roleCompletion(role: RoleId): Tally {
-  const ids = modulesForRole(role).flatMap((m) => moduleLessons(m, role));
+/** Overall completion for a role, measured ONLY across the modules this
+ *  person's organisation actually has. */
+export function roleCompletion(role: RoleId, ent: Entitlements = null): Tally {
+  const ids = visibleModules(role, ent).flatMap((m) => moduleLessons(m, role));
   if (ids.length === 0) return { percent: 0, done: 0, total: 0 };
   const percents = ids.map(lessonPercent);
   const percent = Math.round(percents.reduce((a, b) => a + b, 0) / ids.length);
@@ -55,7 +81,9 @@ export function roleCompletion(role: RoleId): Tally {
   return { percent, done, total: ids.length };
 }
 
-/** Overall completion across the whole catalog (admin-style view). */
+/** Overall completion across the whole catalogue — the internal view. Client
+ *  users must never be measured with this; use roleCompletion with their
+ *  entitlements. */
 export function overallCompletion(): Tally {
   const ids = MODULES.flatMap((m) => moduleLessons(m, 'internal'));
   if (ids.length === 0) return { percent: 0, done: 0, total: 0 };

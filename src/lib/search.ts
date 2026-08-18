@@ -1,4 +1,5 @@
-import { getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
+import { getLesson, lessonTagFor } from '../data/catalog';
+import { visibleModules, type Entitlements } from './completion';
 import type { LangCode, RoleId } from '../data/types';
 
 export interface SearchHit {
@@ -34,12 +35,12 @@ function snippetAround(text: string, q: string): string {
  * subtitles, step titles, narration body & voice-over). Role- and
  * language-aware: only returns lessons the role can see, in the chosen language.
  */
-export function searchContent(query: string, role: RoleId, lang: LangCode): SearchHit[] {
+export function searchContent(query: string, role: RoleId, lang: LangCode, ent: Entitlements = null): SearchHit[] {
   const q = query.trim().toLowerCase();
   if (q.length < 2) return [];
   const hits: SearchHit[] = [];
 
-  for (const mod of modulesForRole(role)) {
+  for (const mod of visibleModules(role, ent)) {
     const moduleName = mod.name[lang];
     for (const ref of mod.lessons) {
       if (ref.comingSoon) continue;

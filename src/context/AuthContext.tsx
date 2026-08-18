@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Session } from '@supabase/supabase-js';
 import { supabase, type Profile } from '../lib/supabase';
 import { pullRemoteProgress, pushLocalProgress, setProgressSyncUser } from '../lib/progress';
+import type { Entitlements } from '../lib/completion';
 
 interface AuthCtx {
   session: Session | null;
@@ -13,6 +14,10 @@ interface AuthCtx {
   /** the training path this user is locked to (set by the admin at invite time);
    *  null = free choice (admins, CSMs, and legacy unassigned accounts) */
   assignedRole: 'operator' | 'supervisor' | 'internal' | null;
+  /** Modules this person's organisation bought. NULL = unrestricted, i.e. every
+   *  internal account. Pass to visibleModules()/roleCompletion() so what is
+   *  shown AND what is counted both respect what was sold. */
+  entitlements: Entitlements;
   /** account was provisioned with a temporary password — hold it on the
    *  set-password screen until it chooses its own. Cleared by SetPassword in
    *  the same updateUser call that sets the new password. */
@@ -34,6 +39,7 @@ export const useAuth = () => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [entitlements, setEntitlements] = useState<Entitlements>(null);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (userId: string) => {
@@ -44,8 +50,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // do this BEFORE exposing any profile so gated content never flashes
       await supabase.auth.signOut();
       setProfile(null);
+      setEntitlements(null);
       setProgressSyncUser(null);
       return;
+    }
+    // Entitlements resolve BEFORE the profile is exposed. Setting the profile
+    // first would render one frame with entitlements still null — which reads
+    // as "unrestricted" — flashing modules a client never bought.
+    if (prof?.org_id) {
+      const { data: grants } = await supabase
+        .from('org_modules')
+        .select('module_id')
+        .eq('org_id', prof.org_id);
+      setEntitlements(new Set((grants ?? []).map((g) => g.module_id as string)));
+    } else {
+      setEntitlements(null); // DigitalPaani account — unrestricted
     }
     setProfile(prof);
     setProgressSyncUser(userId);
@@ -74,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (cancelled) return;
       setSession(null);
       setProfile(null);
+      setEntitlements(null);
       setLoading(false);
     }, 8000);
     supabase.auth
@@ -102,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loadProfile(s.user.id);
       } else {
         setProfile(null);
+        setEntitlements(null);
         setProgressSyncUser(null);
       }
     });
@@ -135,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setProfile(null);
+    setEntitlements(null);
     setProgressSyncUser(null);
   }, []);
 
@@ -157,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       canCreate: profile?.role === 'admin' || profile?.role === 'csm',
       // only plain users are locked to their assigned path; staff roam freely
       assignedRole: profile?.role === 'user' ? (profile?.training_role ?? null) : null,
+      entitlements,
       mustSetPassword: session?.user?.user_metadata?.must_set_password === true,
       signUp,
       signIn,
@@ -164,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       resetPassword,
       refreshProfile,
     }),
-    [session, profile, loading, signUp, signIn, signOut, resetPassword, refreshProfile],
+    [session, profile, entitlements, loading, signUp, signIn, signOut, resetPassword, refreshProfile],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

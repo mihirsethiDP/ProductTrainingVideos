@@ -1013,3 +1013,41 @@ begin
   return new;
 end;
 $fn$;
+
+-- ============================================================================
+--  PHASE 2 — entitlements
+--
+--  A module is the unit of sale. This table is the record of what each client
+--  actually bought, and it is what every completion figure must be measured
+--  against — see the denominator note below.
+--
+--  module_id is a catalogue string ('module-04-inventory'), not a foreign key:
+--  modules are still TypeScript files compiled into the bundle, so there is no
+--  table to reference. That is deliberate — this table is the boundary either
+--  way, and it does not change shape when content eventually moves server-side
+--  in phase 3.
+--
+--  NULL org (a DigitalPaani account) is NOT represented here at all. Internal
+--  staff are unrestricted by absence, not by a row granting them everything —
+--  same rule as phase 1, and it means nobody has to remember to grant modules
+--  to internal people when a new one ships.
+-- ============================================================================
+create table if not exists public.org_modules (
+  org_id     uuid not null references public.organizations (id) on delete cascade,
+  module_id  text not null,
+  granted_at timestamptz not null default now(),
+  primary key (org_id, module_id)
+);
+
+alter table public.org_modules enable row level security;
+
+-- staff grant and revoke
+drop policy if exists org_modules_staff on public.org_modules;
+create policy org_modules_staff on public.org_modules
+  for all using (public.can_create()) with check (public.can_create());
+
+-- a client user may read their own organisation's grants — this is what the
+-- app loads at sign-in to decide what to show and what to count
+drop policy if exists org_modules_read_own on public.org_modules;
+create policy org_modules_read_own on public.org_modules
+  for select using (org_id = public.my_org());

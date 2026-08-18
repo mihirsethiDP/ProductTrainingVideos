@@ -3,9 +3,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { modulesForRole } from '../data/catalog';
+
 import type { RoleId } from '../data/types';
-import { moduleLessons } from '../lib/completion';
+import { moduleLessons, visibleModules } from '../lib/completion';
 import { saveRole } from '../lib/progress';
 
 const ROLE_CARDS: { id: RoleId; icon: string; nameKey: string; descKey: string }[] = [
@@ -17,7 +17,7 @@ const ROLE_CARDS: { id: RoleId; icon: string; nameKey: string; descKey: string }
 export default function RoleSelect() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { assignedRole } = useAuth();
+  const { assignedRole, entitlements } = useAuth();
 
   // invited users are locked to the path the admin chose — no picker for them
   if (assignedRole) return <Navigate to={`/${assignedRole}`} replace />;
@@ -35,7 +35,7 @@ export default function RoleSelect() {
         <div className="eyebrow" style={{ padding: '0 8px' }}>{t('whoAreYou')}</div>
         <div className="role-grid" data-tour="paths">
           {ROLE_CARDS.map((card) => {
-            const modules = modulesForRole(card.id);
+            const modules = visibleModules(card.id, entitlements);
             // count only real, role-visible lessons — not coming-soon or hidden
             // config rows — so the card matches the actual course (and RoleHome)
             const lessonCount = modules.reduce((n, m) => n + moduleLessons(m, card.id).length, 0);

@@ -8,8 +8,8 @@ import LessonFallback from '../components/LessonFallback';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { demoVideoUrl, demoVideoDownloadUrl } from '../lib/supabase';
-import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES, modulesForRole } from '../data/catalog';
-import { moduleLessons } from '../lib/completion';
+import { ROLES, getLesson, lessonTagFor, stepTagFor, MODULES } from '../data/catalog';
+import { moduleLessons, visibleModules, isEntitled } from '../lib/completion';
 import type { RoleId } from '../data/types';
 import { onVoicesChanged, pickVoiceForLanguage } from '../lib/tts';
 import {
@@ -25,7 +25,7 @@ import { getLessonProgress, saveLessonStep } from '../lib/progress';
 export default function LessonPage() {
   const { role, moduleId, lessonId } = useParams();
   const { lang, meta, t } = useLanguage();
-  const { assignedRole } = useAuth();
+  const { assignedRole, entitlements } = useAuth();
   const navigate = useNavigate();
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
@@ -273,6 +273,13 @@ export default function LessonPage() {
   if (offLimits) {
     return <Navigate to={`/${assignedRole ?? role}`} replace />;
   }
+  // A module the client's organisation never bought. Hidden from their home and
+  // their search already — this stops a shared or guessed URL from playing it,
+  // the same lesson the config-track leak taught. Internal accounts have
+  // entitlements === null and are unaffected.
+  if (!isEntitled(module.id, entitlements)) {
+    return <Navigate to={`/${assignedRole ?? role}`} replace />;
+  }
 
   // clamp for the single render right after a lesson switch, before the reset effect runs
   const safeStep = Math.max(0, Math.min(step, totalSteps - 1));
@@ -307,7 +314,7 @@ export default function LessonPage() {
     if (idx >= 0 && idx < within.length - 1) {
       return { moduleId: module.id, id: within[idx + 1] };
     }
-    const roleModules = modulesForRole(roleId);
+    const roleModules = visibleModules(roleId, entitlements);
     const mIdx = roleModules.findIndex((m) => m.id === module.id);
     for (let i = mIdx + 1; i < roleModules.length; i++) {
       const ls = moduleLessons(roleModules[i], roleId);

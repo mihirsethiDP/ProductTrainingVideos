@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import ProgressRing from '../components/ProgressRing';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import type { Entitlements } from '../lib/completion';
 import {
   supabase,
   inviteState,
@@ -53,6 +54,13 @@ const ALL_LESSONS = MODULES.flatMap((m) =>
   m.lessons.filter((l) => !l.comingSoon && getLesson(l.id)).map((l) => ({ moduleId: m.id, moduleNumber: m.number, id: l.id })),
 );
 
+/** Lessons that count for ONE person — their organisation's modules only.
+ *  A client who bought six modules must not be scored out of fourteen, and the
+ *  admin viewing them may well be entitled to more than they are, so this has
+ *  to key off the SUBJECT's org rather than the viewer's. */
+const lessonsFor = (ent: Entitlements) =>
+  ent === null ? ALL_LESSONS : ALL_LESSONS.filter((l) => ent.has(l.moduleId));
+
 function pctFor(row: ProgRow | undefined, lessonId: string): number {
   const total = getLesson(lessonId)?.layouts.length ?? row?.total_steps ?? 0;
   if (!row || total <= 0) return 0;
@@ -84,6 +92,8 @@ export default function Admin() {
   const [activityMsg, setActivityMsg] = useState<string | null>(null);
   // per-account sign-in state, keyed by user id (empty until the RPC is deployed)
   const [statuses, setStatuses] = useState<Map<string, AccountStatusRow>>(new Map());
+  // org id -> the modules that org bought, for scoring each user against their own
+  const [orgEntitlements, setOrgEntitlements] = useState<Map<string, Set<string>>>(new Map());
 
   // staff who arrived via Google SSO in the last 7 days — the in-app stand-in
   // for "notify the owner", since Google signups skip the invite queue entirely
@@ -107,12 +117,14 @@ export default function Admin() {
       jb,
       { data: act, error: actErr },
       { data: st, error: stErr },
+      { data: grants },
     ] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
       listJobs(),
       supabase.rpc('admin_activity', { limit_n: 250 }),
       supabase.rpc('admin_account_status'),
+      supabase.from('org_modules').select('org_id,module_id'),
     ]);
     // distinguish a real load failure from a genuinely empty org — otherwise a
     // network/RLS error reads as "no users yet". Gate the "couldn't load users"
@@ -129,6 +141,11 @@ export default function Admin() {
     // yet the roster still renders, just without the invite-state pills
     if (stErr) console.error('Admin load — account status:', stErr.message);
     setStatuses(new Map(((st as AccountStatusRow[]) ?? []).map((r) => [r.id, r])));
+    const byOrg = new Map<string, Set<string>>();
+    for (const g of (grants as { org_id: string; module_id: string }[]) ?? []) {
+      (byOrg.get(g.org_id) ?? byOrg.set(g.org_id, new Set()).get(g.org_id)!).add(g.module_id);
+    }
+    setOrgEntitlements(byOrg);
     // activity log is best-effort: if the admin_activity function isn't deployed
     // yet (schema.sql not re-run), degrade gracefully instead of blanking the page.
     if (actErr) {
@@ -172,12 +189,14 @@ export default function Admin() {
   const userOverall = useCallback(
     (userId: string) => {
       const rows = byUser.get(userId);
-      const pcts = ALL_LESSONS.map((l) => pctFor(rows?.get(l.id), l.id));
+      const orgId = users.find((u) => u.id === userId)?.org_id ?? null;
+      const lessons = lessonsFor(orgId ? (orgEntitlements.get(orgId) ?? new Set<string>()) : null);
+      const pcts = lessons.map((l) => pctFor(rows?.get(l.id), l.id));
       const percent = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
-      const done = ALL_LESSONS.filter((l) => pctFor(rows?.get(l.id), l.id) >= 100).length;
-      return { percent, done, total: ALL_LESSONS.length };
+      const done = lessons.filter((l) => pctFor(rows?.get(l.id), l.id) >= 100).length;
+      return { percent, done, total: lessons.length };
     },
-    [byUser],
+    [byUser, users, orgEntitlements],
   );
 
   // the protect_superadmin trigger rejects edits to the owner account, so these

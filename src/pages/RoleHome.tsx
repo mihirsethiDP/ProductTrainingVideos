@@ -7,10 +7,10 @@ import ProgressRing from '../components/ProgressRing';
 import SearchBar from '../components/SearchBar';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { ROLES, getLesson, lessonTagFor, modulesForRole } from '../data/catalog';
+import { ROLES, getLesson, lessonTagFor } from '../data/catalog';
 import type { RoleId } from '../data/types';
 import { getLessonProgress } from '../lib/progress';
-import { lessonPercent, moduleCompletion, roleCompletion } from '../lib/completion';
+import { lessonPercent, moduleCompletion, roleCompletion, visibleModules } from '../lib/completion';
 import { useTour } from '../context/TourContext';
 
 const ROLE_LABEL_KEY: Record<RoleId, string> = {
@@ -24,7 +24,7 @@ export default function RoleHome() {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const { maybeStartFirstVisit } = useTour();
-  const { assignedRole } = useAuth();
+  const { assignedRole, entitlements } = useAuth();
 
   const validRole = !!role && ROLES.includes(role as RoleId);
   useEffect(() => {
@@ -35,8 +35,10 @@ export default function RoleHome() {
   // invited users only see the path the admin assigned them
   if (assignedRole && role !== assignedRole) return <Navigate to={`/${assignedRole}`} replace />;
   const roleId = role as RoleId;
-  const modules = modulesForRole(roleId);
-  const overall = roleCompletion(roleId);
+  // both the grid AND the ring are narrowed to what this organisation bought;
+  // showing six modules while counting out of fourteen is the denominator bug
+  const modules = visibleModules(roleId, entitlements);
+  const overall = roleCompletion(roleId, entitlements);
 
   return (
     <div className="page">

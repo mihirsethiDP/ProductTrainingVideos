@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { searchContent } from '../lib/search';
 import type { RoleId } from '../data/types';
 
@@ -23,7 +24,8 @@ export default function SearchBar({ role }: { role: RoleId }) {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
 
-  const hits = useMemo(() => searchContent(query, role, lang), [query, role, lang]);
+  const { entitlements } = useAuth();
+  const hits = useMemo(() => searchContent(query, role, lang, entitlements), [query, role, lang, entitlements]);
   const open = focused && query.trim().length >= 2;
 
   return (
