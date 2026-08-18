@@ -8,7 +8,6 @@ import Admin from './pages/Admin';
 import Studio from './pages/Studio';
 import Library from './pages/Library';
 import PlantLibrary from './pages/PlantLibrary';
-import UserCenter from './pages/UserCenter';
 import Team from './pages/Team';
 import WatchEquipment from './pages/WatchEquipment';
 import SetPassword from './pages/SetPassword';
@@ -60,7 +59,8 @@ export default function App() {
       <Route path="/admin" element={<Protected><Admin /></Protected>} />
       <Route path="/admin/studio" element={<Protected><Studio /></Protected>} />
       <Route path="/admin/plants" element={<Protected><PlantLibrary /></Protected>} />
-      <Route path="/admin/users" element={<Protected><UserCenter /></Protected>} />
+      {/* the User Center merged into Plants & People; keep old links working */}
+      <Route path="/admin/users" element={<Navigate to="/admin/plants" replace />} />
       <Route path="/admin/library" element={<Protected><Library /></Protected>} />
       {/* same page, reachable without an /admin URL — plant members browse
           their own plants read-only; the page itself decides the controls */}

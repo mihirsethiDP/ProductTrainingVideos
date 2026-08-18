@@ -17,70 +17,59 @@ export interface Membership {
   plant_role: PlantRole;
 }
 
-export interface ManagedUser {
-  id: string;
+
+/** One person as they appear on a plant's roster. */
+export interface PlantPerson {
+  userId: string;
+  name: string;
   email: string;
-  name: string;
-  role: AppRole;
-  trainingRole: TrainingRole | null;
-  active: boolean;
+  appRole: AppRole;
   orgId: string | null;
-  orgName: string | null;
-  memberships: Membership[];
+  plantRole: PlantRole;
+  /** their memberships at OTHER plants — the multi-plant head case, visible
+   *  inline instead of needing a person-centric page */
+  alsoAt: { plantName: string; plantRole: PlantRole }[];
 }
 
-export interface PlantOption {
-  id: string;
-  name: string;
-  org_id: string | null;
-  orgName: string | null;
-}
+const ROLE_ORDER: Record<PlantRole, number> = { head: 0, supervisor: 1, operator: 2 };
 
-export async function listManagedUsers(): Promise<{ rows: ManagedUser[]; error: string | null }> {
-  const [{ data: profs, error }, { data: orgs }, { data: plants }, { data: mems }] = await Promise.all([
-    supabase.from('profiles').select('id,email,full_name,role,training_role,active,org_id').order('email'),
-    supabase.from('organizations').select('id,name'),
-    supabase.from('plants').select('id,name'),
-    supabase.from('plant_members').select('user_id,plant_id,plant_role'),
-  ]);
+/** Everyone at one plant, heads first — plus where else each person sits. */
+export async function listPlantPeople(plantId: string): Promise<{ rows: PlantPerson[]; error: string | null }> {
+  const { data: mems, error } = await supabase
+    .from('plant_members')
+    .select('user_id,plant_role')
+    .eq('plant_id', plantId);
   if (error) return { rows: [], error: error.message };
+  const ids = (mems ?? []).map((m) => m.user_id as string);
+  if (ids.length === 0) return { rows: [], error: null };
 
-  const orgName = new Map((orgs ?? []).map((o) => [o.id as string, o.name as string]));
+  const [{ data: profs }, { data: others }, { data: plants }] = await Promise.all([
+    supabase.from('profiles').select('id,email,full_name,role,org_id').in('id', ids),
+    supabase.from('plant_members').select('user_id,plant_id,plant_role').in('user_id', ids).neq('plant_id', plantId),
+    supabase.from('plants').select('id,name'),
+  ]);
   const plantName = new Map((plants ?? []).map((p) => [p.id as string, p.name as string]));
 
-  const rows = (profs ?? []).map((p) => ({
-    id: p.id as string,
-    email: p.email as string,
-    name: (p.full_name as string) || (p.email as string),
-    role: p.role as AppRole,
-    trainingRole: (p.training_role as TrainingRole) ?? null,
-    active: p.active as boolean,
-    orgId: (p.org_id as string) ?? null,
-    orgName: p.org_id ? (orgName.get(p.org_id as string) ?? null) : null,
-    memberships: (mems ?? [])
-      .filter((m) => m.user_id === p.id)
-      .map((m) => ({
-        plant_id: m.plant_id as string,
-        plant_name: plantName.get(m.plant_id as string) ?? '—',
-        plant_role: m.plant_role as PlantRole,
-      }))
-      .sort((a, b) => a.plant_name.localeCompare(b.plant_name)),
-  }));
+  const rows: PlantPerson[] = (mems ?? [])
+    .map((m) => {
+      const p = (profs ?? []).find((x) => x.id === m.user_id);
+      return {
+        userId: m.user_id as string,
+        name: (p?.full_name as string) || (p?.email as string) || '—',
+        email: (p?.email as string) ?? '',
+        appRole: ((p?.role as AppRole) ?? 'user'),
+        orgId: (p?.org_id as string) ?? null,
+        plantRole: m.plant_role as PlantRole,
+        alsoAt: (others ?? [])
+          .filter((o) => o.user_id === m.user_id)
+          .map((o) => ({
+            plantName: plantName.get(o.plant_id as string) ?? '—',
+            plantRole: o.plant_role as PlantRole,
+          })),
+      };
+    })
+    .sort((a, b) => ROLE_ORDER[a.plantRole] - ROLE_ORDER[b.plantRole] || a.name.localeCompare(b.name));
   return { rows, error: null };
-}
-
-export async function listPlantOptions(): Promise<PlantOption[]> {
-  const [{ data: plants }, { data: orgs }] = await Promise.all([
-    supabase.from('plants').select('id,name,org_id').order('name'),
-    supabase.from('organizations').select('id,name'),
-  ]);
-  const orgName = new Map((orgs ?? []).map((o) => [o.id as string, o.name as string]));
-  return (plants ?? []).map((p) => ({
-    id: p.id as string,
-    name: p.name as string,
-    org_id: (p.org_id as string) ?? null,
-    orgName: p.org_id ? (orgName.get(p.org_id as string) ?? null) : null,
-  }));
 }
 
 export async function addToPlant(

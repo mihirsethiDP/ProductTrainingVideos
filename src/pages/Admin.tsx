@@ -272,10 +272,7 @@ export default function Admin() {
               <button className="lesson-cta">🎬 Content Studio — build demos &amp; lessons →</button>
             </Link>
             <Link to="/admin/plants">
-              <button className="lesson-cta">🏭 Plant Library — plants &amp; module access →</button>
-            </Link>
-            <Link to="/admin/users">
-              <button className="lesson-cta">👤 User Center — people &amp; plants →</button>
+              <button className="lesson-cta">🏭 Plants &amp; People — access &amp; onboarding →</button>
             </Link>
             <Link to="/admin/library">
               <button className="lesson-cta">🔧 Equipment Library — plant photos &amp; videos →</button>
