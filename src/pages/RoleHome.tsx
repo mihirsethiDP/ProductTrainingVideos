@@ -78,6 +78,18 @@ export default function RoleHome() {
           )}
         </div>
 
+        {/* A client whose plant has no modules yet used to land on the marketing
+            headline, "0% complete · 0/0 lessons", and nothing else — which reads
+            as a broken product rather than an unfinished setup. Say what is
+            actually going on and suppress the 0/0 ring, which only looks like
+            failure. */}
+        {modules.length === 0 ? (
+          <div className="home-empty">
+            <div className="home-empty-title">{t('noModulesTitle')}</div>
+            <p>{t('noModulesBody')}</p>
+          </div>
+        ) : (
+          <>
         <SearchBar role={roleId} />
 
         <div className="progress-summary" data-tour="progress-summary">
@@ -203,6 +215,9 @@ export default function RoleHome() {
           </div>
           );
         })}
+
+        </>
+        )}
 
         <Footer />
       </div>

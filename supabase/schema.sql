@@ -1071,10 +1071,14 @@ create policy org_modules_read_own on public.org_modules
 -- a client operator could list every plant name on the platform, including
 -- other customers'. Internal accounts keep exactly what they had.
 drop policy if exists plants_read on public.plants;
+-- QA 2026-08-18: the "or your whole organisation's plants" clause was too wide.
+-- An operator on one plant could list every other plant their employer owns —
+-- and in the Equipment Library those extra plants appeared in the picker with
+-- no media behind them, which just looks broken. Membership is the unit of
+-- access in this model, so membership is what this grants.
 create policy plants_read on public.plants for select using (
-  public.is_internal_account()                       -- every DigitalPaani account, as before
-  or id in (select public.my_plants())               -- a plant you belong to
-  or (org_id is not null and org_id = public.my_org()) -- or one your organisation owns
+  public.is_internal_account()            -- every DigitalPaani account, as before
+  or id in (select public.my_plants())    -- and otherwise only plants you are on
 );
 
 -- plant_media: staff curate; members read their own plants

@@ -1,11 +1,30 @@
 import type { LangCode, RoleId } from '../data/types';
 import { supabase } from './supabase';
 
-const KEY = 'dp-training-v1';
+const BASE_KEY = 'dp-training-v1';
 
 // When a user is logged in, lesson progress is mirrored to Supabase so it
 // follows them across devices and is visible to admins. Set by AuthContext.
 let syncUserId: string | null = null;
+
+/**
+ * The local store is scoped PER ACCOUNT.
+ *
+ * It used to be one fixed key for the whole browser, which meant the next
+ * person to sign in on a shared machine inherited whatever the previous person
+ * had done — and pushLocalProgress then uploaded it to them as their own. On a
+ * plant computer shared by a shift that is not a curiosity: it silently
+ * fabricates completion for people who never opened a lesson, and a plant head
+ * is judged on exactly that number.
+ *
+ * Signed-out use (zero-auth demos and quick tours) keeps the anonymous key,
+ * and is deliberately NOT merged into an account on sign-in — inheriting an
+ * unknown browser's history is the very thing being fixed.
+ */
+function storeKey(): string {
+  return syncUserId ? `${BASE_KEY}:${syncUserId}` : BASE_KEY;
+}
+
 export function setProgressSyncUser(id: string | null) {
   syncUserId = id;
 }
@@ -24,7 +43,7 @@ interface Store {
 
 function read(): Store {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(storeKey());
     if (raw) return { lessons: {}, ...JSON.parse(raw) };
   } catch {
     /* corrupted or unavailable storage — start fresh */
@@ -34,31 +53,52 @@ function read(): Store {
 
 function write(store: Store) {
   try {
-    localStorage.setItem(KEY, JSON.stringify(store));
+    localStorage.setItem(storeKey(), JSON.stringify(store));
   } catch {
     /* storage unavailable (private mode) — progress just won't persist */
+  }
+}
+
+// Language and chosen path are DEVICE preferences, not progress: they stay on
+// the shared key so scoping progress per account doesn't reset someone's
+// language the next time they load the page.
+function readDevice(): { lang?: LangCode; role?: RoleId } {
+  try {
+    const raw = localStorage.getItem(BASE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function writeDevice(patch: { lang?: LangCode; role?: RoleId }) {
+  try {
+    localStorage.setItem(BASE_KEY, JSON.stringify({ ...readDevice(), ...patch }));
+  } catch {
+    /* ignore */
   }
 }
 
 const VALID_LANGS: LangCode[] = ['en', 'hi', 'ta', 'mr'];
 
 export function getSavedLang(): LangCode | undefined {
-  const saved = read().lang;
+  const saved = readDevice().lang;
   // guard against a stale/foreign code (e.g. a removed language) — an unknown
   // value would otherwise index into an undefined string table and white-screen
   return saved && VALID_LANGS.includes(saved) ? saved : undefined;
 }
 
 export function saveLang(lang: LangCode) {
-  write({ ...read(), lang });
+  writeDevice({ lang });
 }
 
 export function getSavedRole(): RoleId | undefined {
-  return read().role;
+  return readDevice().role;
 }
 
 export function saveRole(role: RoleId) {
-  write({ ...read(), role });
+  writeDevice({ role });
 }
 
 export function getLessonProgress(lessonId: string): LessonProgress | undefined {
