@@ -83,9 +83,14 @@ export async function listTeam(plant: TeamPlant): Promise<{ rows: TeamMember[]; 
     supabase.from('plant_modules').select('module_id').eq('plant_id', plant.id),
   ]);
 
-  // an internal plant (no owning client) is unrestricted; a client plant is
-  // exactly what it was granted
-  const ent: Entitlements = plant.org_id ? new Set((grants ?? []).map((g) => g.module_id)) : null;
+  // a plant that has grants (or belongs to a client) scores its people against
+  // those grants — org-less is NOT a free pass, or an org-less client plant
+  // would score everyone against the whole internal catalogue. Only a truly
+  // internal plant with no grants falls back to unrestricted.
+  const ent: Entitlements =
+    plant.org_id || (grants ?? []).length > 0
+      ? new Set((grants ?? []).map((g) => g.module_id))
+      : null;
 
   const byUser = new Map<string, Map<string, ProgressRow>>();
   for (const r of (prog ?? []) as ProgressRow[]) {

@@ -63,6 +63,10 @@ export default function PlantLibrary() {
   const [npOrg, setNpOrg] = useState(''); // '' internal · 'new' → name input · else org id
   const [npOrgName, setNpOrgName] = useState('');
 
+  // attach the selected plant to a brand-new client (the reassign select's "new" case)
+  const [showNewClient, setShowNewClient] = useState(false);
+  const [ncName, setNcName] = useState('');
+
   // add person (detail)
   const [apEmail, setApEmail] = useState('');
   const [apName, setApName] = useState('');
@@ -274,10 +278,33 @@ export default function PlantLibrary() {
                   <div>
                     <label className="lib-label" htmlFor="pl-org">Client</label>{' '}
                     <select id="pl-org" className="au-role" value={plant.org_id ?? ''}
-                            onChange={(e) => { void setPlantOrg(plant.id, e.target.value || null).then(reload); }}>
+                            onChange={(e) => {
+                              if (e.target.value === 'new') { setShowNewClient(true); return; }
+                              setShowNewClient(false);
+                              void setPlantOrg(plant.id, e.target.value || null).then(reload);
+                            }}>
                       <option value="">Internal (no client)</option>
                       {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+                      <option value="new">＋ New client…</option>
                     </select>
+                    {showNewClient && (
+                      <form
+                        className="pp-newform"
+                        style={{ marginTop: 8 }}
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const { org, error: oe } = await createOrganization(ncName);
+                          if (oe) { setError(oe); return; }
+                          if (org) await setPlantOrg(plant.id, org.id);
+                          setNcName(''); setShowNewClient(false);
+                          await reload();
+                        }}
+                      >
+                        <input type="text" placeholder="Client name" value={ncName}
+                               onChange={(e) => setNcName(e.target.value)} required />
+                        <button type="submit" className="lesson-cta">Save</button>
+                      </form>
+                    )}
                   </div>
                 </div>
 

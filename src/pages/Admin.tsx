@@ -198,10 +198,15 @@ export default function Admin() {
   const userOverall = useCallback(
     (userId: string) => {
       const rows = byUser.get(userId);
-      // internal accounts (no org) are unrestricted; client accounts inherit
-      // from their plants
-      const isClient = (users.find((u) => u.id === userId)?.org_id ?? null) !== null;
-      const lessons = lessonsFor(isClient ? (userEntitlements.get(userId) ?? new Set<string>()) : null);
+      // same rule as sign-in: staff are unrestricted; a plain user on plants is
+      // scored against their plants' grants (org or not); a plain user without
+      // plants is unrestricted only if they are org-less (legacy internal)
+      const u = users.find((x) => x.id === userId);
+      const ent =
+        !u || u.role !== 'user'
+          ? null
+          : (userEntitlements.get(userId) ?? (u.org_id ? new Set<string>() : null));
+      const lessons = lessonsFor(ent);
       const pcts = lessons.map((l) => pctFor(rows?.get(l.id), l.id));
       const percent = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
       const done = lessons.filter((l) => pctFor(rows?.get(l.id), l.id) >= 100).length;

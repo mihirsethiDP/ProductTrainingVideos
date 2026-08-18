@@ -79,21 +79,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ({ data: mems } = await supabase.from('plant_members').select('plant_id,plant_role'));
       setMemberships((mems ?? []) as Membership[]);
     }
-    if (prof?.org_id) {
-      // a client account inherits from its PLANTS — the union, since one person
-      // can sit at more than one plant and should see everything they cover
-      const plantIds = (mems ?? []).map((m) => m.plant_id as string);
-      if (plantIds.length === 0) {
-        setEntitlements(new Set()); // in a client org but on no plant yet: nothing
-      } else {
-        const { data: grants } = await supabase
-          .from('plant_modules')
-          .select('module_id')
-          .in('plant_id', plantIds);
-        setEntitlements(new Set((grants ?? []).map((g) => g.module_id as string)));
-      }
+    // Entitlements are PLANT-driven, not org-driven. The org is only the
+    // tenancy boundary for reads; what a person may LEARN comes from the plants
+    // they sit on. Keying this off org_id was a live bug: the two original
+    // plants carry no client org, so a supervisor placed on one fell through
+    // the "DigitalPaani account — unrestricted" branch and saw the whole
+    // catalogue instead of her plant's three modules.
+    const isStaff = prof?.role === 'admin' || prof?.role === 'csm';
+    const plantIds = (mems ?? []).map((m) => m.plant_id as string);
+    if (!prof || isStaff) {
+      setEntitlements(null); // staff learn and curate the whole catalogue
+    } else if (plantIds.length > 0) {
+      // on a plant: the union of what their plants grant — org or no org
+      const { data: grants } = await supabase
+        .from('plant_modules')
+        .select('module_id')
+        .in('plant_id', plantIds);
+      setEntitlements(new Set((grants ?? []).map((g) => g.module_id as string)));
     } else {
-      setEntitlements(null); // DigitalPaani account — unrestricted
+      // no plant: a client account has nothing yet; an org-less plain user is
+      // a legacy internal learner and keeps the full catalogue
+      setEntitlements(prof.org_id ? new Set() : null);
     }
     setProfile(prof);
     setProgressSyncUser(userId);
