@@ -491,6 +491,12 @@ export default function LessonPage() {
           }
         />
 
+        {/* Demos are a client's OWN setup, so calling that illustrative would be
+            wrong — this is for the standard catalogue only. */}
+        {moduleId !== 'module-demos' && (
+          <div className="sample-note">{t('sampleDataNote')}</div>
+        )}
+
         <div className="narration">
           <span className="narration-label">{t('narration')} · {stepTag}</span>
           <div className="narration-step">

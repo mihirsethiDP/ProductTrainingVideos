@@ -242,6 +242,12 @@ button { font-family: var(--sans); }
 .au-state.done    { background: #e7f6ee; color: var(--leaf); }
 .au-state.waiting { background: var(--paper-warm); color: var(--ink-soft); }
 
+.sample-note {
+  margin: 10px 0 0; padding: 7px 12px;
+  background: var(--paper-warm); border: 1px solid var(--line); border-radius: 8px;
+  font-size: 11.5px; color: var(--ink-soft); text-align: center;
+}
+
 /* ===== plant head / supervisor team view ===== */
 .team-summary {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
