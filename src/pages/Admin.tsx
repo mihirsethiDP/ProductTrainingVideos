@@ -92,8 +92,9 @@ export default function Admin() {
   const [activityMsg, setActivityMsg] = useState<string | null>(null);
   // per-account sign-in state, keyed by user id (empty until the RPC is deployed)
   const [statuses, setStatuses] = useState<Map<string, AccountStatusRow>>(new Map());
-  // org id -> the modules that org bought, for scoring each user against their own
-  const [orgEntitlements, setOrgEntitlements] = useState<Map<string, Set<string>>>(new Map());
+  // user id -> the modules they inherit from their plants, for scoring each
+  // person against their own set rather than the whole catalogue
+  const [userEntitlements, setUserEntitlements] = useState<Map<string, Set<string>>>(new Map());
 
   // staff who arrived via Google SSO in the last 7 days — the in-app stand-in
   // for "notify the owner", since Google signups skip the invite queue entirely
@@ -118,13 +119,15 @@ export default function Admin() {
       { data: act, error: actErr },
       { data: st, error: stErr },
       { data: grants },
+      { data: allMems },
     ] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: true }),
       supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed'),
       listJobs(),
       supabase.rpc('admin_activity', { limit_n: 250 }),
       supabase.rpc('admin_account_status'),
-      supabase.from('org_modules').select('org_id,module_id'),
+      supabase.from('plant_modules').select('plant_id,module_id'),
+      supabase.from('plant_members').select('user_id,plant_id'),
     ]);
     // distinguish a real load failure from a genuinely empty org — otherwise a
     // network/RLS error reads as "no users yet". Gate the "couldn't load users"
@@ -141,11 +144,17 @@ export default function Admin() {
     // yet the roster still renders, just without the invite-state pills
     if (stErr) console.error('Admin load — account status:', stErr.message);
     setStatuses(new Map(((st as AccountStatusRow[]) ?? []).map((r) => [r.id, r])));
-    const byOrg = new Map<string, Set<string>>();
-    for (const g of (grants as { org_id: string; module_id: string }[]) ?? []) {
-      (byOrg.get(g.org_id) ?? byOrg.set(g.org_id, new Set()).get(g.org_id)!).add(g.module_id);
+    // plant -> modules, then user -> the union across their plants
+    const byPlant = new Map<string, Set<string>>();
+    for (const g of (grants as { plant_id: string; module_id: string }[]) ?? []) {
+      (byPlant.get(g.plant_id) ?? byPlant.set(g.plant_id, new Set()).get(g.plant_id)!).add(g.module_id);
     }
-    setOrgEntitlements(byOrg);
+    const byUser2 = new Map<string, Set<string>>();
+    for (const m of (allMems as { user_id: string; plant_id: string }[]) ?? []) {
+      const set = byUser2.get(m.user_id) ?? byUser2.set(m.user_id, new Set()).get(m.user_id)!;
+      for (const mod of byPlant.get(m.plant_id) ?? []) set.add(mod);
+    }
+    setUserEntitlements(byUser2);
     // activity log is best-effort: if the admin_activity function isn't deployed
     // yet (schema.sql not re-run), degrade gracefully instead of blanking the page.
     if (actErr) {
@@ -189,14 +198,16 @@ export default function Admin() {
   const userOverall = useCallback(
     (userId: string) => {
       const rows = byUser.get(userId);
-      const orgId = users.find((u) => u.id === userId)?.org_id ?? null;
-      const lessons = lessonsFor(orgId ? (orgEntitlements.get(orgId) ?? new Set<string>()) : null);
+      // internal accounts (no org) are unrestricted; client accounts inherit
+      // from their plants
+      const isClient = (users.find((u) => u.id === userId)?.org_id ?? null) !== null;
+      const lessons = lessonsFor(isClient ? (userEntitlements.get(userId) ?? new Set<string>()) : null);
       const pcts = lessons.map((l) => pctFor(rows?.get(l.id), l.id));
       const percent = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
       const done = lessons.filter((l) => pctFor(rows?.get(l.id), l.id) >= 100).length;
       return { percent, done, total: lessons.length };
     },
-    [byUser, users, orgEntitlements],
+    [byUser, users, userEntitlements],
   );
 
   // the protect_superadmin trigger rejects edits to the owner account, so these

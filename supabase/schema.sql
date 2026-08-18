@@ -1141,3 +1141,43 @@ create policy lp_manager_read on public.lesson_progress
 
 -- NOTE: lp_own (FOR ALL) is untouched, so writing progress is still strictly
 -- your own. A manager can read their team's rows and can never edit them.
+
+-- ============================================================================
+--  Entitlements move from the ORGANISATION to the PLANT
+--
+--  Revised model: an admin assigns modules to a plant, adds people to that
+--  plant, and everyone there inherits the same access regardless of persona.
+--  Persona (head / supervisor / operator) now decides only ONE thing — whether
+--  you get a dashboard over your people. It no longer narrows content.
+--
+--  Supersedes org_modules from phase 2, which was empty and never used in
+--  anger. Dropped rather than left behind: two tables that could each answer
+--  "what may this person see" is one too many, and the stale one always wins
+--  an argument eventually.
+--
+--  organizations stays. It is no longer the entitlement holder, but it is
+--  still how several plants belong to one customer, and profiles.org_id is
+--  still the tenant boundary that keeps clients apart.
+-- ============================================================================
+
+drop table if exists public.org_modules;
+
+create table if not exists public.plant_modules (
+  plant_id   uuid not null references public.plants (id) on delete cascade,
+  module_id  text not null,
+  granted_at timestamptz not null default now(),
+  primary key (plant_id, module_id)
+);
+
+alter table public.plant_modules enable row level security;
+
+-- staff grant and revoke, from the Plant Library
+drop policy if exists plant_modules_staff on public.plant_modules;
+create policy plant_modules_staff on public.plant_modules
+  for all using (public.can_create()) with check (public.can_create());
+
+-- anyone at the plant may read what that plant has — this is what the app
+-- loads at sign-in to decide what to show and what to count
+drop policy if exists plant_modules_read_own on public.plant_modules;
+create policy plant_modules_read_own on public.plant_modules
+  for select using (plant_id in (select public.my_plants()));

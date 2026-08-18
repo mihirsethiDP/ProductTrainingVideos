@@ -69,16 +69,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // as "unrestricted" — flashing modules a client never bought.
     // plants this person belongs to — drives Equipment Library access. The
     // read-self policy on plant_members means this returns only their own rows.
+    let mems: { plant_id: string; plant_role: string }[] | null = null;
     if (prof) {
-      const { data: mems } = await supabase.from('plant_members').select('plant_id,plant_role');
+      ({ data: mems } = await supabase.from('plant_members').select('plant_id,plant_role'));
       setMemberships((mems ?? []) as Membership[]);
     }
     if (prof?.org_id) {
-      const { data: grants } = await supabase
-        .from('org_modules')
-        .select('module_id')
-        .eq('org_id', prof.org_id);
-      setEntitlements(new Set((grants ?? []).map((g) => g.module_id as string)));
+      // a client account inherits from its PLANTS — the union, since one person
+      // can sit at more than one plant and should see everything they cover
+      const plantIds = (mems ?? []).map((m) => m.plant_id as string);
+      if (plantIds.length === 0) {
+        setEntitlements(new Set()); // in a client org but on no plant yet: nothing
+      } else {
+        const { data: grants } = await supabase
+          .from('plant_modules')
+          .select('module_id')
+          .in('plant_id', plantIds);
+        setEntitlements(new Set((grants ?? []).map((g) => g.module_id as string)));
+      }
     } else {
       setEntitlements(null); // DigitalPaani account — unrestricted
     }

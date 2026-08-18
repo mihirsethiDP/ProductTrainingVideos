@@ -16,15 +16,37 @@ export const isEntitled = (moduleId: string, ent: Entitlements): boolean =>
   ent === null || ent.has(moduleId);
 
 /**
- * The modules a person actually sees: their role's modules, narrowed to what
- * their organisation was sold.
+ * The modules a person actually sees.
  *
- * Every caller that used to reach for modulesForRole() should come here
- * instead — that is what keeps the denominator honest. A client who bought six
- * modules must never see a figure measured against fourteen.
+ * Two different rules, because internal and client accounts are shaped
+ * differently:
+ *
+ *  INTERNAL (ent === null) — role decides, exactly as it always has. Operators,
+ *  supervisors and internal staff each have their own path through the
+ *  catalogue.
+ *
+ *  CLIENT (ent is a set) — the PLANT decides, and persona does not narrow
+ *  content at all. Everyone at a plant sees the same modules; being a head or a
+ *  supervisor only earns you a dashboard over your people. So this deliberately
+ *  does NOT go through modulesForRole().
+ *
+ * The one thing a grant can never do is hand a client an internal-exclusive
+ * module. If someone mis-assigns Triggers or Sensor Health to a plant in the
+ * Plant Library, that filter is what stops it reaching the floor — the guard
+ * belongs here rather than in the admin screen, where it could be bypassed.
+ *
+ * Either way this is what keeps the denominator honest: a plant with six
+ * modules must never be measured against fourteen.
  */
 export function visibleModules(role: RoleId, ent: Entitlements = null): ModuleDef[] {
-  return modulesForRole(role).filter((m) => isEntitled(m.id, ent));
+  if (ent === null) return modulesForRole(role);
+  return MODULES.filter(
+    (m) =>
+      ent.has(m.id) &&
+      // roles: [] is a hidden holder (demos, quick tours); internal-only means
+      // exactly that, whatever a grant says
+      m.roles.some((r) => r !== 'internal'),
+  );
 }
 
 /** Percent complete for one lesson (0..100). */

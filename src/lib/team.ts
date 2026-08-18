@@ -80,12 +80,11 @@ export async function listTeam(plant: TeamPlant): Promise<{ rows: TeamMember[]; 
   const [{ data: profs }, { data: prog }, { data: grants }] = await Promise.all([
     supabase.from('profiles').select('id,full_name,email,training_role,active').in('id', ids),
     supabase.from('lesson_progress').select('user_id,lesson_id,last_step,total_steps,completed,updated_at').in('user_id', ids),
-    plant.org_id
-      ? supabase.from('org_modules').select('module_id').eq('org_id', plant.org_id)
-      : Promise.resolve({ data: null } as { data: { module_id: string }[] | null }),
+    supabase.from('plant_modules').select('module_id').eq('plant_id', plant.id),
   ]);
 
-  // null = unrestricted, for a plant that belongs to no client (an internal one)
+  // an internal plant (no owning client) is unrestricted; a client plant is
+  // exactly what it was granted
   const ent: Entitlements = plant.org_id ? new Set((grants ?? []).map((g) => g.module_id)) : null;
 
   const byUser = new Map<string, Map<string, ProgressRow>>();
