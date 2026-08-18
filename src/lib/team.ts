@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { MODULES, getLesson } from '../data/catalog';
+import { getLesson } from '../data/catalog';
 import { moduleLessons, visibleModules, type Entitlements } from './completion';
 import type { RoleId } from '../data/types';
 
@@ -97,11 +97,12 @@ export async function listTeam(plant: TeamPlant): Promise<{ rows: TeamMember[]; 
     const id = m.user_id as string;
     const p = (profs ?? []).find((x) => x.id === id);
     const training = (p?.training_role ?? null) as RoleId | null;
-    // what THIS person is expected to complete: their path, narrowed to what
-    // their organisation was sold
-    const lessonIds = training
-      ? visibleModules(training, ent).flatMap((mod) => moduleLessons(mod, training))
-      : MODULES.flatMap((mod) => moduleLessons(mod, 'internal'));
+    // What THIS person is expected to complete. On a client plant that is always
+    // the plant's modules — falling back to the internal catalogue for someone
+    // with no training path scored them out of 43 lessons while the rest of
+    // their team was scored out of 5, which makes the whole column unreadable.
+    const scoredAs: RoleId = training ?? (ent === null ? 'internal' : 'operator');
+    const lessonIds = visibleModules(scoredAs, ent).flatMap((mod) => moduleLessons(mod, scoredAs));
     const mine = byUser.get(id);
     const percents = lessonIds.map((lid) => pct(mine?.get(lid), lid));
     const done = lessonIds.filter((lid) => pct(mine?.get(lid), lid) >= 100).length;
