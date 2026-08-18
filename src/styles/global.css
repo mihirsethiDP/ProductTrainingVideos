@@ -281,6 +281,49 @@ button { font-family: var(--sans); }
   font-size: 12.5px; color: var(--ink-soft); line-height: 1.6;
 }
 
+/* ===== user center: people and their plants ===== */
+.uc-split { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: start; }
+.uc-search {
+  width: 100%; padding: 9px 12px; margin-bottom: 10px;
+  border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; background: #fff;
+}
+.uc-list { max-height: 620px; overflow-y: auto; }
+.uc-person {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; text-align: left; padding: 10px 12px; margin-bottom: 6px;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+}
+.uc-person:hover { background: var(--paper); }
+.uc-person.on { border-color: var(--water); background: var(--paper); }
+.uc-person-main { min-width: 0; }
+.uc-person-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.uc-count { font-size: 10.5px; color: var(--ink-soft); font-family: var(--mono); }
+
+.uc-detail { min-width: 0; }
+.uc-memberships { display: flex; flex-direction: column; gap: 8px; }
+.uc-mem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px;
+}
+.uc-mem-plant { flex: 1; font-size: 14px; font-weight: 600; color: var(--ink); }
+
+.uc-issued {
+  margin: 12px 0; padding: 16px 18px;
+  background: #e7f6ee; border: 1px solid #aedcc1; border-radius: 12px;
+}
+.uc-issued-title { font-weight: 700; font-size: 13.5px; color: var(--leaf); margin-bottom: 10px; }
+.uc-cred { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 8px; }
+.uc-cred span { font-size: 13.5px; color: var(--ink); }
+.uc-cred code {
+  font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+  background: #fff; border: 1px solid #aedcc1; border-radius: 7px; padding: 5px 12px; color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .uc-split { grid-template-columns: 1fr; }
+  .uc-list { max-height: none; }
+}
+
 /* ===== plant head / supervisor team view ===== */
 .team-summary {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;

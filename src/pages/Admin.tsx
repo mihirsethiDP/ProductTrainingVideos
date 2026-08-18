@@ -274,6 +274,9 @@ export default function Admin() {
             <Link to="/admin/plants">
               <button className="lesson-cta">🏭 Plant Library — plants &amp; module access →</button>
             </Link>
+            <Link to="/admin/users">
+              <button className="lesson-cta">👤 User Center — people &amp; plants →</button>
+            </Link>
             <Link to="/admin/library">
               <button className="lesson-cta">🔧 Equipment Library — plant photos &amp; videos →</button>
             </Link>
