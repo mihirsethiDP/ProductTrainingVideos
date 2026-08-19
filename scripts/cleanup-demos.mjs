@@ -55,8 +55,18 @@ function deregisterFromCatalog(lessonId) {
   const varName = imp[1];
   c = c.replace(imp[0], '');
   c = c.replace(new RegExp(`\\s*\\[${varName}\\.id\\]: ${varName},`), '');
-  for (const pat of [`{ id: '${lessonId}' }, `, `, { id: '${lessonId}' }`, `{ id: '${lessonId}' }`]) {
-    if (c.includes(pat)) { c = c.replace(pat, ''); break; }
+  // The lessons array is formatted one entry per line, so take the whole line —
+  // its indent and trailing comma included. Matching the bare `{ id: '...' }`
+  // alone leaves the comma behind and elides an array element, which tsc reads
+  // as `({ id: string } | undefined)[]`. Single-line forms are the fallback.
+  const entry = `\\{ id: '${lessonId}' \\}`;
+  const ownLine = new RegExp(`^[ \\t]*${entry},?[ \\t]*\\r?\\n`, 'm');
+  if (ownLine.test(c)) {
+    c = c.replace(ownLine, '');
+  } else {
+    for (const pat of [`{ id: '${lessonId}' }, `, `, { id: '${lessonId}' }`, `{ id: '${lessonId}' }`]) {
+      if (c.includes(pat)) { c = c.replace(pat, ''); break; }
+    }
   }
   if (!DRY) fs.writeFileSync(file, c);
   console.log(`  de-registered ${varName} from catalog.ts`);
