@@ -1,5 +1,4 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
-import demoMerino from './lessons/module-demos/demo-merino';
 import demoAdaniMumbai from './lessons/module-demos/demo-adani-mumbai';
 import demoPasswordReset from './lessons/module-demos/demo-password-reset';
 import demoPhoneVerification from './lessons/module-demos/demo-phone-verification';
@@ -61,7 +60,6 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
-  [demoMerino.id]: demoMerino,
   [demoAdaniMumbai.id]: demoAdaniMumbai,
   [demoPasswordReset.id]: demoPasswordReset,
   [demoPhoneVerification.id]: demoPhoneVerification,
@@ -498,7 +496,6 @@ export const MODULES: ModuleDef[] = [
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
     lessons: [
-      { id: 'demo-merino' },
       { id: 'demo-adani-mumbai' },
       { id: 'demo-password-reset' },
       { id: 'demo-phone-verification' },
