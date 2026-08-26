@@ -11,8 +11,8 @@ import {
   type AdminPlant, type Organization,
 } from '../lib/plants';
 import {
-  addToPlant, createClientUser, listPlantPeople, removeFromPlant, syncUserOrg,
-  type PlantPerson, type PlantRole,
+  addToPlant, createClientUser, listPlantPeople, removeFromPlant, syncUserOrg, syncTrainingRole,
+  TRAINING_FOR, type PlantPerson, type PlantRole,
 } from '../lib/users';
 import { isMissingSchema } from '../lib/library';
 
@@ -21,15 +21,6 @@ const PLANT_ROLES: { id: PlantRole; label: string }[] = [
   { id: 'supervisor', label: 'Supervisor' },
   { id: 'operator', label: 'Operator' },
 ];
-
-/** The training path follows from the job — one less thing to pick. Heads and
- *  supervisors read the oversight variants; operators the hands-on ones.
- *  Content itself comes from the plant's modules either way. */
-const TRAINING_FOR: Record<PlantRole, 'supervisor' | 'operator'> = {
-  head: 'supervisor',
-  supervisor: 'supervisor',
-  operator: 'operator',
-};
 
 /**
  * Plants & People — one screen for the whole onboarding flow.
@@ -167,7 +158,7 @@ export default function PlantLibrary() {
     if (ce) { setError(ce); return; }
     if (existing) {
       const { data: prof } = await supabase.from('profiles').select('id').eq('email', apEmail.trim().toLowerCase()).maybeSingle();
-      if (prof) await maybeAdopt(prof.id);
+      if (prof) { await maybeAdopt(prof.id); await syncTrainingRole(prof.id); }
       setNotice(`${apEmail.trim()} already had an account — added to ${plant.name}.`);
     } else if (password) {
       setIssued({ email: apEmail.trim().toLowerCase(), password });
@@ -180,7 +171,11 @@ export default function PlantLibrary() {
   async function changeRole(userId: string, role: PlantRole) {
     if (!plant) return;
     const { error: e } = await addToPlant(userId, plant.id, role);
-    if (e) setError(e); else await loadDetail(plant.id);
+    if (e) { setError(e); return; }
+    // the membership is only half of it — their training path is stored on the
+    // profile and the home page reads THAT, so it has to move too
+    await syncTrainingRole(userId);
+    await loadDetail(plant.id);
   }
 
   async function removePerson(p: PlantPerson) {
@@ -188,7 +183,11 @@ export default function PlantLibrary() {
     if (!window.confirm(`Remove ${p.name} from ${plant.name}?`)) return;
     const { error: e } = await removeFromPlant(p.userId, plant.id);
     if (e) setError(e);
-    else { await loadDetail(plant.id); await reload(); }
+    else {
+      await syncTrainingRole(p.userId); // they may now be an operator elsewhere
+      await loadDetail(plant.id);
+      await reload();
+    }
   }
 
   if (loading || !authReady) return null;

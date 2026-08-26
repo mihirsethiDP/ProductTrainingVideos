@@ -72,6 +72,46 @@ export async function listPlantPeople(plantId: string): Promise<{ rows: PlantPer
   return { rows, error: null };
 }
 
+/**
+ * The training path implied by a plant role. Heads and supervisors read the
+ * oversight variants; operators the hands-on ones. Content comes from the
+ * plant either way — this only decides which home they land on.
+ */
+export const TRAINING_FOR: Record<PlantRole, TrainingRole> = {
+  head: 'supervisor',
+  supervisor: 'supervisor',
+  operator: 'operator',
+};
+
+/**
+ * Recompute profiles.training_role from ALL of a person's plant memberships.
+ *
+ * This has to be called whenever a membership changes. It was not, and that
+ * was a live bug: training_role is stamped once when the account is created,
+ * so demoting a plant head to operator moved the membership row but left the
+ * profile saying "supervisor" — and the home page reads the profile. The
+ * person kept landing on the supervisor path after being made an operator.
+ *
+ * Derived from every membership rather than just the one being edited, because
+ * someone can be a head at one plant and an operator at another; the widest
+ * role they hold anywhere decides their path. Staff are never touched — their
+ * path is not membership-derived.
+ */
+export async function syncTrainingRole(userId: string): Promise<{ error: string | null }> {
+  const { data: prof } = await supabase.from('profiles').select('role').eq('id', userId).single();
+  if (prof?.role !== 'user') return { error: null };
+
+  const { data: mems } = await supabase.from('plant_members').select('plant_role').eq('user_id', userId);
+  const roles = (mems ?? []).map((m) => m.plant_role as PlantRole);
+  if (roles.length === 0) return { error: null }; // no plants left: leave as-is
+
+  const next: TrainingRole = roles.some((r) => r === 'head' || r === 'supervisor')
+    ? 'supervisor'
+    : 'operator';
+  const { error } = await supabase.from('profiles').update({ training_role: next }).eq('id', userId);
+  return { error: error?.message ?? null };
+}
+
 export async function addToPlant(
   userId: string,
   plantId: string,
