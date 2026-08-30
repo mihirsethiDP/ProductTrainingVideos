@@ -2,6 +2,7 @@ import type { Lesson, ModuleDef, RoleId } from './types';
 import demoAdaniMumbai from './lessons/module-demos/demo-adani-mumbai';
 import demoPasswordReset from './lessons/module-demos/demo-password-reset';
 import demoPhoneVerification from './lessons/module-demos/demo-phone-verification';
+import demoTotalWaterManagement from './lessons/module-demos/demo-total-water-management';
 import shortOperational from './lessons/module-shorts/short-operational';
 import shortNonOperational from './lessons/module-shorts/short-non-operational';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
@@ -63,6 +64,7 @@ export const LESSONS: Record<string, Lesson> = {
   [demoAdaniMumbai.id]: demoAdaniMumbai,
   [demoPasswordReset.id]: demoPasswordReset,
   [demoPhoneVerification.id]: demoPhoneVerification,
+  [demoTotalWaterManagement.id]: demoTotalWaterManagement,
   [shortOperational.id]: shortOperational,
   [shortNonOperational.id]: shortNonOperational,
   [lessonReading.id]: lessonReading,
@@ -499,6 +501,7 @@ export const MODULES: ModuleDef[] = [
       { id: 'demo-adani-mumbai' },
       { id: 'demo-password-reset' },
       { id: 'demo-phone-verification' },
+      { id: 'demo-total-water-management' },
     ],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
