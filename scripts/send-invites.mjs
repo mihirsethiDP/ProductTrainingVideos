@@ -18,7 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const SUPABASE_URL = 'https://zilwylqyhbejgmbizywh.supabase.co';
-const APP_URL = 'https://mihirsethidp.github.io/ProductTrainingVideos/';
+const APP_URL = 'https://training.digitalpaani.com/';
 const KEY_FILE = path.resolve('scripts/service.local');
 const SERVICE_ROLE =
   process.env.SUPABASE_SERVICE_ROLE ||

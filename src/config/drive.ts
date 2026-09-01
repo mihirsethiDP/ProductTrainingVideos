@@ -15,7 +15,7 @@
  *    Google's multi-week verification review that Drive scopes otherwise need).
  * 4. Credentials → Create credentials → **OAuth client ID** → Web application.
  *    Authorized JavaScript origins — add BOTH:
- *      https://mihirsethidp.github.io
+ *      https://training.digitalpaani.com
  *      http://localhost:5173
  *    (no redirect URIs needed; the token flow is popup-based)
  * 5. Paste the client id below.
