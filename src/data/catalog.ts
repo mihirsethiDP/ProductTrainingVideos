@@ -1,5 +1,4 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
-import demoPhoneVerification from './lessons/module-demos/demo-phone-verification';
 import demoTotalWaterManagement from './lessons/module-demos/demo-total-water-management';
 import demoTajExoticaDashboard from './lessons/module-demos/demo-taj-exotica-dashboard';
 import shortOperational from './lessons/module-shorts/short-operational';
@@ -60,7 +59,6 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
-  [demoPhoneVerification.id]: demoPhoneVerification,
   [demoTotalWaterManagement.id]: demoTotalWaterManagement,
   [demoTajExoticaDashboard.id]: demoTajExoticaDashboard,
   [shortOperational.id]: shortOperational,
@@ -496,7 +494,6 @@ export const MODULES: ModuleDef[] = [
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
     lessons: [
-      { id: 'demo-phone-verification' },
       { id: 'demo-total-water-management' },
       { id: 'demo-taj-exotica-dashboard' },
     ],
