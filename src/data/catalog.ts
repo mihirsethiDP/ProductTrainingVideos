@@ -3,6 +3,7 @@ import demoTotalWaterManagement from './lessons/module-demos/demo-total-water-ma
 import demoTajExoticaDashboard from './lessons/module-demos/demo-taj-exotica-dashboard';
 import demoPlakshaDashboard from './lessons/module-demos/demo-plaksha-dashboard';
 import demoMdeaAmazonDashboard from './lessons/module-demos/demo-mdea-amazon-dashboard';
+import demoGitamDashboard from './lessons/module-demos/demo-gitam-dashboard';
 import shortOperational from './lessons/module-shorts/short-operational';
 import shortNonOperational from './lessons/module-shorts/short-non-operational';
 import lessonReading from './lessons/module-01-dashboard/lesson-01-reading';
@@ -65,6 +66,7 @@ export const LESSONS: Record<string, Lesson> = {
   [demoTajExoticaDashboard.id]: demoTajExoticaDashboard,
   [demoPlakshaDashboard.id]: demoPlakshaDashboard,
   [demoMdeaAmazonDashboard.id]: demoMdeaAmazonDashboard,
+  [demoGitamDashboard.id]: demoGitamDashboard,
   [shortOperational.id]: shortOperational,
   [shortNonOperational.id]: shortNonOperational,
   [lessonReading.id]: lessonReading,
@@ -502,6 +504,7 @@ export const MODULES: ModuleDef[] = [
       { id: 'demo-taj-exotica-dashboard' },
       { id: 'demo-plaksha-dashboard' },
       { id: 'demo-mdea-amazon-dashboard' },
+      { id: 'demo-gitam-dashboard' },
     ],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
