@@ -1,5 +1,4 @@
 import type { Lesson, ModuleDef, RoleId } from './types';
-import demoTotalWaterManagement from './lessons/module-demos/demo-total-water-management';
 import demoTajExoticaDashboard from './lessons/module-demos/demo-taj-exotica-dashboard';
 import demoPlakshaDashboard from './lessons/module-demos/demo-plaksha-dashboard';
 import demoMdeaAmazonDashboard from './lessons/module-demos/demo-mdea-amazon-dashboard';
@@ -62,7 +61,6 @@ export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
 /** All lessons with real content, keyed by id. */
 export const LESSONS: Record<string, Lesson> = {
-  [demoTotalWaterManagement.id]: demoTotalWaterManagement,
   [demoTajExoticaDashboard.id]: demoTajExoticaDashboard,
   [demoPlakshaDashboard.id]: demoPlakshaDashboard,
   [demoMdeaAmazonDashboard.id]: demoMdeaAmazonDashboard,
@@ -500,7 +498,6 @@ export const MODULES: ModuleDef[] = [
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
     lessons: [
-      { id: 'demo-total-water-management' },
       { id: 'demo-taj-exotica-dashboard' },
       { id: 'demo-plaksha-dashboard' },
       { id: 'demo-mdea-amazon-dashboard' },
