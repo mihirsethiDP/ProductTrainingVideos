@@ -52,6 +52,9 @@ import lessonAnalyticalFormulas from './lessons/module-15-analytical-engine/less
 import lessonAnalyticalCreate from './lessons/module-15-analytical-engine/lesson-02-create';
 import lessonAnalyticalSettings from './lessons/module-15-analytical-engine/lesson-03-settings';
 import lessonAnalyticalNested from './lessons/module-15-analytical-engine/lesson-04-nested';
+import demoTataLavidaDashboard from './lessons/module-demos/demo-tata-lavida-dashboard';
+import demoParkViewSpaDashboard from './lessons/module-demos/demo-park-view-spa-dashboard';
+import demoBackDatedEntry from './lessons/module-demos/demo-back-dated-entry';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -110,6 +113,9 @@ export const LESSONS: Record<string, Lesson> = {
   [lessonAnalyticalCreate.id]: lessonAnalyticalCreate,
   [lessonAnalyticalSettings.id]: lessonAnalyticalSettings,
   [lessonAnalyticalNested.id]: lessonAnalyticalNested,
+  [demoTataLavidaDashboard.id]: demoTataLavidaDashboard,
+  [demoParkViewSpaDashboard.id]: demoParkViewSpaDashboard,
+  [demoBackDatedEntry.id]: demoBackDatedEntry,
 };
 
 /**
@@ -490,6 +496,9 @@ export const MODULES: ModuleDef[] = [
       mr: 'रेकॉर्डिंगमधून तयार केलेले क्लायंट-विशिष्ट डेमो — लिंकद्वारे उपलब्ध, सूचीबद्ध नाही.',
     },
     lessons: [
+      { id: 'demo-tata-lavida-dashboard' },
+      { id: 'demo-park-view-spa-dashboard' },
+      { id: 'demo-back-dated-entry' },
     ],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
