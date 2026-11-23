@@ -57,6 +57,8 @@ import demoParkViewSpaDashboard from './lessons/module-demos/demo-park-view-spa-
 import demoBackDatedEntry from './lessons/module-demos/demo-back-dated-entry';
 import demoAmazonLucknowDashboard from './lessons/module-demos/demo-amazon-lucknow-dashboard';
 import demoHondaManesarDashboard from './lessons/module-demos/demo-honda-manesar-dashboard';
+import demoLodhaDashboard from './lessons/module-demos/demo-lodha-dashboard';
+import demoEmsDashboard from './lessons/module-demos/demo-ems-dashboard';
 
 export const ROLES: RoleId[] = ['operator', 'supervisor', 'internal'];
 
@@ -120,6 +122,8 @@ export const LESSONS: Record<string, Lesson> = {
   [demoBackDatedEntry.id]: demoBackDatedEntry,
   [demoAmazonLucknowDashboard.id]: demoAmazonLucknowDashboard,
   [demoHondaManesarDashboard.id]: demoHondaManesarDashboard,
+  [demoLodhaDashboard.id]: demoLodhaDashboard,
+  [demoEmsDashboard.id]: demoEmsDashboard,
 };
 
 /**
@@ -505,6 +509,8 @@ export const MODULES: ModuleDef[] = [
       { id: 'demo-back-dated-entry' },
       { id: 'demo-amazon-lucknow-dashboard' },
       { id: 'demo-honda-manesar-dashboard' },
+      { id: 'demo-lodha-dashboard' },
+      { id: 'demo-ems-dashboard' },
     ],
   },
   // Hidden holder for the forwardable persona shorts. roles: [] keeps them out
